@@ -1,6 +1,6 @@
 // "Who was there": the last people, cars and animals the outdoor cameras (Frigate) saw, as pictures with
 // name or number plate when Frigate knows them, filterable, a tap shows the big picture.
-import { h, icon } from "./util.js";
+import { h, icon, toggleSwitch } from "./util.js";
 import { openSheet } from "./dialogs.js";
 import { t } from "./i18n.js";
 import { clock } from "./popkit.js";
@@ -101,15 +101,65 @@ export function openVisitors(ctx) {
   loadVisits(hass, { hours: 48 }).then((list) => { events = list; draw(); });
 }
 
+// Which cameras "Last movements" shows is a choice of each user, kept by Home Assistant with the user
+// (frontend user data), so it follows them to every screen and does not change it for the others.
+const MOTION_KEY = "hauspanel_motion_cams";
+/** The cameras Frigate knows (entity ids). */
+export const frigateCams = (hass) => Object.keys(hass.states).filter((id) => id.startsWith("camera.") && hass.states[id].attributes.client_id && hass.states[id].attributes.camera_name);
+/** The user's own choice (entity ids), or null: the cameras of the Security page. */
+export async function motionCamPref(hass) {
+  try {
+    const r = await hass.callWS({ type: "frontend/get_user_data", key: MOTION_KEY });
+    return Array.isArray(r?.value) ? r.value : null;
+  } catch { return null; }
+}
+const setMotionCamPref = (hass, value) => hass.callWS({ type: "frontend/set_user_data", key: MOTION_KEY, value });
+
+/** Pick the cameras for "Last movements"; only for the signed-in user. onDone runs after a change. */
+export async function openMotionCams(ctx, defaults, onDone = () => {}) {
+  const hass = ctx.hass;
+  const all = frigateCams(hass);
+  const saved = await motionCamPref(hass);
+  let chosen = new Set(saved ?? defaults.filter((id) => all.includes(id)));
+  let changed = false;
+  const sheet = openSheet(ctx, { title: t("sec_recent_cams"), subtitle: hass.user?.name || "", cls: "qsheet", onClose: () => { if (changed) onDone(); } });
+  const save = () => { changed = true; setMotionCamPref(hass, [...chosen]).catch(() => {}); };
+  const list = h("div", { class: "hp-qlist" });
+  const draw = () => list.replaceChildren(...all.map((id) => {
+    const sw = toggleSwitch(chosen.has(id), () => {
+      if (chosen.has(id)) chosen.delete(id); else chosen.add(id);
+      sw.update(chosen.has(id));
+      row.classList.toggle("off", !chosen.has(id));
+      save();
+    });
+    const st = hass.states[id];
+    const row = h("div", { class: `hp-qrow ${chosen.has(id) ? "" : "off"}` }, h("span", { class: "hp-qrow-ic" }, icon("mdi:cctv")),
+      h("div", { class: "hp-qrow-text" }, h("b", {}, st?.attributes.friendly_name || id)), sw);
+    row.addEventListener("click", () => sw.click());
+    return row;
+  }));
+  draw();
+  const reset = h("button", { class: "hp-btn ghost" }, icon("mdi:restore"), h("span", {}, t("sec_recent_reset")));
+  reset.addEventListener("click", () => {
+    chosen = new Set(defaults.filter((id) => all.includes(id)));
+    changed = true;
+    hass.callWS({ type: "frontend/set_user_data", key: MOTION_KEY, value: null }).catch(() => {});
+    draw();
+  });
+  sheet.body.append(h("p", { class: "hp-muted small" }, t("sec_recent_cams_hint")),
+    all.length ? list : h("div", { class: "hp-qempty" }, t("sec_recent_no_cams")), h("div", { class: "hp-sheet-actions hp-app-foot" }, reset));
+}
+
 /**
- * The last few things the cameras on the Security page saw (any label), as a small picture grid.
- * A tap shows the snapshot big; "All" opens "Who was there".
+ * The last few things the cameras saw (any label), as a small picture grid: the cameras the user picked,
+ * else those on the Security page. A tap plays the clip big; the camera button picks the cameras.
  */
 export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
   const hass = ctx.hass;
   const big = h("div", { class: "hp-vis-big", hidden: true });
   const grid = h("div", { class: "hp-vis-grid hp-sec-recent" }, h("div", { class: "hp-muted small" }, t("loading")));
-  const head = h("div", { class: "hp-label hp-ov-label" }, h("span", {}, t("sec_recent")));
+  const pick = h("button", { class: "hp-round ghost small hp-sec-recent-pick", "aria-label": t("sec_recent_cams"), title: t("sec_recent_cams") }, icon("mdi:cctv"));
+  const head = h("div", { class: "hp-label hp-ov-label hp-sec-recent-head" }, h("span", {}, t("sec_recent")), pick);
   const box = h("div", { class: "hp-sec-recent-box" }, head, big, grid);
   const lang = hass.locale?.language || "de";
   const when = (ts) => {
@@ -117,8 +167,14 @@ export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
     return new Date().toDateString() === d.toDateString() ? clock(hass, d) : `${d.toLocaleDateString(lang, { weekday: "short" })} ${clock(hass, d)}`;
   };
   const label = (e) => subLabel(e) || t(`vis_l_${e.label}`) || e.label;
-  loadVisits(hass, { hours: 72, labels: null, limit, only: camIds }).then((list) => {
-    if (!list.length) { box.hidden = true; return; }
+  pick.addEventListener("click", () => openMotionCams(ctx, camIds, () => load()));
+  const load = async () => {
+    const own = await motionCamPref(hass);
+    const only = own ?? camIds;
+    big.hidden = true;
+    big.replaceChildren();
+    const list = only.length ? await loadVisits(hass, { hours: 72, labels: null, limit, only }) : [];
+    if (!list.length) { grid.replaceChildren(h("div", { class: "hp-qempty" }, t(only.length ? "sec_recent_none" : "sec_recent_no_pick"))); return; }
     grid.replaceChildren(...list.slice(0, limit).map((e) => {
       // Like Frigate: the short animated preview in the grid (the still picture until it has loaded or if there is none).
       const base = `/api/frigate/${e.instance}/notifications/${e.id}`;
@@ -147,6 +203,7 @@ export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
       });
       return el;
     }));
-  });
+  };
+  load();
   return box;
 }

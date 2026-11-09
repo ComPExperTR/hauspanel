@@ -12,7 +12,7 @@ import { loadVisits } from "./visitors.js";
 import { openLeave } from "./leave.js";
 import { t } from "./i18n.js";
 import { svgEl, btn, twoTap, fmt, ring, stat, ago, since, hint } from "./popkit.js";
-import { openVisitors, recentMotions } from "./visitors.js";
+import { openVisitors, recentMotions, frigateCams } from "./visitors.js";
 
 export const classicPopups = (ctx) => !!ctx.settings.s.classicPopups;
 
@@ -178,7 +178,7 @@ export function openSecurityOverview(ctx, openClassic) {
 
   const cams = cameraList(ctx).items;
   const lay = secLayout(ctx);
-  const recent = cams.length && lay.on.has("recent") ? recentMotions(ctx, cams) : null;
+  const recent = (cams.length || frigateCams(ctx.hass).length) && lay.on.has("recent") ? recentMotions(ctx, cams) : null;
   const parts = {
     alarm: alarmId ? [aCard, modeBox, blockers] : [],
     doors: [openBox, closedHead, closedBox],

@@ -944,6 +944,9 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-rooms-floor { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 12px 2px 0; color: var(--hp-sub); font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; --mdc-icon-size: 18px; }
 .hp-rooms-floor:first-child { margin-top: 0; }
 .hp-rooms-all .hp-ph-room-text b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hp-sec-recent > .hp-qempty { grid-column: 1 / -1; }
+.hp-sec-recent-head { display: flex; align-items: center; justify-content: space-between; }
+.hp-sec-recent-head .hp-sec-recent-pick { width: 32px; height: 32px; --mdc-icon-size: 17px; opacity: .7; margin: -6px 0; }
 .hp-ph-floor { display: flex; align-items: center; gap: 8px; padding: 16px 4px 2px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--hp-sub); }
 .hp-ph-floor:first-child { padding-top: 0; }
 .hp-ph-floor ha-icon { --mdc-icon-size: 15px; }
