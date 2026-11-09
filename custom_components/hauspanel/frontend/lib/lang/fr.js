@@ -938,4 +938,10 @@ export default {
   gate_no_move: "La porte n'a pas bougé. Vérifiez qu'elle est joignable et que rien ne la bloque.",
   gate_failed: "Home Assistant n'a pas pu l'envoyer : {why}",
   set_players_hint: "Désactivez ce que vous ne voulez pas voir : il n'apparaît alors nulle part dans HausPanel (comme Paramètres → Masquer). Les lecteurs injoignables reviennent d'eux-mêmes dès qu'ils sont en ligne.",
+  fav_cards: "Cartes",
+  fav_card_media: "En cours de lecture",
+  fav_card_media_sub: "Ce qui joue, avec lecture et morceau suivant",
+  fav_card_security_sub: "Ce qui est ouvert, l'alarme",
+  fav_card_climate_sub: "Températures et chauffage",
+  fav_card_today_sub: "Prochains événements et rappels",
 };

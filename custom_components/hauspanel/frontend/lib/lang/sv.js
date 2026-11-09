@@ -938,4 +938,10 @@ export default {
   gate_no_move: "Porten har inte rört sig. Kontrollera att den går att nå och att inget är i vägen.",
   gate_failed: "Home Assistant kunde inte skicka det: {why}",
   set_players_hint: "Stäng av det du inte vill se: det visas då ingenstans i HausPanel (som Inställningar → Dölj). Spelare som inte nås kommer tillbaka av sig själva när de är online.",
+  fav_cards: "Kort",
+  fav_card_media: "Spelas nu",
+  fav_card_media_sub: "Det som spelas nu, med spela och hoppa",
+  fav_card_security_sub: "Vad som är öppet, larmet",
+  fav_card_climate_sub: "Temperaturer och värme",
+  fav_card_today_sub: "Nästa händelser och påminnelser",
 };

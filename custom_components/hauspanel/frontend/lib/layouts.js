@@ -494,8 +494,10 @@ export function overview(ctx, { container = "home", own = false, onAdd = null } 
     if (m.all.some((id) => id.startsWith("climate."))) auto.push("card:climate");
     if (m.media.length) auto.push("card:media");
   }
+  // Summary cards that exist in this house (also for the Favourites home, where they are added by hand).
+  const cards = availableCards(ctx);
   const valid = (k) => {
-    if (k.startsWith("card:")) return auto.includes(k);
+    if (k.startsWith("card:")) return cards.includes(k);
     if (k.startsWith("room:")) return k === "room:_other" ? !!m.unassigned.tiles.length : !!m.areaById.get(k.slice(5));
     if (k.startsWith("bby:")) return !!babyCamera(ctx);
     if (k.startsWith("wbx:")) return wallboxes(ctx.hass).includes(k.slice(4));
@@ -544,6 +546,19 @@ export function overview(ctx, { container = "home", own = false, onAdd = null } 
   return h("div", {}, grid, tools);
 }
 
+/** The summary cards this house has: Today, Security, Climate and the music card ("now playing"). */
+function availableCards(ctx) {
+  const m = ctx.model;
+  const out = [];
+  if (ctx.agenda.calendars().length || ctx.agenda.todoLists().length) out.push("card:today");
+  if (m.security.length) out.push("card:security");
+  if (m.all.some((id) => id.startsWith("climate."))) out.push("card:climate");
+  if (m.media.length) out.push("card:media");
+  return out;
+}
+const CARD_INFO = { "card:media": ["mdi:music", "fav_card_media", "fav_card_media_sub"], "card:security": ["mdi:shield-outline", "security", "fav_card_security_sub"],
+  "card:climate": ["mdi:thermometer", "climate", "fav_card_climate_sub"], "card:today": ["mdi:calendar-today", "card_today", "fav_card_today_sub"] };
+
 /** Picker for the Favourites home: a room as a whole, or any device from it (also when the room is already there). */
 function openFavPicker(ctx, container) {
   const sheet = openSheet(ctx, { title: t("fav_add"), subtitle: t("fav_add_hint"), cls: "fav-picker tall" });
@@ -560,6 +575,15 @@ function openFavPicker(ctx, container) {
   function draw() {
     const have = new Set(ctx.settings.arrange(container, [], () => true).items);
     const out = [];
+    // Cards first: the music card (whatever plays), security, climate, today.
+    const cardKeys = availableCards(ctx).sort((a, b) => (a === "card:media" ? -1 : b === "card:media" ? 1 : 0));
+    if (cardKeys.length) {
+      out.push(h("div", { class: "hp-group-label" }, t("fav_cards")));
+      for (const k of cardKeys) {
+        const [ic, name, sub] = CARD_INFO[k];
+        out.push(addRow(k, ic, t(name), t(sub), have.has(k)));
+      }
+    }
     for (const g of roomsByFloor(ctx)) {
       if (g.floor) out.push(h("div", { class: "hp-group-label" }, g.floor.name));
       for (const a of g.rooms) {

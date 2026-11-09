@@ -938,4 +938,10 @@ export default {
   gate_no_move: "Brama się nie poruszyła. Sprawdź, czy jest osiągalna i czy nic jej nie blokuje.",
   gate_failed: "Home Assistant nie mógł tego wysłać: {why}",
   set_players_hint: "Wyłącz to, czego nie chcesz widzieć: nie pojawi się wtedy nigdzie w HausPanel (jak w Ustawienia → Ukrywanie). Niedostępne odtwarzacze wrócą same, gdy będą online.",
+  fav_cards: "Karty",
+  fav_card_media: "Teraz gra",
+  fav_card_media_sub: "Co teraz gra, z odtwarzaniem i przewijaniem",
+  fav_card_security_sub: "Co jest otwarte, alarm",
+  fav_card_climate_sub: "Temperatury i ogrzewanie",
+  fav_card_today_sub: "Najbliższe wydarzenia i przypomnienia",
 };

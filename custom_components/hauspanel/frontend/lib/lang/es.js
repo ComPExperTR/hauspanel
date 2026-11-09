@@ -938,4 +938,10 @@ export default {
   gate_no_move: "La puerta no se ha movido. Comprueba que esté accesible y que nada la bloquee.",
   gate_failed: "Home Assistant no pudo enviarlo: {why}",
   set_players_hint: "Desactiva lo que no quieras ver: así no aparece en ningún sitio de HausPanel (como Ajustes → Ocultar). Los reproductores inaccesibles vuelven solos en cuanto están en línea.",
+  fav_cards: "Tarjetas",
+  fav_card_media: "Reproduciendo",
+  fav_card_media_sub: "Lo que suena ahora, con reproducir y saltar",
+  fav_card_security_sub: "Lo que está abierto, la alarma",
+  fav_card_climate_sub: "Temperaturas y calefacción",
+  fav_card_today_sub: "Próximos eventos y recordatorios",
 };

@@ -938,4 +938,10 @@ export default {
   gate_no_move: "La porta non si è mossa. Controlla che sia raggiungibile e che niente la blocchi.",
   gate_failed: "Home Assistant non è riuscito a inviarlo: {why}",
   set_players_hint: "Disattiva ciò che non vuoi vedere: non comparirà da nessuna parte in HausPanel (come Impostazioni → Nascondi). I lettori non raggiungibili ricompaiono da soli appena tornano online.",
+  fav_cards: "Schede",
+  fav_card_media: "In riproduzione",
+  fav_card_media_sub: "Ciò che suona ora, con play e salta",
+  fav_card_security_sub: "Cosa è aperto, l'allarme",
+  fav_card_climate_sub: "Temperature e riscaldamento",
+  fav_card_today_sub: "Prossimi eventi e promemoria",
 };

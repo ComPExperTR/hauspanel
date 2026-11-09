@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Buttons that need two taps (gates, the doorbell opener, scenes) now say *Tap to confirm* after the first tap.
+- **Favourites**: the picker has *Cards* on top: *Now playing* (the music card, whatever plays right now), Security, Climate and Today can be added like rooms and devices.
 - **Settings → Rooms & devices → Speakers & TVs**: one switch per player; off hides it everywhere in HausPanel. The Media page and its player buttons list the same players as the rooms, each once.
 - Media players that can't be reached get no tile; they come back by themselves once they are online again. Players that are just off stay.
 - **Music Assistant**: its players, which come without a room, join the room of their twin (the speaker's own player with the same name or device name) and stand for it there, so a room shows the player that is really playing. Players with no twin get no tile under Other but still show on Home's music card while they play.

@@ -938,4 +938,10 @@ export default {
   gate_no_move: "De deur heeft niet bewogen. Controleer of hij bereikbaar is en niets in de weg staat.",
   gate_failed: "Home Assistant kon dat niet versturen: {why}",
   set_players_hint: "Zet uit wat je niet wilt zien: het verschijnt dan nergens in HausPanel (zoals Instellingen → Verbergen). Onbereikbare spelers komen vanzelf terug zodra ze online zijn.",
+  fav_cards: "Kaarten",
+  fav_card_media: "Nu aan het spelen",
+  fav_card_media_sub: "Wat nu speelt, met afspelen en volgende",
+  fav_card_security_sub: "Wat openstaat, het alarm",
+  fav_card_climate_sub: "Temperaturen en verwarming",
+  fav_card_today_sub: "Volgende afspraken en herinneringen",
 };
