@@ -945,6 +945,8 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-rooms-floor:first-child { margin-top: 0; }
 .hp-rooms-all .hp-ph-room-text b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hp-sec-recent > .hp-qempty { grid-column: 1 / -1; }
+.hp-set-sub { padding: 12px 14px 2px; font-size: 12px; font-weight: 600; color: var(--hp-sub); letter-spacing: .04em; text-transform: uppercase; }
+.hp-set-own { display: inline-block; margin-left: 4px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--hp-accent, #6cc7b2) 22%, transparent); color: var(--hp-text); font-size: 11px; font-weight: 600; vertical-align: 1px; }
 .hp-sec-recent-head { display: flex; align-items: center; justify-content: space-between; }
 .hp-sec-recent-head .hp-sec-recent-pick { width: 32px; height: 32px; --mdc-icon-size: 17px; opacity: .7; margin: -6px 0; }
 .hp-ph-floor { display: flex; align-items: center; gap: 8px; padding: 16px 4px 2px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--hp-sub); }

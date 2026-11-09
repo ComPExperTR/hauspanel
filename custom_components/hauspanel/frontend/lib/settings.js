@@ -7,6 +7,8 @@ import { candidateEntities, hideMatcher } from "./model.js";
 import { t } from "./i18n.js";
 import { babyCamera, babyAreaOf, openBaby } from "./baby.js";
 import { securityEditor } from "./overviews.js";
+import { cameraList, CAM_CONTAINER } from "./securityview.js";
+import { openMotionCams, motionCamPref, frigateCams } from "./visitors.js";
 import { doorbells, bellCameras, openers, bellEnabled, bellCamera, bellOpener, ringNow } from "./doorbell.js";
 
 /** Soft surface of lit cards. */
@@ -103,6 +105,35 @@ export function openSettings(ctx) {
       return b;
     })), t("cams_per_page_hint"));
     const sidebarRow = () => row(t("hide_sidebar"), toggleSwitch(dev.hideSidebar, () => { S.setDevice("hideSidebar", !dev.hideSidebar); draw(); }), t("hide_sidebar_hint"));
+    // Cameras: which ones the Security page shows (for everyone), and whose movements the security
+    // popup lists (only for the signed-in user). Before, both were only in edit mode and the popup.
+    const camerasSection = () => {
+      const { items, hidden } = cameraList(ctx);
+      const all = [...items, ...hidden.filter((id) => !items.includes(id) && ctx.hass.states[id])];
+      if (!all.length && !frigateCams(ctx.hass).length) return null;
+      const nameOf = (id) => ctx.hass.states[id]?.attributes.friendly_name || id;
+      const list = h("div", { class: "hp-qlist" }, ...all.map((id) => {
+        const shown = items.includes(id);
+        const sw = toggleSwitch(shown, () => {
+          if (shown) ctx.hideItem(CAM_CONTAINER, id); else S.unhide(CAM_CONTAINER, id);
+          draw();
+        });
+        return h("div", { class: `hp-qrow ${shown ? "" : "off"}` }, h("span", { class: "hp-qrow-ic" }, icon("mdi:cctv")),
+          h("div", { class: "hp-qrow-text" }, h("b", {}, nameOf(id))), sw);
+      }));
+      const motionSub = h("small", {}, "…");
+      motionCamPref(ctx.hass).then((own) => {
+        motionSub.textContent = own == null ? t("set_cams_motion_default") : own.length ? own.map(nameOf).join(", ") : t("set_cams_motion_none");
+      });
+      const pickBtn = h("button", { class: "hp-chip" }, icon("mdi:cctv"), t("set_cams_motion_pick"));
+      pickBtn.addEventListener("click", () => openMotionCams(ctx, items, draw));
+      const motion = frigateCams(ctx.hass).length
+        ? h("div", { class: "hp-set-row" }, h("div", { class: "hp-set-label" },
+            h("span", {}, t("set_cams_motion"), " ", h("span", { class: "hp-set-own" }, t("only_you"))), motionSub), pickBtn)
+        : null;
+      return section(t("set_cams"), h("p", { class: "hp-muted small" }, t("set_cams_hint")),
+        all.length ? h("div", { class: "hp-set-sub" }, t("set_cams_page")) : null, all.length ? list : null, motion);
+    };
     if (kind === "main") {
       const lay = h("div", { class: "hp-layout-pick" });
       for (const l of LAYOUTS) {
@@ -237,16 +268,20 @@ export function openSettings(ctx) {
         row(t("scene_confirm_setting"), toggleSwitch(s.sceneConfirm !== false, () => {
           S.update((x) => { x.sceneConfirm = x.sceneConfirm === false; });
           draw();
-        }), t("scene_confirm_hint")),
-        row(t("rp_setting"), toggleSwitch(s.roomPopup !== false, () => {
-          S.update((x) => { x.roomPopup = x.roomPopup === false; });
-          draw();
-        }), t("rp_setting_hint"))));
+        }), t("scene_confirm_hint"))));
+      add("rooms", section(t("set_rooms_open"),
+        // What a tap on a room opens, as two clear choices (holding opens the other one).
+        row(t("rp_tap"), h("div", { class: "hp-seg" }, [[true, "rp_tap_glance"], [false, "rp_tap_page"]].map(([v, l]) => {
+          const b = h("button", { class: (s.roomPopup !== false) === v ? "active" : "" }, t(l));
+          b.addEventListener("click", () => { S.update((x) => { x.roomPopup = v; }); draw(); });
+          return b;
+        })), t("rp_tap_hint"))));
       // Security: the popup behind the Security chip, its doors and when they may be open, the good night check.
       const ed = securityEditor(ctx);
       add("security",
         section(t("ov_watched_label"), h("p", { class: "hp-muted small" }, t("set_sec_items_hint")), ed.items),
         section(t("set_sec_popup"), h("p", { class: "hp-muted small" }, t("set_sec_popup_hint")), ed.parts),
+        camerasSection(),
         section(t("gn_title"), row(t("gn_setting"), toggleSwitch(s.nightCheck === true, () => {
           S.update((x) => { x.nightCheck = x.nightCheck !== true; });
           draw();
