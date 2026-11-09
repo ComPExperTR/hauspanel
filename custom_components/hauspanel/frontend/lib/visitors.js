@@ -192,13 +192,34 @@ export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
         h("div", { class: "cap" }, h("b", {}, label(e)), h("small", {}, `${when(e.start_time)} · ${e.camName}`)));
       el.addEventListener("click", () => {
         const close = h("button", { class: "hp-round ghost small", "aria-label": t("close") }, icon("mdi:close"));
-        close.addEventListener("click", (ev) => { ev.stopPropagation(); big.hidden = true; big.replaceChildren(); });
+        // The clip shown before is let go first.
+        big._stop?.();
+        let blobUrl = null;
+        const stop = () => { if (blobUrl) URL.revokeObjectURL(blobUrl); blobUrl = null; };
+        big._stop = stop;
+        close.addEventListener("click", (ev) => { ev.stopPropagation(); stop(); big.hidden = true; big.replaceChildren(); });
         // The clip plays big (muted, inline, with controls); without a clip the snapshot.
-        const media = e.has_clip
-          ? h("video", { src: `${base}/clip.mp4`, poster: `${base}/snapshot.jpg`, autoplay: true, muted: true, playsinline: true, controls: true, loop: true, preload: "auto" })
-          : h("img", { alt: "", src: `${base}/snapshot.jpg` });
-        if (media.tagName === "VIDEO") { media.muted = true; media.playsInline = true; media.autoplay = true; media.loop = true; media.controls = true; media.setAttribute("playsinline", ""); }
-        big.replaceChildren(media,
+        // Home Assistant passes Frigate's clip on without a length and without byte ranges, which iPhones need
+        // to play an MP4: so the short clip is loaded in full first and played from memory.
+        let media;
+        let wait = null;
+        if (e.has_clip) {
+          media = h("video", { poster: `${base}/snapshot.jpg`, muted: true, playsinline: true, controls: true, loop: true, preload: "auto" });
+          media.muted = true; media.playsInline = true; media.loop = true; media.controls = true; media.setAttribute("playsinline", "");
+          wait = h("span", { class: "hp-vis-wait" }, icon("mdi:loading"));
+          big.classList.add("loading");
+          fetch(`${base}/clip.mp4`).then((r) => (r.ok ? r.blob() : Promise.reject(r.status))).then((b) => {
+            if (!media.isConnected) return;
+            stop();
+            blobUrl = URL.createObjectURL(b.type ? b : new Blob([b], { type: "video/mp4" }));
+            media.src = blobUrl;
+            media.play?.().catch(() => {});
+          }).catch(() => {
+            // No clip yet (the event may still be running): the snapshot instead.
+            if (media.isConnected) media.replaceWith(h("img", { alt: "", src: `${base}/snapshot.jpg` }));
+          }).finally(() => { big.classList.remove("loading"); wait.remove(); });
+        } else media = h("img", { alt: "", src: `${base}/snapshot.jpg` });
+        big.replaceChildren(media, ...(wait ? [wait] : []),
           h("div", { class: "cap" }, icon(LABEL_IC[e.label] || "mdi:motion-sensor"), h("b", {}, label(e)), h("small", {}, `${e.camName} · ${when(e.start_time)}`)), close);
         big.hidden = false;
         big.scrollIntoView({ block: "nearest", behavior: "smooth" });

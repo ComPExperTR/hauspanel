@@ -2153,6 +2153,11 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 a.hp-hint { color: inherit; text-decoration: none; }
 .hp-hint .hp-qrow-ic { color: #f6c945; }
 .hp-hint .hp-hint-go { color: var(--hp-sub); --mdc-icon-size: 17px; flex: none; }
+/* Clip loading in the security popup */
+.hp-vis-big { position: relative; }
+.hp-vis-wait { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; --mdc-icon-size: 26px; pointer-events: none; }
+.hp-vis-wait ha-icon { animation: hp-spin 1s linear infinite; }
+@keyframes hp-spin { to { transform: rotate(360deg); } }
 /* Welcome window */
 .hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
 .hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }
