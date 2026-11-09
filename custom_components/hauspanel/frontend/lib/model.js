@@ -206,6 +206,23 @@ export function buildModel(hass, hide) {
   return model;
 }
 
+/**
+ * Is someone in this room? Presence and occupancy sensors count; when a room has one, plain motion sensors
+ * there are left out (they drop off while you sit still, and are often the same device seen twice). Only a
+ * room without them falls back to motion. { on, since, ids } or null when the room has no such sensor.
+ */
+export function roomPresence(hass, area) {
+  const kind = (id) => hass.states[id]?.attributes.device_class;
+  const live = (id) => hass.states[id] && !["unavailable", "unknown"].includes(hass.states[id].state);
+  const bins = (area?.all || []).filter((id) => id.startsWith("binary_sensor."));
+  const presence = bins.filter((id) => ["occupancy", "presence"].includes(kind(id)));
+  const ids = (presence.length ? presence : bins.filter((id) => kind(id) === "motion")).filter(live);
+  if (!ids.length) return null;
+  const on = ids.some((id) => hass.states[id].state === "on");
+  const since = Math.max(...ids.map((id) => Date.parse(hass.states[id].last_changed || "") || 0));
+  return { on, since, ids };
+}
+
 /** Signature of the parts of hass that change the model (registries), not states. */
 export function registrySignature(hass) {
   return [hass.areas, hass.devices, hass.entities, hass.floors];

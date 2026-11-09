@@ -1,7 +1,7 @@
 // Room popup: a glowing card with the temperature ring on top, big control tiles (light, shades, music, switches),
 // the room's own devices, scenes, and closed sections with every lamp, shade, switch and player.
 import { h, icon, domainOf, slider, toggleSwitch, lightColor, entityName } from "./util.js";
-import { isOn } from "./model.js";
+import { isOn, roomPresence } from "./model.js";
 import { entityIcon, tapAction } from "./domains.js";
 import { openSheet } from "./dialogs.js";
 import { openThermostat } from "./thermostat.js";
@@ -53,8 +53,8 @@ export function openRoomPopup(ctx, areaId) {
   const switches = tiles.filter((id) => ["switch", "fan", "input_boolean"].includes(domainOf(id)) && !ctx.settings.s.meters?.[id]);
   const locks = tiles.filter((id) => domainOf(id) === "lock");
   const windows = area.all.filter((id) => domainOf(id) === "binary_sensor" && ["window", "opening"].includes(hass.states[id]?.attributes.device_class));
-  // Motion and presence sensors of the room: shown only for people who switched it on (a personal choice).
-  const motions = ctx.prefs?.roomMotion ? area.all.filter((id) => domainOf(id) === "binary_sensor" && ["motion", "occupancy", "presence"].includes(hass.states[id]?.attributes.device_class)) : [];
+  // Presence (or motion) in the room: shown only for people who switched it on (a personal choice).
+  const showPresence = !!ctx.prefs?.roomMotion;
   const humidity = area.humidity;
   // Generic names ("Einschalter", "Switch 0", "Relay") get their device's name instead.
   const GENERIC = /^(einschalter|ausschalter|schalter|switch|relay|relais|power|steckdose|socket|output|kanal|channel)\b[\s\d_-]*$/i;
@@ -511,12 +511,10 @@ export function openRoomPopup(ctx, areaId) {
 
   // "Motion now" or "empty for 2 h" (since the last sensor went quiet).
   const motionFact = (hs) => {
-    const live = motions.map((id) => hs.states[id]).filter((st) => st && !["unavailable", "unknown"].includes(st.state));
-    if (!live.length) return null;
-    const on = live.some((st) => st.state === "on");
-    const last = Math.max(...live.map((st) => Date.parse(st.last_changed || "") || 0));
-    return h("div", { class: `hp-rp-fact ${on ? "live" : ""}` }, icon(on ? "mdi:motion-sensor" : "mdi:motion-sensor-off"),
-      h("div", {}, h("b", {}, on ? t("rp_motion_now") : t("rp_motion_empty", { t: since(last) })), h("small", {}, t("rp_motion"))));
+    const p = showPresence ? roomPresence(hs, area) : null;
+    if (!p) return null;
+    return h("div", { class: `hp-rp-fact ${p.on ? "live" : ""}` }, icon(p.on ? "mdi:account" : "mdi:account-off-outline"),
+      h("div", {}, h("b", {}, p.on ? t("rp_motion_now") : t("rp_motion_empty", { t: since(p.since) })), h("small", {}, t("rp_motion"))));
   };
   const update = (hs) => {
     const tv = num(hs, area.temperature) ?? (climate ? hs.states[climate]?.attributes.current_temperature : null);

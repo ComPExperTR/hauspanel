@@ -44,7 +44,7 @@ Tip: the room icon in HausPanel is the area's icon. Change it in the area settin
 
 ![The Rooms tab with every room](../images/guides/guide-rooms-tab.png)
 
-**Motion in the room popup** (only for you): *Settings → Rooms & devices → Show motion in the room popup*. Rooms with a motion or presence sensor then show *Motion now* or how long they have been quiet.
+**Presence in rooms** (only for you): *Settings → Rooms & devices → Show presence in rooms*. Room cards and the room list then show a small person while someone is there, and the room popup how long it has been quiet. Presence and occupancy sensors count; motion sensors only in rooms without one.
 
 ---
 
@@ -209,7 +209,7 @@ By default everyone in the household sees the same HausPanel.
 
 - **Settings → System → My own settings** on: from then on your changes apply only to you (on this panel), everyone else keeps the shared settings. It starts as a copy of the shared ones.
 - Off again: you see the shared settings.
-- A few choices are always your own, whatever this switch says: the start screen (*Start Home Assistant here*), the cameras for *Last movements* and *Show motion in the room popup*.
+- A few choices are always your own, whatever this switch says: the start screen (*Start Home Assistant here*), the cameras for *Last movements* and *Show presence in rooms*.
 - *This screen* is always per device.
 
 Each tab says at the top who a change applies to: this screen, only you, or everyone.

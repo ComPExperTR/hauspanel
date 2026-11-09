@@ -2189,6 +2189,12 @@ a.hp-hint { color: inherit; text-decoration: none; }
 .hp-root.lite .hp-backdrop { background: rgba(10,8,12,.72); }
 /* Settings → System: back up and take from another panel */
 .hp-take-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+/* Someone in the room (presence) on room cards and rows */
+.hp-presence { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(92,200,121,.22); color: #8fe0b4; flex: none; --mdc-icon-size: 14px; }
+.hp-presence[hidden] { display: none; }
+.hp-card.lit .hp-presence { background: rgba(46,140,118,.16); color: #2e8c76; }
+.hp-ph-room > .hp-presence, .hp-ph-room-top > .hp-presence { margin-left: auto; }
+.hp-ph-room-top > .hp-presence + .hp-power { margin-left: 6px; }
 /* Welcome window */
 .hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
 .hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }

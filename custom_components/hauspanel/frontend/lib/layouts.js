@@ -1,6 +1,6 @@
 // Layouts and the building blocks they share: home status, scenes, room cards, room view, room menu.
 import { h, icon, formatNumber, formatTime, formatDate, bindTapHold, domainOf, isUnlocked, entityName } from "./util.js";
-import { isOn } from "./model.js";
+import { isOn, roomPresence } from "./model.js";
 import { createTile, createSeparator, createScenePill } from "./tile.js";
 import { MEDIA, entityIcon, stateText } from "./domains.js";
 import { sortable } from "./drag.js";
@@ -322,7 +322,9 @@ function roomCard(ctx, area, container) {
   const sub = h("div", { class: "hp-sub" });
   const dots = h("div", { class: "hp-dots" });
   const flame = h("span", { class: "hp-act small", hidden: true, title: t("heating_now") }, icon("mdi:fire"));
-  const temp = h("div", { class: "hp-roomcard-temp" }, shadeInfo, flame, h("span", { class: "hp-temp-val" }));
+  // Someone in the room (presence sensor; motion only without one), for people who switched it on.
+  const pres = h("span", { class: "hp-presence", hidden: true, title: t("rp_motion_now") }, icon("mdi:account"));
+  const temp = h("div", { class: "hp-roomcard-temp" }, pres, shadeInfo, flame, h("span", { class: "hp-temp-val" }));
   // Icon and temperature on top; name, what is on and a bar per light below, the buttons bottom right.
   const el = h("div", { class: "hp-card hp-roomcard", dataset: { key: `room:${area.id}` }, role: "button", tabindex: "0" },
     h("div", { class: "hp-roomcard-top" }, ic, temp),
@@ -357,6 +359,7 @@ function roomCard(ctx, area, container) {
       dots.replaceChildren(...[...sig].map((c) => h("i", { class: c === "1" ? "on" : "" })));
     }
     temp.lastChild.textContent = roomTemp(ctx, area);
+    pres.hidden = !(ctx.prefs?.roomMotion && roomPresence(hass, area)?.on);
     flame.hidden = !area.tiles.some((id) => id.startsWith("climate.") && ["heating", "preheating"].includes(hass.states[id]?.attributes.hvac_action));
     const sh = shadeState(ctx, stats);
     shadeBtn.hidden = !sh;
@@ -1284,8 +1287,9 @@ function roomsOverview(ctx) {
       if (mode === "cards") { box.append(roomCard(ctx, a, "rooms")); continue; }
       const sub = h("small");
       const power = h("button", { class: "hp-power", "aria-label": t("power") }, icon("mdi:power"));
+      const pres = h("span", { class: "hp-presence", hidden: true, title: t("rp_motion_now") }, icon("mdi:account"));
       const row = h("div", { class: `hp-card hp-ph-room ${mode === "compact" ? "mini" : ""}`, role: "button", tabindex: "0" },
-        h("div", { class: "hp-tile-icon" }, icon(a.icon || "mdi:texture-box")), h("div", { class: "hp-ph-room-text" }, h("b", {}, a.name || t("other")), sub), power);
+        h("div", { class: "hp-tile-icon" }, icon(a.icon || "mdi:texture-box")), h("div", { class: "hp-ph-room-text" }, h("b", {}, a.name || t("other")), sub), pres, power);
       let stats;
       power.addEventListener("pointerdown", (e) => e.stopPropagation());
       power.addEventListener("click", (e) => { e.stopPropagation(); switchRoom(ctx, stats, !stats.on); });
@@ -1296,6 +1300,7 @@ function roomsOverview(ctx) {
         power.hidden = !stats.lights.length;
         const txt = [onText(stats), roomTemp(ctx, a)].filter(Boolean).join(" · ");
         if (sub.textContent !== txt) sub.textContent = txt;
+        pres.hidden = !(ctx.prefs?.roomMotion && roomPresence(ctx.hass, a)?.on);
       };
       row.update();
       ctx.live.push(row);

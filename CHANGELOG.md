@@ -5,6 +5,7 @@
 - **Gate and garage popup**: after the second tap it says *Sent – waiting for the door to move*, and when the door hasn't moved after 20 seconds, or Home Assistant refuses the command, it says so. Doors that can't stop (many garage openers) keep Open and Close while moving instead of showing a Stop that does nothing.
 - A pool's filter pump is no longer shown like a washing machine, and a machine seen by two integrations (Home Connect and WashData) shows once.
 - Browser Mod's own entities (the browser's "screen" light, media player and tab camera) stay out of rooms and security.
+- **Presence in rooms** (a personal choice, *Settings → Rooms & devices → Show presence in rooms*): a small person on room cards and in the room list while someone is there, and in the room popup how long it has been quiet. Presence and occupancy sensors count; a room's motion sensors only when it has none, so a second, slower sensor of the same device doesn't count twice.
 
 ## 1.4.2
 

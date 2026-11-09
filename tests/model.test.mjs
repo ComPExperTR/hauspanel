@@ -116,3 +116,21 @@ test("Browser Mod (the browsers themselves) stays out of rooms and security", ()
   assert.deepEqual(m.areaById.get("office").tiles, ["light.desk"]);
   assert.ok(!m.security.includes("camera.browser_mod_abc"));
 });
+
+test("presence: occupancy sensors count, a motion sensor in the same room is left out", async () => {
+  const { roomPresence } = await import(LIB + "model.js");
+  const area = (ids) => ({ all: ids });
+  const hass = fakeHass({ states: {
+    "binary_sensor.office_presence": { state: "on", last_changed: "2026-11-09T16:00:00Z", attributes: { device_class: "occupancy" } },
+    "binary_sensor.office_motion": { state: "off", last_changed: "2026-11-09T16:10:00Z", attributes: { device_class: "motion" } },
+    "binary_sensor.hall_motion": { state: "off", last_changed: "2026-11-09T15:00:00Z", attributes: { device_class: "motion" } },
+    "binary_sensor.attic_presence": { state: "unavailable", attributes: { device_class: "presence" } },
+    "binary_sensor.attic_motion": { state: "on", attributes: { device_class: "motion" } },
+  } });
+  const office = roomPresence(hass, area(["binary_sensor.office_presence", "binary_sensor.office_motion"]));
+  assert.equal(office.on, true, "presence says someone is there, the dropped-off motion sensor doesn't count");
+  assert.deepEqual(office.ids, ["binary_sensor.office_presence"]);
+  assert.equal(roomPresence(hass, area(["binary_sensor.hall_motion"])).on, false, "motion only where there is no presence sensor");
+  assert.equal(roomPresence(hass, area(["binary_sensor.attic_presence", "binary_sensor.attic_motion"])), null, "an unavailable presence sensor still rules out motion");
+  assert.equal(roomPresence(hass, area([])), null, "no sensor, nothing to say");
+});

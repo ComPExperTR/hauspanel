@@ -44,7 +44,7 @@ Tipp: Das Raumsymbol in HausPanel ist das Symbol des Bereichs. Du änderst es in
 
 ![Der Reiter Räume mit allen Räumen](../images/guides/guide-rooms-tab.png)
 
-**Bewegung im Raum-Popup** (nur für dich): *Einstellungen → Räume & Geräte → Bewegung im Raum-Popup zeigen*. Räume mit Bewegungs- oder Präsenzmelder zeigen dann *Bewegung jetzt* oder wie lange sie schon ruhig sind.
+**Präsenz in Räumen** (nur für dich): *Einstellungen → Räume & Geräte → Präsenz in Räumen zeigen*. Raumkacheln und die Raumliste zeigen dann ein kleines Personensymbol, solange jemand da ist, und das Raum-Popup, wie lange es schon ruhig ist. Es zählen Präsenzmelder, Bewegungsmelder nur in Räumen ohne.
 
 ---
 
@@ -209,7 +209,7 @@ Normalerweise sehen alle im Haushalt dasselbe HausPanel.
 
 - **Einstellungen → System → Eigene Einstellungen nur für mich** einschalten: Ab dann gelten deine Änderungen nur für dich (auf diesem Panel), alle anderen behalten die gemeinsamen Einstellungen. Es startet als Kopie der gemeinsamen.
 - Wieder aus: Du siehst die gemeinsamen Einstellungen.
-- Ein paar Dinge sind immer deine eigenen, egal was dieser Schalter sagt: die Startseite (*Home Assistant hier starten*), die Kameras für *Letzte Bewegungen* und *Bewegung im Raum-Popup zeigen*.
+- Ein paar Dinge sind immer deine eigenen, egal was dieser Schalter sagt: die Startseite (*Home Assistant hier starten*), die Kameras für *Letzte Bewegungen* und *Präsenz in Räumen zeigen*.
 - *Dieser Bildschirm* gilt immer pro Gerät.
 
 Jeder Reiter sagt oben, für wen eine Änderung gilt: diesen Bildschirm, nur dich oder alle.

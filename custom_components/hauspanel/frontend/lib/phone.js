@@ -3,6 +3,7 @@
 import { h, icon, bindTapHold } from "./util.js";
 import { renderHome, renderPage, roomView, roomStats, roomTemp, onText, switchRoom, roomsByFloor, floorHeading } from "./layouts.js";
 import { t } from "./i18n.js";
+import { roomPresence } from "./model.js";
 
 /** Phones: the smaller side of the screen is under 500 px (iPhone in portrait and landscape). */
 export const isPhoneScreen = () => Math.min(window.innerWidth, window.innerHeight) < 500;
@@ -34,12 +35,14 @@ function roomList(ctx) {
     // Room names hyphenate in the user's language when two per line ("Schlaf-zimmer").
     const nameEl = h("b", { lang: ctx.hass.locale?.language || ctx.hass.language || "de" }, a.name || t("other"));
     const text = h("div", { class: "hp-ph-room-text" }, nameEl, sub);
+    // Someone in the room, for people who switched it on (presence sensors; motion only without one).
+    const pres = h("span", { class: "hp-presence", hidden: true, title: t("rp_motion_now") }, icon("mdi:account"));
     fitName(nameEl);
     const row = mode === "grid"
-      ? h("div", { class: "hp-card hp-ph-room small", role: "button", tabindex: "0" }, h("div", { class: "hp-ph-room-top" }, ic, power), text)
+      ? h("div", { class: "hp-card hp-ph-room small", role: "button", tabindex: "0" }, h("div", { class: "hp-ph-room-top" }, ic, pres, power), text)
       : mode === "compact"
-        ? h("div", { class: "hp-card hp-ph-room mini", role: "button", tabindex: "0" }, ic, text, power)
-        : h("div", { class: "hp-card hp-ph-room", role: "button", tabindex: "0" }, ic, text, power, icon("mdi:chevron-right", "hp-ph-chev"));
+        ? h("div", { class: "hp-card hp-ph-room mini", role: "button", tabindex: "0" }, ic, text, pres, power)
+        : h("div", { class: "hp-card hp-ph-room", role: "button", tabindex: "0" }, ic, text, pres, power, icon("mdi:chevron-right", "hp-ph-chev"));
     let stats;
     power.addEventListener("pointerdown", (e) => e.stopPropagation());
     power.addEventListener("click", (e) => {
@@ -53,6 +56,7 @@ function roomList(ctx) {
       power.hidden = !stats.lights.length;
       const txt = [onText(stats), roomTemp(ctx, a)].filter(Boolean).join(" · ");
       if (sub.textContent !== txt) sub.textContent = txt;
+      pres.hidden = !(ctx.prefs?.roomMotion && roomPresence(ctx.hass, a)?.on);
     };
     row.update();
     ctx.live.push(row);
