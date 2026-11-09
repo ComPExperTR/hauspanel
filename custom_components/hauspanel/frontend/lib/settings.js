@@ -70,6 +70,10 @@ function section(title, ...children) {
     h("div", { class: "hp-set-section" }, ...kids));
 }
 
+/** Step-by-step guides on GitHub, and the one that fits each settings tab. */
+const GUIDES = "https://github.com/alpacalabs-de/hauspanel/blob/main/docs/";
+const GUIDE_OF = { home: "edit", rooms: "areas", security: "security", look: "look", device: "wall-tablet", navigation: "pages", agenda: "agenda", hide: "hiding", system: "own-settings" };
+
 /** Icon colour per settings tab. */
 const TAB_COLORS = { security: "#ef5f67", home: "#6cc7b2", rooms: "#f6c945", look: "#f06fa5", device: "#4ea5f5", navigation: "#a985f5", agenda: "#f39c3c", hide: "#8f9bab", system: "#7f8ea3" };
 
@@ -489,7 +493,11 @@ export function openSettings(ctx) {
           : ["mdi:account-multiple-outline", t("scope_shared", { panel: panelTitle(panelId) })];
     const note = scope ? h("div", { class: "hp-set-scope" }, icon(scope[0]), h("span", {}, scope[1])) : null;
     // One line on what the tab is for, so a first look makes sense.
-    const intro = h("p", { class: "hp-set-intro" }, t(`set_intro_${tab}`));
+    // … and a link to the step-by-step guide for it (German page when HausPanel speaks German).
+    const de = /^de/i.test(ctx.hass.locale?.language || ctx.hass.language || "");
+    const guide = `${GUIDES}${de ? "guides.de.md" : "guides.md"}#${GUIDE_OF[tab] || "guides"}`;
+    const intro = h("p", { class: "hp-set-intro" }, t(`set_intro_${tab}`), " ",
+      h("a", { class: "hp-set-guide", href: guide, target: "_blank", rel: "noopener" }, icon("mdi:help-circle-outline"), t("set_guide")));
     const pane = h("div", { class: "hp-set-pane" }, ...[intro, note, ...(groups[tab] || [])].filter(Boolean));
     sheet.body.append(nav, pane);
     pane.scrollTop = scroll;

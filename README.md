@@ -129,8 +129,8 @@ The gear at the top right opens the settings. Every tab starts with one line on 
 | Tab | What you set there |
 |---|---|
 | **Home** | Home style, which status chips show, the cards on Home, date, weather and calendar in the header |
-| **Rooms & devices** | Room popup on or off, scenes ask first, one tile for all shades of a room |
-| **Security** | Which doors, gates and locks are watched and in which order, when each may be open, the parts of the security popup, good night check, doorbell, baby monitor |
+| **Rooms & devices** | What a tap on a room opens (room at a glance or the full page), scenes ask first, one tile for all shades of a room |
+| **Security** | Which doors, gates and locks are watched and in which order, when each may be open, the cameras (Security page for everyone, last movements just for you), the parts of the security popup, good night check, doorbell, baby monitor |
 | **Look** | Card colour, accent colour, background (it can follow the colour of the lights that are on), corners, glass, classic popups |
 | **This screen** | Layout, tile size, side panel, hide the Home Assistant sidebar, cameras per page |
 | **Navigation** | Which tabs show in the bar at the bottom, your own pages |
@@ -144,6 +144,8 @@ The gear at the top right opens the settings. Every tab starts with one line on 
     <td width="50%"><img src="images/screenshots/tablet-settings-look.png" alt="Settings: Look"><br><sub>Settings → Look: colours and background, shown live behind the window.</sub></td>
   </tr>
 </table>
+
+**Step by step:** short guides for wall tablets, phones, the gate that may be open during the day, cameras, hiding and more are in [docs/guides.md](docs/guides.md). Every settings tab links to the one that fits.
 
 ## Install
 
@@ -232,6 +234,8 @@ Home Assistant kennt dein Haus schon: welche Räume auf welcher Etage liegen und
 **Installieren:** In HACS unter „Benutzerdefinierte Repositories“ `https://github.com/alpacalabs-de/hauspanel` als „Integration“ hinzufügen, HausPanel installieren, Home Assistant neu starten, dann **Einstellungen → Geräte & Dienste → Integration hinzufügen → HausPanel**.
 
 **Erste Schritte:** Geräte Räumen zuordnen und Räume Etagen, dann HausPanel öffnen und die Einstellungen von links nach rechts durchgehen.
+
+**Schritt für Schritt:** kurze Anleitungen fürs Wandtablet, das Handy, das Tor, das tagsüber offen sein darf, Kameras, Ausblenden und mehr stehen in [docs/guides.de.md](docs/guides.de.md). Jeder Reiter in den Einstellungen verlinkt die passende.
 
 **Unterstützen:** HausPanel ist kostenlos und bleibt es. Wenn es dir Zeit spart, kannst du uns auf [Ko-fi einen Kaffee spendieren](https://ko-fi.com/alpacalabs). Ein Stern auf GitHub oder eine Idee als Issue hilft genauso.
 

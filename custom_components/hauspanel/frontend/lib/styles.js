@@ -2142,6 +2142,8 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-set-version a { color: var(--hp-accent); text-decoration: none; }
 .hp-set-version a:hover { text-decoration: underline; }
 .hp-set-intro { margin: 2px auto 12px; padding: 0 4px; box-sizing: border-box; width: 100%; font-size: 13.5px; line-height: 1.45; color: var(--hp-sub); }
+.hp-set-guide { display: inline-flex; align-items: center; gap: 3px; color: var(--hp-accent, #6cc7b2); text-decoration: none; font-weight: 600; white-space: nowrap; --mdc-icon-size: 15px; }
+.hp-set-guide:hover { text-decoration: underline; }
 .hp-set-section > .hp-qlist { background: transparent; padding: 0 2px; border-radius: 0; }
 .hp-allow-body { display: grid; gap: 12px; margin-top: 10px; }
 .hp-allow-times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
