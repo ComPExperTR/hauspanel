@@ -5,7 +5,7 @@ import { h, icon, domainOf, slider, toggleSwitch, entityName, formatTime } from 
 import { isOn, hideMatcher } from "./model.js";
 import { openSheet } from "./dialogs.js";
 import { snapshotUrl } from "./camera.js";
-import { statusItems, isAlert, isAllowedOpen, allowRule, pillName, cameraList, HOME_SEC_CONTAINER } from "./securityview.js";
+import { statusItems, isAlert, isAllowedOpen, allowRule, pillName, cameraList, HOME_SEC_CONTAINER, secIcon } from "./securityview.js";
 import { openThermostat } from "./thermostat.js";
 import { heatPumps, openHeatPump } from "./heatpump.js";
 import { loadVisits } from "./visitors.js";
@@ -215,7 +215,7 @@ export function openSecurityOverview(ctx, openClassic) {
     const closed = watch.filter((id) => !isAlert(hs, id));
     openBox.replaceChildren(...open.map((id) => {
       const d = domainOf(id);
-      const r = row({ ic: d === "lock" ? "mdi:lock-open-variant-outline" : d === "cover" ? "mdi:garage-open-variant" : hs.states[id]?.attributes.device_class === "window" ? "mdi:window-open-variant" : "mdi:door-open", onClick: () => ctx.openDetails(id) });
+      const r = row({ ic: secIcon(hs, id, true), onClick: () => ctx.openDetails(id) });
       r.classList.add("bad");
       r.name.textContent = nameOf(hs, id);
       r.sub.textContent = [t("ov_open_for", { when: since(hs.states[id].last_changed) }), blocking.has(id) ? t("ov_blocks_short") : null].filter(Boolean).join(" · ");
@@ -233,9 +233,9 @@ export function openSecurityOverview(ctx, openClassic) {
       const d = domainOf(id);
       const ok = isAllowedOpen(hs, id);
       const el = ok
-        ? h("button", { class: "hp-ov-ok allowed" }, icon(d === "lock" ? "mdi:lock-open-variant-outline" : d === "cover" ? "mdi:garage-open-variant" : "mdi:door-open"),
+        ? h("button", { class: "hp-ov-ok allowed" }, icon(secIcon(hs, id, true)),
           h("span", {}, nameOf(hs, id)), h("small", {}, t("sec_allowed_until", { t: allowRule(id).to })))
-        : h("button", { class: "hp-ov-ok" }, icon(d === "lock" ? "mdi:lock" : d === "cover" ? "mdi:garage-variant" : hs.states[id]?.attributes.device_class === "window" ? "mdi:window-closed-variant" : "mdi:door-closed"),
+        : h("button", { class: "hp-ov-ok" }, icon(secIcon(hs, id, false)),
           h("span", {}, nameOf(hs, id)));
       el.addEventListener("click", () => ctx.openDetails(id));
       return el;
@@ -345,7 +345,7 @@ export function securityEditor(ctx, watchAll = () => secWatchAll(ctx), onChange 
       clock.addEventListener("click", () => openAllowSheet(ctx, id, () => { onChange(); setTimeout(drawItems, 50); }));
       const where = ctx.model.areaById.get(ctx.model.areaOf[id])?.name || "";
       return h("div", { class: `hp-qrow ${shownNow ? "" : "off"}` },
-        h("span", { class: "hp-qrow-ic" }, icon(d === "lock" ? "mdi:lock" : d === "cover" ? "mdi:garage-variant" : st?.attributes.device_class === "window" ? "mdi:window-closed-variant" : "mdi:door-closed")),
+        h("span", { class: "hp-qrow-ic" }, icon(secIcon(hass, id, false))),
         h("div", { class: "hp-qrow-text" }, h("b", {}, pillName(hass, id)), h("small", {}, rule ? [where, allowText(rule)].filter(Boolean).join(" · ") : where)),
         ...(shownNow ? [clock, arrows(i, shownIds.length, (dd) => {
           onChange();

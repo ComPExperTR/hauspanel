@@ -105,6 +105,22 @@ function roomLabel(ctx, id) {
 }
 
 const GATE_NAME = /\bgate\b|_gate\b|\btor\b|_tor\b|einfahrt|hoftor|gartentor|driveway|portail|cancello|poort|brama/i;
+/**
+ * The icon for a door, gate, garage, window or lock, open or closed – the same everywhere (pills, the
+ * security popup, the list in the settings). A gate's contact set up as a door still gets a gate by its name.
+ */
+export function secIcon(hass, id, open) {
+  const st = hass.states[id];
+  const d = domainOf(id);
+  const dc = st?.attributes.device_class;
+  const gate = dc === "gate" || GATE_NAME.test(`${id} ${st?.attributes.friendly_name || ""}`);
+  if (d === "lock") return open ? "mdi:lock-open-variant-outline" : "mdi:lock";
+  if (d === "cover") return gate && dc !== "garage" ? (open ? "mdi:gate-open" : "mdi:gate") : open ? "mdi:garage-open-variant" : "mdi:garage-variant";
+  if (dc === "window") return open ? "mdi:window-open-variant" : "mdi:window-closed-variant";
+  if (dc === "garage_door") return open ? "mdi:garage-open-variant" : "mdi:garage-variant";
+  if (gate) return open ? "mdi:gate-open" : "mdi:gate";
+  return open ? "mdi:door-open" : "mdi:door-closed";
+}
 function statusPill(ctx, id, { byRoom = false } = {}) {
   const ic = icon("mdi:help");
   const name = h("b", {});
@@ -120,9 +136,9 @@ function statusPill(ctx, id, { byRoom = false } = {}) {
   el.update = (hass) => {
     const st = hass.states[id];
     if (!st) return;
-    // A gate's contact is often set up as a door: by its name it still gets a gate.
-    ic.icon = id.startsWith("binary_sensor.") && GATE_NAME.test(`${id} ${st.attributes.friendly_name || ""}`)
-      ? (st.state === "on" ? "mdi:gate-open" : "mdi:gate") : entityIcon(hass, st);
+    // Doors, gates, windows and locks look the same as in the security popup; everything else as in HA.
+    const opening = domainOf(id) === "lock" || domainOf(id) === "cover" || (id.startsWith("binary_sensor.") && ["door", "window", "opening", "garage_door", "gate"].includes(st.attributes.device_class));
+    ic.icon = opening ? secIcon(hass, id, rawOpen(hass, id)) : entityIcon(hass, st);
     name.textContent = byRoom ? roomLabel(ctx, id) : pillName(hass, id);
     // Open inside its time window: "OK until 19:00" (short, the pill is narrow; closed again, it says Closed).
     state.textContent = isAllowedOpen(hass, id) ? t("sec_allowed_short", { t: allowRule(id).to }) : stateText(hass, st);
@@ -190,7 +206,8 @@ function secRow(ctx, id) {
     const st = hass.states[id];
     if (!st) return;
     const alert = isAlert(hass, id);
-    ic.icon = entityIcon(hass, st);
+    const opening = domainOf(id) === "lock" || domainOf(id) === "cover" || (id.startsWith("binary_sensor.") && ["door", "window", "opening", "garage_door", "gate"].includes(st.attributes.device_class));
+    ic.icon = opening ? secIcon(hass, id, rawOpen(hass, id)) : entityIcon(hass, st);
     name.textContent = pillName(hass, id);
     state.textContent = stateText(hass, st);
     el.classList.toggle("alert", alert);

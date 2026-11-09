@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Security popup, the settings list and the Security page use the same icons as the pills: a gate contact set up as a door shows a gate there too.
+
 ## 1.4.1
 
 - **Panel layout, left side**: *On now* can show under the scenes (Settings → This screen → Side panel), small and two per row; the scenes there are two per row too.

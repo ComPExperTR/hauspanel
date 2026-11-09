@@ -77,3 +77,22 @@ test("an allowed window silences the warning, but never a triggered alarm", () =
   assert.equal(sv.isAllowedOpen(hass, "cover.gate"), true);
   assert.equal(sv.isAlert(hass, "alarm_control_panel.home"), true, "a triggered alarm always warns");
 });
+
+test("icons: a gate contact set up as a door still gets a gate, open or closed", () => {
+  const hass = fakeHass({ states: {
+    "binary_sensor.entry_gate": { state: "on", attributes: { device_class: "door", friendly_name: "Entry Gate" } },
+    "binary_sensor.einfahrt_kontakt": { state: "off", attributes: { device_class: "door", friendly_name: "Einfahrt" } },
+    "binary_sensor.front_door": { state: "off", attributes: { device_class: "door", friendly_name: "Front Door" } },
+    "binary_sensor.bath_window": { state: "on", attributes: { device_class: "window" } },
+    "cover.garage": { state: "open", attributes: { device_class: "garage" } },
+    "cover.yard_gate": { state: "closed", attributes: { device_class: "gate" } },
+    "lock.front": { state: "unlocked", attributes: {} },
+  } });
+  assert.equal(sv.secIcon(hass, "binary_sensor.entry_gate", true), "mdi:gate-open");
+  assert.equal(sv.secIcon(hass, "binary_sensor.einfahrt_kontakt", false), "mdi:gate");
+  assert.equal(sv.secIcon(hass, "binary_sensor.front_door", false), "mdi:door-closed");
+  assert.equal(sv.secIcon(hass, "binary_sensor.bath_window", true), "mdi:window-open-variant");
+  assert.equal(sv.secIcon(hass, "cover.garage", true), "mdi:garage-open-variant");
+  assert.equal(sv.secIcon(hass, "cover.yard_gate", false), "mdi:gate");
+  assert.equal(sv.secIcon(hass, "lock.front", true), "mdi:lock-open-variant-outline");
+});
