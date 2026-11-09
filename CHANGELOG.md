@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.1
 
 - Last movements: a **full screen** button next to the close button. On the iPhone the clip itself goes full screen.
 - Edit mode: the **status chips** on Home can be dragged with a finger (the page no longer scrolls away) and no longer flip back and forth between chips of different widths; tiles sort the same steady way.
