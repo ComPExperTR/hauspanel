@@ -1,7 +1,7 @@
 """Constants for HausPanel."""
 
 DOMAIN = "hauspanel"
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 PANEL_URL = "hauspanel"
 PHONE_PANEL_URL = "iphonepanel"
 SECURITY_PANEL_URL = "securitypanel"

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.4.1
 
 - **Panel layout, left side**: *On now* can show under the scenes (Settings → This screen → Side panel), small and two per row; the scenes there are two per row too.
 - Security pills: a gate allowed to be open says *OK until 19:00* instead of a text that ran out of the pill; a gate contact set up as a door gets a gate icon; long second lines end in "…".
