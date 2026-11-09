@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.0
 
 - **Maintenance** also lists devices that went quiet (a temperature, humidity or battery sensor without news for two days) and consumables that are nearly used up (filters, brushes, mops, dust bags, toner, ink at 10 % or less). Each can be ignored like the others.
 - **Worth a look** at the top of the settings: devices without a room, rooms without a floor, cameras that can't be reached, each linking its guide.
