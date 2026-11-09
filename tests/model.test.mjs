@@ -160,9 +160,10 @@ test("Music Assistant: a player without a room joins its twin's room and stands 
   assert.equal(m.areaOf["media_player.office_tv_ma"], undefined, "unreachable: left out");
   assert.ok(office.includes("media_player.apple_tv_office"), "a twin with another name, and an unavailable MA player, keep the original");
   assert.ok(!m.unassigned.tiles.some((id) => id.includes("desk_speaker")), "nothing left under Other");
+  assert.ok(m.media.includes("media_player.desk_speaker") && !m.media.includes("media_player.desk_speaker_2"), "the Media page lists each speaker once");
 });
 
-test("Music Assistant: a player with no twin and no room gets no tile under Other, but stays a media player", () => {
+test("Music Assistant: a player with no twin and no room gets no tile and is not listed under media", () => {
   const hass = fakeHass({
     devices: { ma: { id: "ma", name: "Receiver" } },
     entities: { "media_player.receiver_ma": { device_id: "ma", platform: "music_assistant" } },
@@ -170,7 +171,7 @@ test("Music Assistant: a player with no twin and no room gets no tile under Othe
   });
   const m = buildModel(hass, {});
   assert.ok(!m.unassigned.tiles.includes("media_player.receiver_ma"));
-  assert.ok(m.media.includes("media_player.receiver_ma"), "Home's music card can still show it");
+  assert.ok(!m.media.includes("media_player.receiver_ma"), "the Media page shows what the rooms show");
 });
 
 test("an unreachable media player gets no tile, one that is just off does", () => {
