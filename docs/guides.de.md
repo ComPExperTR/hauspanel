@@ -44,6 +44,8 @@ Tipp: Das Raumsymbol in HausPanel ist das Symbol des Bereichs. Du änderst es in
 
 ![Der Reiter Räume mit allen Räumen](../images/guides/guide-rooms-tab.png)
 
+**Bewegung im Raum-Popup** (nur für dich): *Einstellungen → Räume & Geräte → Bewegung im Raum-Popup zeigen*. Räume mit Bewegungs- oder Präsenzmelder zeigen dann *Bewegung jetzt* oder wie lange sie schon ruhig sind.
+
 ---
 
 <a id="wall-tablet"></a>
@@ -54,6 +56,7 @@ Tipp: Das Raumsymbol in HausPanel ist das Symbol des Bereichs. Du änderst es in
    - **Layout**: *Panel* hält Uhrzeit, Wetter und was offen ist links im Blick. *Kacheln* nutzt den ganzen Bildschirm für die Räume.
    - **Kachelgröße**: *Bildschirm füllen* passt alles auf einen Bildschirm.
    - **Home-Assistant-Seitenleiste ausblenden**: gibt HausPanel den ganzen Bildschirm.
+   - **Effekte**: *Sparsam* lässt Unschärfe, Leuchten und Dauer-Animationen weg, das hilft älteren oder langsamen Tablets. *Automatisch* schaltet das von selbst ein, wenn der Bildschirm langsam wirkt.
 3. **Einstellungen → System → Home Assistant hier starten**, damit das Tablet nach einem Neustart HausPanel öffnet.
 
 *Dieser Bildschirm* wird auf dem Gerät gespeichert: Das Tablet in der Küche und das im Flur können verschiedene Layouts haben.
@@ -195,6 +198,8 @@ Der **Haken** beendet den Bearbeiten-Modus. Anordnung und Ausgeblendetes sind au
 
 **Einstellungen → Kalender und Wetter**: welche Kalender und Erinnerungslisten auf der Startseite und im Popup *Heute* erscheinen und welche Wetter-Entität genutzt wird. *Automatisch* nimmt die erste, die Home Assistant hat; ohne eine nutzt HausPanel Open-Meteo für den Standort deines Zuhauses.
 
+**Müllabfuhr:** Mit [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) oder einem Kalender, dessen Name Abfall, Müll, Tonne oder Waste enthält (ein ICS-Link deiner Gemeinde geht auch), erscheint am Vortag und am Abholtag ein Chip **Müll** auf der Startseite, zum Beispiel *Morgen: Gelbe Tonne*. Ein Tipp zeigt die nächsten zwei Wochen. Abschalten unter *Einstellungen → Startseite → Status-Chips*.
+
 ---
 
 <a id="own-settings"></a>
@@ -204,10 +209,12 @@ Normalerweise sehen alle im Haushalt dasselbe HausPanel.
 
 - **Einstellungen → System → Eigene Einstellungen nur für mich** einschalten: Ab dann gelten deine Änderungen nur für dich (auf diesem Panel), alle anderen behalten die gemeinsamen Einstellungen. Es startet als Kopie der gemeinsamen.
 - Wieder aus: Du siehst die gemeinsamen Einstellungen.
-- Ein paar Dinge sind immer deine eigenen, egal was dieser Schalter sagt: die Startseite (*Home Assistant hier starten*) und die Kameras für *Letzte Bewegungen*.
+- Ein paar Dinge sind immer deine eigenen, egal was dieser Schalter sagt: die Startseite (*Home Assistant hier starten*), die Kameras für *Letzte Bewegungen* und *Bewegung im Raum-Popup zeigen*.
 - *Dieser Bildschirm* gilt immer pro Gerät.
 
 Jeder Reiter sagt oben, für wen eine Änderung gilt: diesen Bildschirm, nur dich oder alle.
+
+**Sichern:** *Einstellungen → System → Sichern* speichert die Einstellungen dieses Panels als Datei und spielt sie wieder ein, zum Beispiel nach dem Umzug auf ein neues Home Assistant. Beim Einspielen werden die aktuellen Einstellungen nach einer Rückfrage ersetzt.
 
 ![Einstellungen → System](../images/guides/guide-system.png)
 

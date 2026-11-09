@@ -1,6 +1,6 @@
 // Settings sheet: changes show live on the dashboard behind it.
 import { h, icon, toggleSwitch } from "./util.js";
-import { openSheet } from "./dialogs.js";
+import { openSheet, confirmDialog } from "./dialogs.js";
 import { LAYOUTS, CAT_DEFAULTS } from "./layouts.js";
 import { CAMS_PER_PAGE } from "./securitypanel.js";
 import { candidateEntities, hideMatcher } from "./model.js";
@@ -11,6 +11,7 @@ import { cameraList, CAM_CONTAINER } from "./securityview.js";
 import { openMotionCams, motionCamPref, frigateCams } from "./visitors.js";
 import { openWelcome } from "./welcome.js";
 import { setupHints } from "./hints.js";
+import { setPref } from "./userprefs.js";
 import { doorbells, bellCameras, openers, bellEnabled, bellCamera, bellOpener, ringNow } from "./doorbell.js";
 
 /** Soft surface of lit cards. */
@@ -111,6 +112,12 @@ export function openSettings(ctx) {
       return b;
     })), t("cams_per_page_hint"));
     const sidebarRow = () => row(t("hide_sidebar"), toggleSwitch(dev.hideSidebar, () => { S.setDevice("hideSidebar", !dev.hideSidebar); draw(); }), t("hide_sidebar_hint"));
+    // Effects: automatic (lite on slow screens), full, or lite.
+    const liteRow = () => row(t("lite_label"), h("div", { class: "hp-seg" }, [["auto", "lite_auto"], ["off", "lite_full"], ["on", "lite_on"]].map(([v, l]) => {
+      const b = h("button", { class: (dev.lite || "auto") === v ? "active" : "" }, t(l));
+      b.addEventListener("click", () => { S.setDevice("lite", v); draw(); });
+      return b;
+    })), (dev.lite || "auto") === "auto" && ctx._slow ? t("lite_hint_slow") : t("lite_hint"));
     // Cameras: which ones the Security page shows (for everyone), and whose movements the security
     // popup lists (only for the signed-in user). Before, both were only in edit mode and the popup.
     const camerasSection = () => {
@@ -178,9 +185,9 @@ export function openSettings(ctx) {
               draw();
             })))));
       }
-      add("device", section(t("set_screen"), sidebarRow(), dev.layout === "security" ? camsRow() : null));
+      add("device", section(t("set_screen"), sidebarRow(), liteRow(), dev.layout === "security" ? camsRow() : null));
     } else if (kind === "security") {
-      add("device", section(t("set_screen"), camsRow(), sidebarRow()));
+      add("device", section(t("set_screen"), camsRow(), sidebarRow(), liteRow()));
     }
 
     // Look
@@ -255,7 +262,7 @@ export function openSettings(ctx) {
       const cats = { ...CAT_DEFAULTS, ...(s.cats || {}) };
       const chipsSection = section(t("cat_chips"), h("p", { class: "hp-muted small" }, t("cat_chips_hint")),
         ...[["light", "mdi:lightbulb-outline", t("cat_light")], ["climate", "mdi:thermometer", t("climate")], ["shades", "mdi:blinds-horizontal", t("shades")], ["security", "mdi:shield-outline", t("security")],
-          ["energy", "mdi:lightning-bolt-outline", t("energy")], ["today", "mdi:calendar-blank-outline", t("cat_today")], ["maint", "mdi:wrench-outline", t("maintenance")], ["leave", "mdi:home-export-outline", t("leave_chip")]].map(([k, ic, label]) =>
+          ["energy", "mdi:lightning-bolt-outline", t("energy")], ["today", "mdi:calendar-blank-outline", t("cat_today")], ["waste", "mdi:delete-variant", t("waste")], ["maint", "mdi:wrench-outline", t("maintenance")], ["leave", "mdi:home-export-outline", t("leave_chip")]].map(([k, ic, label]) =>
           row(h("span", {}, icon(ic), " ", label), toggleSwitch(cats[k], () => {
             S.update((x) => { x.cats = { ...cats, [k]: !cats[k] }; });
             draw();
@@ -281,7 +288,11 @@ export function openSettings(ctx) {
           const b = h("button", { class: (s.roomPopup !== false) === v ? "active" : "" }, t(l));
           b.addEventListener("click", () => { S.update((x) => { x.roomPopup = v; }); draw(); });
           return b;
-        })), t("rp_tap_hint"))));
+        })), t("rp_tap_hint")),
+        // Motion in the room popup: a choice of each person, not of the panel.
+        h("div", { class: "hp-set-row" }, h("div", { class: "hp-set-label" },
+          h("span", {}, t("rp_motion_setting"), " ", h("span", { class: "hp-set-own" }, t("only_you"))), h("small", {}, t("rp_motion_setting_hint"))),
+          toggleSwitch(!!ctx.prefs?.roomMotion, () => { setPref(ctx, "roomMotion", !ctx.prefs?.roomMotion); draw(); }))));
       // Security: the popup behind the Security chip, its doors and when they may be open, the good night check.
       const ed = securityEditor(ctx);
       add("security",
@@ -455,6 +466,36 @@ export function openSettings(ctx) {
         }
         draw();
       }), t("personal_settings_hint", { user: ctx.hass.user?.name || "", panel: panelTitle(panelId) }))));
+    // Back up and restore: the settings of this panel (yours or the shared ones, whichever you see) as a file.
+    {
+      const exp = h("button", { class: "hp-chip" }, icon("mdi:download-outline"), t("backup_export"));
+      exp.addEventListener("click", () => {
+        const data = { hauspanel: ctx.version, panel: panelId, exported: new Date().toISOString(), settings: JSON.parse(JSON.stringify(S.s)) };
+        const a = h("a", { href: URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })), download: `hauspanel-${panelId}-${new Date().toISOString().slice(0, 10)}.json` });
+        document.body.append(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      });
+      const file = h("input", { type: "file", accept: ".json,application/json", hidden: true });
+      const imp = h("button", { class: "hp-chip" }, icon("mdi:upload-outline"), t("backup_import"));
+      imp.addEventListener("click", () => file.click());
+      file.addEventListener("change", async () => {
+        const f = file.files?.[0];
+        file.value = "";
+        if (!f) return;
+        let data;
+        try { data = JSON.parse(await f.text()); } catch { data = null; }
+        if (!data || typeof data.settings !== "object" || !("hauspanel" in data)) { ctx.toast(t("backup_bad")); return; }
+        confirmDialog(ctx, { title: t("backup_import"), text: t("backup_import_confirm", { panel: panelTitle(data.panel || panelId), date: (data.exported || "").slice(0, 10) }), ok: t("backup_import_ok"), danger: true,
+          onOk: () => {
+            S.update((x) => { for (const k of Object.keys(x)) delete x[k]; Object.assign(x, JSON.parse(JSON.stringify(data.settings))); }, "import");
+            ctx.toast(t("backup_done"));
+            draw();
+          } });
+      });
+      add("system", section(t("backup_title"), h("p", { class: "hp-muted small" }, t("backup_hint")),
+        h("div", { class: "hp-set-row-end hp-backup-btns" }, exp, imp, file)));
+    }
     add("system", section(t("when_opening"),
       row(t("start_screen"), startToggle("user"), t("start_screen_hint")),
       isAdmin ? row(t("start_screen_all"), startToggle("system"), t("start_screen_all_hint")) : null));

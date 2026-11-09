@@ -2166,6 +2166,17 @@ a.hp-hint { color: inherit; text-decoration: none; }
 .hp-vis-wait { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; --mdc-icon-size: 26px; pointer-events: none; }
 .hp-vis-wait ha-icon { animation: hp-spin 1s linear infinite; }
 @keyframes hp-spin { to { transform: rotate(360deg); } }
+/* Waste collection */
+.hp-cat.waste.active .hp-cat-ic { background: var(--bin, #f6c945); color: #1d1a16; }
+.hp-waste-row { align-items: center; }
+.hp-waste-row.soon b { color: var(--hp-text); }
+.hp-waste-bins { display: flex; gap: 4px; flex: none; }
+.hp-waste-bins .bin { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--bin) 85%, transparent); color: #1d1a16; --mdc-icon-size: 19px; }
+/* Lite mode for slow tablets: no blur, no glow, no endless animations, instant changes */
+.hp-root.lite *, .hp-root.lite *::before, .hp-root.lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; transition-duration: 0s !important; }
+.hp-root.lite *:not(.hp-keep-anim), .hp-root.lite *:not(.hp-keep-anim)::before, .hp-root.lite *:not(.hp-keep-anim)::after { animation-iteration-count: 1 !important; }
+.hp-root.lite .hp-bg-glow { display: none; }
+.hp-root.lite .hp-backdrop { background: rgba(10,8,12,.72); }
 /* Welcome window */
 .hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
 .hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }
@@ -2419,6 +2430,7 @@ a.hp-hint { color: inherit; text-decoration: none; }
 .hp-rp-fact.state ha-icon { color: var(--hp-sub); }
 .hp-rp-hero2.heat .hp-rp-fact.state ha-icon { color: #ff8a4c; filter: drop-shadow(0 0 6px rgba(255,120,60,.8)); }
 .hp-rp-fact.warn ha-icon, .hp-rp-fact.warn b { color: #f6c945; }
+.hp-rp-fact.live ha-icon, .hp-rp-fact.live b { color: #8fe0b4; }
 .hp-rp-ctl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
 .hp-rp-ctl[hidden] { display: none; }
 .hp-rp-ct { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; min-height: 112px; padding: 14px; border-radius: 22px; overflow: hidden; background: var(--hp-glass); background-size: cover; background-position: center; border: 1px solid var(--hp-border); cursor: pointer; transition: transform .1s, background-color .3s; }

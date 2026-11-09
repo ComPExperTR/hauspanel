@@ -128,15 +128,15 @@ The gear at the top right opens the settings. Every tab starts with one line on 
 
 | Tab | What you set there |
 |---|---|
-| **Home** | Home style, which status chips show, the cards on Home, date, weather and calendar in the header |
-| **Rooms & devices** | What a tap on a room opens (room at a glance or the full page), scenes ask first, one tile for all shades of a room |
+| **Home** | Home style, which status chips show (including Waste), the cards on Home, date, weather and calendar in the header |
+| **Rooms & devices** | What a tap on a room opens (room at a glance or the full page), motion in the room popup (just for you), scenes ask first, one tile for all shades of a room |
 | **Security** | Which doors, gates and locks are watched and in which order, when each may be open, the cameras (Security page for everyone, last movements just for you), the parts of the security popup, good night check, doorbell, baby monitor |
 | **Look** | Card colour, accent colour, background (it can follow the colour of the lights that are on), corners, glass, classic popups |
-| **This screen** | Layout, tile size, side panel, hide the Home Assistant sidebar, cameras per page |
+| **This screen** | Layout, tile size, side panel, hide the Home Assistant sidebar, effects (lite mode for slow tablets), cameras per page |
 | **Navigation** | Which tabs show in the bar at the bottom, your own pages |
 | **Calendar and weather** | Which calendars and lists, which weather source (Open-Meteo when you have none) |
 | **Hiding** | Single entities, text rules, device types, integrations |
-| **System** | Your own settings for this panel, open HausPanel first when Home Assistant starts |
+| **System** | Your own settings for this panel, back up and restore as a file, open HausPanel first when Home Assistant starts, the welcome window again |
 
 <table>
   <tr>

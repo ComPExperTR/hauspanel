@@ -44,6 +44,8 @@ Tip: the room icon in HausPanel is the area's icon. Change it in the area settin
 
 ![The Rooms tab with every room](../images/guides/guide-rooms-tab.png)
 
+**Motion in the room popup** (only for you): *Settings → Rooms & devices → Show motion in the room popup*. Rooms with a motion or presence sensor then show *Motion now* or how long they have been quiet.
+
 ---
 
 <a id="wall-tablet"></a>
@@ -54,6 +56,7 @@ Tip: the room icon in HausPanel is the area's icon. Change it in the area settin
    - **Layout**: *Panel* keeps time, weather and what is open on the left. *Tiles* uses the whole screen for rooms.
    - **Tile size**: *Fill screen* fits everything on one screen.
    - **Hide the Home Assistant sidebar**: gives HausPanel the full screen.
+   - **Effects**: *Lite* leaves out blur, glow and endless animations, which helps older or slow tablets. *Automatic* turns it on by itself when the screen seems slow.
 3. **Settings → System → Start Home Assistant here**, so the tablet opens HausPanel after a restart.
 
 *This screen* is stored on the device: the kitchen tablet and the hallway tablet can have different layouts.
@@ -195,6 +198,8 @@ The **tick** ends edit mode. Arrangement and hiding are the same on every screen
 
 **Settings → Calendar and weather**: which calendars and reminder lists show on Home and in the *Today* popup, and which weather entity is used. *Automatic* takes the first one Home Assistant has; with none HausPanel uses Open-Meteo for your home's location.
 
+**Waste collection:** with [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule), or any calendar whose name says Abfall, Müll, Waste, Trash or Bin (an ICS link from your town works too), a **Waste** chip shows on Home the day before and on the day of a pickup, for example *Tomorrow: Yellow bin*. A tap shows the next two weeks. Switch the chip off in *Settings → Home → Status chips*.
+
 ---
 
 <a id="own-settings"></a>
@@ -204,10 +209,12 @@ By default everyone in the household sees the same HausPanel.
 
 - **Settings → System → My own settings** on: from then on your changes apply only to you (on this panel), everyone else keeps the shared settings. It starts as a copy of the shared ones.
 - Off again: you see the shared settings.
-- A few choices are always your own, whatever this switch says: the start screen (*Start Home Assistant here*) and the cameras for *Last movements*.
+- A few choices are always your own, whatever this switch says: the start screen (*Start Home Assistant here*), the cameras for *Last movements* and *Show motion in the room popup*.
 - *This screen* is always per device.
 
 Each tab says at the top who a change applies to: this screen, only you, or everyone.
+
+**Back up:** *Settings → System → Back up* saves the settings of this panel as a file and loads them back, for example after moving to a new Home Assistant. Loading replaces the current settings after you confirm.
 
 ![Settings → System](../images/guides/guide-system.png)
 

@@ -28,6 +28,7 @@ import { babyCamera, babyMotion, babyCry, babyAreaOf, openBaby } from "./baby.js
 import { doorbells } from "./doorbell.js";
 import { snapshotUrl } from "./camera.js";
 import { ago, since } from "./popkit.js";
+import { wasteSources, loadPickups, openWaste, whenText } from "./waste.js";
 
 export const LAYOUTS = [
   { id: "grid", icon: "mdi:view-grid-outline" },
@@ -113,9 +114,9 @@ const OPENINGS = ["door", "window", "garage_door", "opening"];
  * The home at a glance: round category chips (light, climate, security, energy, today) and "All lights off".
  * Each chip leads to its page where there is one.
  */
-export const CAT_DEFAULTS = { light: true, climate: true, shades: true, security: true, energy: true, today: true, maint: true, leave: true };
+export const CAT_DEFAULTS = { light: true, climate: true, shades: true, security: true, energy: true, today: true, waste: true, maint: true, leave: true };
 
-export const CAT_ORDER = ["light", "climate", "shades", "security", "energy", "today", "maint", "leave"];
+export const CAT_ORDER = ["light", "climate", "shades", "security", "energy", "today", "waste", "maint", "leave"];
 
 export function homeCats(ctx) {
   const box = h("div", { class: "hp-cats" });
@@ -150,6 +151,9 @@ export function homeCats(ctx) {
   const energy = rate ? chip("energy", "mdi:lightning-bolt-outline", t("energy"), () => openEnergyFlow(ctx, rate)) : null;
   const hasAgenda = ctx.agenda.calendars().length;
   const today = hasAgenda ? chip("today", "mdi:calendar-blank-outline", t("today"), () => openCalendar(ctx)) : null;
+  // Waste: only when a waste calendar is there, and on Home only the day before and on the day of a pickup.
+  const hasWaste = (() => { const w = wasteSources(ctx.hass); return w.calendars.length + w.sensors.length > 0; })();
+  const waste = hasWaste ? chip("waste", "mdi:delete-variant", t("waste"), () => openWaste(ctx, ctx._waste?.list || [])) : null;
   // Maintenance only shows up when something needs looking after.
   const maint = chip("maint", "mdi:wrench-outline", t("maintenance"), () => openMaintenanceSheet(ctx));
   const leave = chip("leave", "mdi:home-export-outline", t("leave_chip"), () => openLeave(ctx));
@@ -217,6 +221,27 @@ export function homeCats(ctx) {
     if (today) {
       const k = ctx.agenda.todayEvents().length;
       today.val.textContent = k ? t("n_events", { n: k }) : t("nothing_today");
+    }
+    if (waste) {
+      // The pickups are fetched every half hour (and once the day changes), shared by every redraw.
+      const c = ctx._waste;
+      const day = new Date().toDateString();
+      if (!c || (Date.now() - c.at > 1800e3 || c.day !== day) && !c.loading) {
+        ctx._waste = { ...(c || { list: [] }), at: Date.now(), day, loading: true };
+        loadPickups(hass, (cal, start, end) => hass.callApi("GET", `calendars/${cal}?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`))
+          .then((list) => { ctx._waste = { list, at: Date.now(), day, loading: false }; box.update(ctx.hass); })
+          .catch(() => { ctx._waste = { ...ctx._waste, loading: false }; });
+      }
+      const list = ctx._waste?.list || [];
+      const soonDays = list.filter((p) => Math.round((p.day - new Date(new Date().toDateString())) / 86400e3) <= 1);
+      const first = soonDays[0];
+      const same = first ? soonDays.filter((p) => p.key === first.key) : [];
+      waste.hidden = !first && !editing;
+      waste.classList.toggle("active", !!first);
+      if (first) {
+        waste.val.textContent = `${whenText(hass, first.day)}: ${same.map((p) => p.what).join(", ")}`;
+        waste.style.setProperty("--bin", first.color);
+      } else waste.val.textContent = list[0] ? whenText(hass, list[0].day) : "–";
     }
   };
   box.update(ctx.hass);

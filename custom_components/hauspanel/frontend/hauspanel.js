@@ -36,6 +36,7 @@ import { renderSecurityPanel, securityBar, securityStatePill, securityPages, bin
 import { openSettings, CARD_COLORS, ACCENTS, BACKGROUNDS } from "./lib/settings.js";
 import { setLanguage, t } from "./lib/i18n.js";
 import { maybeWelcome } from "./lib/welcome.js";
+import { loadPrefs } from "./lib/userprefs.js";
 import { STYLES, loadFont } from "./lib/styles.js";
 
 const BUILT_IN_TABS = {
@@ -110,6 +111,12 @@ class HausPanelElement extends HTMLElement {
     return dev;
   }
 
+  /** Lite mode: no glass, no glow and no endless animations on this screen ("auto" follows the speed test). */
+  get lite() {
+    const v = this.settings.device.lite || "auto";
+    return v === "on" || (v === "auto" && !!this._slow);
+  }
+
   get isPhone() {
     return this.layout === "phone";
   }
@@ -146,7 +153,9 @@ class HausPanelElement extends HTMLElement {
     bindEdgeSwipe(this._main, () => this.isPhone && !!this.phoneRoom && !this.editing, () => this.back());
     bindPageSwipe(this._main, () => this.layout === "security" && !this.editing && !this.sheets.size, (d) => this.goSecurityPage(this.secPage + d));
 
-    await Promise.all([this.settings.load(this._hass, this._panelId || "hauspanel"), loadEnergyPrefs(this)]);
+    // The person's own choices (motion in the room popup …) load with the panel's settings.
+    const [, , prefs] = await Promise.all([this.settings.load(this._hass, this._panelId || "hauspanel"), loadEnergyPrefs(this), loadPrefs(this._hass)]);
+    this.prefs = prefs;
     this.model = this._buildModel();
     this._sig = registrySignature(this._hass);
     this.agenda = new Agenda(this, () => this._agendaChanged());
@@ -159,6 +168,8 @@ class HausPanelElement extends HTMLElement {
     // The very first time this user opens HausPanel (not on a camera-only screen): three short steps.
     if (this.layout !== "security") setTimeout(() => maybeWelcome(this), 800);
 
+    // Slow tablet? A second of frames after start tells; Settings → This screen can also force it.
+    measureSpeed().then((slow) => { this._slow = slow; if (slow && this.lite) this.rerender(); });
     this._clockTimer = setInterval(() => this._tick(), 1000);
     const activity = () => this._activity();
     for (const ev of ["pointerdown", "keydown", "wheel"]) this.shadowRoot.addEventListener(ev, activity, { capture: true });
@@ -572,7 +583,7 @@ class HausPanelElement extends HTMLElement {
     const layout = this.layout;
     const tabs = this._tabs();
     if (!tabs.items.includes(this.tab) && this.tab !== "rooms") this.tab = tabs.items[0] || "home";
-    this._rootEl.className = `hp-root layout-${layout} tab-${this.tab.split(":")[0]} ${this.editing ? "editing" : ""} ${this.narrow ? "narrow" : ""} ${this._rootEl.classList.contains("light-bg") ? "light-bg" : ""}`;
+    this._rootEl.className = `hp-root layout-${layout} tab-${this.tab.split(":")[0]} ${this.editing ? "editing" : ""} ${this.narrow ? "narrow" : ""} ${this._rootEl.classList.contains("light-bg") ? "light-bg" : ""} ${this.lite ? "lite" : ""}`;
     this._rootEl.querySelector(".hp-loading")?.remove();
 
     if (layout !== "phone") this.phoneRoom = null;
@@ -803,3 +814,28 @@ class HausPanelElement extends HTMLElement {
 }
 
 if (!customElements.get("hauspanel-panel")) customElements.define("hauspanel-panel", HausPanelElement);
+
+/**
+ * A rough speed test: frame times for about a second while the panel settles. Few cores or little memory,
+ * or under ~35 frames a second, counts as slow.
+ */
+function measureSpeed() {
+  if ((navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) || (navigator.deviceMemory && navigator.deviceMemory <= 1)) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const times = [];
+    let last = 0;
+    const step = (now) => {
+      if (last) times.push(now - last);
+      last = now;
+      if (times.length < 60) requestAnimationFrame(step);
+      else {
+        times.sort((a, b) => a - b);
+        resolve(times[Math.floor(times.length / 2)] > 28);
+      }
+    };
+    // Wait for the first drawing to finish, then measure.
+    setTimeout(() => requestAnimationFrame(step), 1500);
+    // A hidden tab gets no frames: then it is not slow, just not looked at.
+    setTimeout(() => resolve(false), 6000);
+  });
+}

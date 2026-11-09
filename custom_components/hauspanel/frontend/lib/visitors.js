@@ -206,7 +206,7 @@ export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
         if (e.has_clip) {
           media = h("video", { poster: `${base}/snapshot.jpg`, muted: true, playsinline: true, controls: true, loop: true, preload: "auto" });
           media.muted = true; media.playsInline = true; media.loop = true; media.controls = true; media.setAttribute("playsinline", "");
-          wait = h("span", { class: "hp-vis-wait" }, icon("mdi:loading"));
+          wait = h("span", { class: "hp-vis-wait" }, icon("mdi:loading", "hp-keep-anim"));
           big.classList.add("loading");
           fetch(`${base}/clip.mp4`).then((r) => (r.ok ? r.blob() : Promise.reject(r.status))).then((b) => {
             if (!media.isConnected) return;

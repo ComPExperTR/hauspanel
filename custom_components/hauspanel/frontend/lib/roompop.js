@@ -53,6 +53,8 @@ export function openRoomPopup(ctx, areaId) {
   const switches = tiles.filter((id) => ["switch", "fan", "input_boolean"].includes(domainOf(id)) && !ctx.settings.s.meters?.[id]);
   const locks = tiles.filter((id) => domainOf(id) === "lock");
   const windows = area.all.filter((id) => domainOf(id) === "binary_sensor" && ["window", "opening"].includes(hass.states[id]?.attributes.device_class));
+  // Motion and presence sensors of the room: shown only for people who switched it on (a personal choice).
+  const motions = ctx.prefs?.roomMotion ? area.all.filter((id) => domainOf(id) === "binary_sensor" && ["motion", "occupancy", "presence"].includes(hass.states[id]?.attributes.device_class)) : [];
   const humidity = area.humidity;
   // Generic names ("Einschalter", "Switch 0", "Relay") get their device's name instead.
   const GENERIC = /^(einschalter|ausschalter|schalter|switch|relay|relais|power|steckdose|socket|output|kanal|channel)\b[\s\d_-]*$/i;
@@ -507,6 +509,15 @@ export function openRoomPopup(ctx, areaId) {
   goRoom.addEventListener("click", () => openRoomEdit(ctx, areaId, cats, () => { sheet.close(); setTimeout(() => openRoomPopup(ctx, areaId), 250); }));
   sheet.body.append(hero, body, h("div", { class: "hp-sheet-actions hp-app-foot" }, goRoom));
 
+  // "Motion now" or "empty for 2 h" (since the last sensor went quiet).
+  const motionFact = (hs) => {
+    const live = motions.map((id) => hs.states[id]).filter((st) => st && !["unavailable", "unknown"].includes(st.state));
+    if (!live.length) return null;
+    const on = live.some((st) => st.state === "on");
+    const last = Math.max(...live.map((st) => Date.parse(st.last_changed || "") || 0));
+    return h("div", { class: `hp-rp-fact ${on ? "live" : ""}` }, icon(on ? "mdi:motion-sensor" : "mdi:motion-sensor-off"),
+      h("div", {}, h("b", {}, on ? t("rp_motion_now") : t("rp_motion_empty", { t: since(last) })), h("small", {}, t("rp_motion"))));
+  };
   const update = (hs) => {
     const tv = num(hs, area.temperature) ?? (climate ? hs.states[climate]?.attributes.current_temperature : null);
     temp.textContent = tv != null ? `${fmt(hs, tv, 1)}°` : "–";
@@ -517,9 +528,10 @@ export function openRoomPopup(ctx, areaId) {
     hero.style.setProperty("--glow", lit.length ? lightColor(hs.states[lit[0]]) || "#ffc46e" : "rgba(120,140,220,.5)");
     const openWin = windows.filter((id) => hs.states[id]?.state === "on").length;
     pills.replaceChildren(...(windows.length ? [h("div", { class: `hp-rp-fact ${openWin ? "warn" : ""}` }, icon(openWin ? "mdi:window-open-variant" : "mdi:window-closed-variant"),
-      h("div", {}, h("b", {}, openWin ? t("th_n_open", { n: openWin }) : t("rp_windows_closed")), h("small", {}, t("th_windows"))))] : []));
+      h("div", {}, h("b", {}, openWin ? t("th_n_open", { n: openWin }) : t("rp_windows_closed")), h("small", {}, t("th_windows"))))] : []),
+      ...(motionFact(hs) ? [motionFact(hs)] : []));
     // A room without temperature, humidity or heating (a utility room) skips the top card.
-    hero.hidden = tv == null && hv == null && !climate;
+    hero.hidden = tv == null && hv == null && !climate && !pills.childElementCount;
     updaters.forEach((u) => u(hs));
   };
   update(hass);

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **Waste chip**: with Waste Collection Schedule or a waste calendar (Abfall, Müll, Waste, Trash, Bin …), a chip shows on Home the day before and on the day of a pickup (*Tomorrow: Yellow bin*), coloured by kind of bin; a tap shows the next two weeks.
+- **Motion in the room popup**, a personal choice in *Settings → Rooms & devices*: *Motion now* or how long the room has been quiet.
+- **Back up and restore** in *Settings → System*: the panel's settings as a file, and loading them back after a confirmation.
+- **Lite mode** in *Settings → This screen → Effects*: no blur, glow or endless animations. *Automatic* turns it on when the screen seems slow.
+
 ## 1.3.1
 
 - Last movements: a **full screen** button next to the close button. On the iPhone the clip itself goes full screen.
