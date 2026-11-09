@@ -205,7 +205,8 @@ export function openRoomPopup(ctx, areaId) {
     updaters.push((hs) => allSw.classList.toggle("on", lights.some((id) => isOn(hs.states[id]))));
   }
 
-  // ---- shades: all up/stop/down + each one
+  // ---- shades: each one in a slim line (all together: the wide tile's slider)
+  let shadeSetTo = null;
   if (shades.length) {
     const call = (svc, ids, data = {}) => ctx.hass.callService("cover", svc, { entity_id: ids, ...data });
     const ctl = (ids) => {
@@ -275,7 +276,8 @@ export function openRoomPopup(ctx, areaId) {
         pos.update(p);
       });
     };
-    if (shades.length > 1) shRow(shades, t("all_shades_n", { n: shades.length }), true);
+    // (All shades together: the slider in the wide Shades tile above.)
+    shadeSetTo = setTo;
     for (const id of shades) shRow([id], shName(id));
   }
 
@@ -374,6 +376,7 @@ export function openRoomPopup(ctx, areaId) {
       c.icEl.icon = on.length ? "mdi:lightbulb-group" : "mdi:lightbulb-group-outline";
     });
   }
+  let shadeTile = null;
   if (shades.length) {
     const c = ctlTile("shades", "mdi:blinds-horizontal", t("shades"), { quickIc: "mdi:arrow-up-down", detailsKey: secKey(t("shades")),
       quick: () => {
@@ -382,8 +385,17 @@ export function openRoomPopup(ctx, areaId) {
       } });
     const slats = h("i", { class: "slats" });
     c.el.prepend(slats);
+    // The tile runs across the whole row with a slider that sets all shades of the room at once.
+    c.el.classList.add("wide", "fixed");
+    const allPos = slider({ value: 0, cls: "hp-rp-ctpos", label: t("all_shades_n", { n: shades.length }), step: 5,
+      onInput: (v) => { c.val.textContent = `${v} %`; slats.style.height = `${100 - v}%`; },
+      onChange: (v) => shadeSetTo?.(shades, v) });
+    c.el.append(allPos);
+    shadeTile = c.el;
     updaters.push((hs) => {
       const avg = Math.round(shades.reduce((a, id) => a + posOf(hs.states[id]), 0) / shades.length);
+      if (allPos.isDragging()) return;
+      allPos.update(avg);
       slats.style.height = `${100 - avg}%`;
       c.el.classList.toggle("on", avg > 5);
       c.val.textContent = avg <= 5 ? t("ov_closed_short") : avg >= 100 ? t("ov_open_short") : `${avg} %`;
@@ -462,8 +474,11 @@ export function openRoomPopup(ctx, areaId) {
     });
   }
   ctlGrid.hidden = !ctlGrid.childElementCount;
-  ctlGrid.classList.toggle("odd", ctlGrid.childElementCount % 2 === 1);
-  if (ctlGrid.childElementCount % 2 === 1) ctlGrid.lastElementChild.classList.add("wide");
+  // The wide Shades tile goes below the pairs; of the others an odd last one also runs across.
+  if (shadeTile) ctlGrid.append(shadeTile);
+  const paired = [...ctlGrid.children].filter((el) => !el.classList.contains("fixed"));
+  ctlGrid.classList.toggle("odd", paired.length % 2 === 1);
+  if (paired.length % 2 === 1) paired[paired.length - 1].classList.add("wide");
   // Sections that have a tile lose their own header: the tile's ⋯ opens them.
   const tiled = new Set([...ctlGrid.children].map((el) => el.dataset.sec));
   for (const sec of sections) if (tiled.has(sec.key)) sec.el.classList.add("headless");
