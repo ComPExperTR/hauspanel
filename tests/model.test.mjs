@@ -195,3 +195,12 @@ test("Music Assistant: the same device name also finds the twin's room", () => {
   assert.equal(m.areaOf["media_player.office_tv_ma"], "office");
   assert.ok(m.areaById.get("office").tiles.includes("media_player.apple_tv_office"), "another name: the original stays too");
 });
+
+test("presence: a car's 'moving' sensor in the garage is no one in the room", async () => {
+  const { roomPresence } = await import(LIB + "model.js");
+  const hass = fakeHass({
+    entities: { "binary_sensor.car_moving": { device_id: "car" }, "device_tracker.car": { device_id: "car" } },
+    states: { "binary_sensor.car_moving": { state: "on", attributes: { device_class: "motion" } }, "device_tracker.car": "home" },
+  });
+  assert.equal(roomPresence(hass, { all: ["binary_sensor.car_moving"] }), null);
+});

@@ -224,7 +224,10 @@ export function buildModel(hass, hide) {
 export function roomPresence(hass, area) {
   const kind = (id) => hass.states[id]?.attributes.device_class;
   const live = (id) => hass.states[id] && !["unavailable", "unknown"].includes(hass.states[id].state);
-  const bins = (area?.all || []).filter((id) => id.startsWith("binary_sensor."));
+  // Things that move around themselves (a car's "moving", a phone) are no sign of someone in the room:
+  // a sensor whose device also has a device tracker doesn't count.
+  const tracked = new Set(Object.values(hass.entities || {}).filter((e) => e.device_id && e.entity_id?.startsWith("device_tracker.")).map((e) => e.device_id));
+  const bins = (area?.all || []).filter((id) => id.startsWith("binary_sensor.") && !tracked.has(hass.entities?.[id]?.device_id));
   const presence = bins.filter((id) => ["occupancy", "presence"].includes(kind(id)));
   const ids = (presence.length ? presence : bins.filter((id) => kind(id) === "motion")).filter(live);
   if (!ids.length) return null;
