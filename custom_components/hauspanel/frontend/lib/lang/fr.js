@@ -933,4 +933,5 @@ export default {
   take_ok: "Reprendre",
   take_done: "Paramètres repris de {from}.",
   take_failed: "Impossible de lire les paramètres de ce panneau.",
+  sec_allowed_short: "OK jusqu'à {t}",
 };

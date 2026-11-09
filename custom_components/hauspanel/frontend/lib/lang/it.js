@@ -933,4 +933,5 @@ export default {
   take_ok: "Prendi",
   take_done: "Impostazioni prese da {from}.",
   take_failed: "Impossibile leggere le impostazioni di quel pannello.",
+  sec_allowed_short: "OK fino alle {t}",
 };

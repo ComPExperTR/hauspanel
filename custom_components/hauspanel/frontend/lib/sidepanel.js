@@ -7,7 +7,7 @@ import { openCalendar } from "./agenda.js";
 import { homeSecurity } from "./securityview.js";
 import { t } from "./i18n.js";
 
-export const SIDE_DEFAULTS = { weather: true, agenda: true, status: true, scenes: true, rooms: false };
+export const SIDE_DEFAULTS = { weather: true, agenda: true, status: true, scenes: true, onnow: false, rooms: false };
 
 /** Now, high/low and the next hours; tap opens the full forecast. */
 function weatherWidget(ctx) {
@@ -74,7 +74,7 @@ function agendaWidget(ctx, max = 4) {
 }
 
 /** The parts of the panel, in order, separated by thin lines. */
-export function sideWidgets(ctx, { statusBlock, roomNav, selected, scenes }) {
+export function sideWidgets(ctx, { statusBlock, roomNav, selected, scenes, onNow }) {
   const on = { ...SIDE_DEFAULTS, ...(ctx.settings.s.side || {}) };
   // The Rooms tab needs the room list to pick a room.
   const needRooms = selected && selected !== "overview";
@@ -92,6 +92,8 @@ export function sideWidgets(ctx, { statusBlock, roomNav, selected, scenes }) {
     const sc = scenes();
     if (sc) parts.push(h("div", { class: "hp-side-scenes" }, sc));
   }
+  // What is on right now (lights, sockets, machines), small and two per row, when switched on for this panel.
+  if (on.onnow && onNow) parts.push(h("div", { class: "hp-side-onnow" }, onNow()));
   if (on.rooms || needRooms) parts.push(roomNav(ctx, selected, { overview: true }));
   for (const p of parts) if (p.sideRefresh) ctx.live.push(p);
   const out = [];

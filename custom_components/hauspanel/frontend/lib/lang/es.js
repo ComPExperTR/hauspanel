@@ -933,4 +933,5 @@ export default {
   take_ok: "Tomar",
   take_done: "Ajustes tomados de {from}.",
   take_failed: "No se pudieron leer los ajustes de ese panel.",
+  sec_allowed_short: "OK hasta {t}",
 };

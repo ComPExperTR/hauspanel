@@ -104,6 +104,7 @@ function roomLabel(ctx, id) {
   return n || pillName(hass, id);
 }
 
+const GATE_NAME = /\bgate\b|_gate\b|\btor\b|_tor\b|einfahrt|hoftor|gartentor|driveway|portail|cancello|poort|brama/i;
 function statusPill(ctx, id, { byRoom = false } = {}) {
   const ic = icon("mdi:help");
   const name = h("b", {});
@@ -119,9 +120,12 @@ function statusPill(ctx, id, { byRoom = false } = {}) {
   el.update = (hass) => {
     const st = hass.states[id];
     if (!st) return;
-    ic.icon = entityIcon(hass, st);
+    // A gate's contact is often set up as a door: by its name it still gets a gate.
+    ic.icon = id.startsWith("binary_sensor.") && GATE_NAME.test(`${id} ${st.attributes.friendly_name || ""}`)
+      ? (st.state === "on" ? "mdi:gate-open" : "mdi:gate") : entityIcon(hass, st);
     name.textContent = byRoom ? roomLabel(ctx, id) : pillName(hass, id);
-    state.textContent = isAllowedOpen(hass, id) ? `${stateText(hass, st)} · ${t("sec_allowed_until", { t: allowRule(id).to })}` : stateText(hass, st);
+    // Open inside its time window: "OK until 19:00" (short, the pill is narrow; closed again, it says Closed).
+    state.textContent = isAllowedOpen(hass, id) ? t("sec_allowed_short", { t: allowRule(id).to }) : stateText(hass, st);
     el.classList.toggle("alert", isAlert(hass, id));
     el.classList.toggle("ok", !isAlert(hass, id) && !isUnavailable(st));
     el.classList.toggle("unavail", isUnavailable(st));

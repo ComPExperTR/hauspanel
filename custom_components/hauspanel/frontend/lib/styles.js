@@ -240,7 +240,7 @@ ha-icon.hp-ic { --mdc-icon-size: 20px; display: inline-flex; flex: none; }
 .hp-spill-icon ha-icon { --mdc-icon-size: 18px; }
 .hp-spill-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
 .hp-spill-text b { font-weight: 500; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hp-spill-text small { font-size: 12px; color: var(--hp-sub); white-space: nowrap; }
+.hp-spill-text small { font-size: 12px; color: var(--hp-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hp-spill.ok .hp-spill-icon { background: rgba(92,200,121,.18); color: #7fd99a; }
 .hp-spill.alert { background: var(--hp-lit); color: var(--hp-lit-text); border-color: transparent; }
 .hp-spill.alert .hp-spill-icon { background: var(--hp-red, #ef5f67); color: #fff; }
@@ -1401,6 +1401,9 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-cat-text { display: flex; flex-direction: column; line-height: 1.2; }
 .hp-cat b { font-size: 12.5px; font-weight: 600; }
 .hp-cat small { font-size: 11.5px; color: var(--hp-sub); font-variant-numeric: tabular-nums; }
+.hp-cat-text { min-width: 0; }
+.hp-cat b, .hp-cat small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hp-root.layout-phone .hp-cat { min-width: 0; }
 .hp-cat.light.active .hp-cat-ic { background: #ffd34e; color: #1c1c1e; }
 .hp-cat.climate .hp-cat-ic { background: #7fc8f8; color: #10222f; }
 .hp-cat.climate.active .hp-cat-ic { background: #f39c3c; color: #2a1606; }
@@ -1529,7 +1532,11 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 /* ---------- scenes in the left panel ---------- */
 .hp-side-scenes .hp-scenes-block { margin: 0; }
 .hp-side-scenes .hp-label { margin: 0 2px 8px; font-size: 11px; }
-.hp-side-scenes .hp-scenes { grid-template-columns: minmax(0, 1fr); gap: 5px; }
+.hp-side-scenes .hp-scenes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.hp-side-onnow .hp-onnow-sec { gap: 8px; }
+.hp-side-onnow .hp-label { margin: 0 2px; font-size: 11px; }
+.hp-side-onnow .hp-onnow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.hp-side-onnow .hp-onnow > * { min-width: 0; }
 .hp-side-scenes .hp-scene { height: 32px; border-radius: 12px; padding: 0 8px 0 6px; gap: 7px; font-size: 12.5px; min-width: 0; }
 .hp-side-scenes .hp-scene ha-icon { width: 24px; height: 24px; --mdc-icon-size: 14px; }
 .hp-side-scenes .hp-scene > span, .hp-side-scenes .hp-scene { overflow: hidden; text-overflow: ellipsis; }

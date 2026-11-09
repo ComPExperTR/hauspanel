@@ -933,4 +933,5 @@ export default {
   take_ok: "Przejmij",
   take_done: "Przejęto ustawienia z {from}.",
   take_failed: "Nie udało się odczytać ustawień tego panelu.",
+  sec_allowed_short: "OK do {t}",
 };

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Panel layout, left side**: *On now* can show under the scenes (Settings → This screen → Side panel), small and two per row; the scenes there are two per row too.
+- Security pills: a gate allowed to be open says *OK until 19:00* instead of a text that ran out of the pill; a gate contact set up as a door gets a gate icon; long second lines end in "…".
+- Status chips keep one line, so on the phone the Waste chip is as tall as the others.
+
 ## 1.4.0
 
 - **Waste chip**: with Waste Collection Schedule or a waste calendar (Abfall, Müll, Waste, Trash, Bin …), a chip shows on Home the day before and on the day of a pickup (*Tomorrow: Yellow bin*), coloured by kind of bin; a tap shows the next two weeks.

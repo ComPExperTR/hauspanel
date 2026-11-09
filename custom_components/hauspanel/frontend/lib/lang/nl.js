@@ -933,4 +933,5 @@ export default {
   take_ok: "Overnemen",
   take_done: "Instellingen overgenomen van {from}.",
   take_failed: "De instellingen van dat paneel konden niet worden gelezen.",
+  sec_allowed_short: "OK tot {t}",
 };

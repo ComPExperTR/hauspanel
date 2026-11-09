@@ -53,7 +53,7 @@ Tip: the room icon in HausPanel is the area's icon. Change it in the area settin
 
 1. On the tablet open **HausPanel** in the Home Assistant sidebar.
 2. **Settings (gear) → This screen**:
-   - **Layout**: *Panel* keeps time, weather and what is open on the left. *Tiles* uses the whole screen for rooms.
+   - **Layout**: *Panel* keeps time, weather and what is open on the left. *Tiles* uses the whole screen for rooms. With *Panel*, **Side panel** chooses what the left side shows: weather, coming up, what is open, scenes, *On now* and the room list.
    - **Tile size**: *Fill screen* fits everything on one screen.
    - **Hide the Home Assistant sidebar**: gives HausPanel the full screen.
    - **Effects**: *Lite* leaves out blur, glow and endless animations, which helps older or slow tablets. *Automatic* turns it on by itself when the screen seems slow.

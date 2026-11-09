@@ -1179,7 +1179,7 @@ function sidePanel(ctx, selected, { allRooms = false } = {}) {
   // With the "Coming up" widget the calendar and reminder buttons would only repeat it.
   const side = { ...SIDE_DEFAULTS, ...(ctx.settings.s.side || {}) };
   return h("aside", { class: "hp-side-panel" }, date, clock, side.agenda ? null : ctx.agendaButtons(), h("div", { class: "hp-side-sep" }),
-    ...sideWidgets(ctx, { statusBlock, roomNav, selected, scenes: () => scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes")) }));
+    ...sideWidgets(ctx, { statusBlock, roomNav, selected, scenes: () => scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes")), onNow: () => onNowBlock(ctx) }));
 }
 
 function focusHome(ctx) {

@@ -177,10 +177,10 @@ export function openSettings(ctx) {
           heights ? row(t("tile_height"), heights, t("tile_height_hint")) : null));
       }
       if (dev.layout === "sidebar") {
-        const side = { weather: true, agenda: true, status: true, rooms: false, ...(s.side || {}) };
+        const side = { weather: true, agenda: true, status: true, scenes: true, onnow: false, rooms: false, ...(s.side || {}) };
         add("device", section(t("side_panel"), h("p", { class: "hp-muted small" }, t("side_panel_hint")),
           ...[["weather", "mdi:weather-partly-cloudy", t("weather")], ["agenda", "mdi:calendar-blank-outline", t("upcoming")],
-            ["status", "mdi:home-outline", t("home_status")], ["scenes", "mdi:palette-outline", t("scenes")], ["rooms", "mdi:format-list-bulleted", t("side_rooms")]].map(([k, ic, label]) =>
+            ["status", "mdi:home-outline", t("home_status")], ["scenes", "mdi:palette-outline", t("scenes")], ["onnow", "mdi:lightbulb-on-outline", t("on_now")], ["rooms", "mdi:format-list-bulleted", t("side_rooms")]].map(([k, ic, label]) =>
             row(h("span", {}, icon(ic), " ", label), toggleSwitch(side[k], () => {
               S.update((x) => { x.side = { ...side, [k]: !side[k] }; });
               draw();

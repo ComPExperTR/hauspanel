@@ -933,4 +933,5 @@ export default {
   take_ok: "Hämta",
   take_done: "Inställningar hämtade från {from}.",
   take_failed: "Det gick inte att läsa inställningarna för den panelen.",
+  sec_allowed_short: "OK till {t}",
 };
