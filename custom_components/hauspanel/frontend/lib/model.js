@@ -145,6 +145,9 @@ export function buildModel(hass, hide) {
     if (!ADDABLE.has(domain)) return;
     if (hidden(entityId)) return;
     if (isHelperGroup(hass, entityId, reg)) return;
+    // A media player that can't be reached doesn't work from here: no tile until it is back (then the
+    // model is built again, see registrySignature).
+    if (domain === "media_player" && st.state === "unavailable") return;
 
     const dev = reg?.device_id ? hass.devices[reg.device_id] : undefined;
     const areaId = reg?.area_id || dev?.area_id || null;
@@ -262,8 +265,11 @@ function linkMusicAssistant(hass, model, areas) {
 
 /** Signature of the parts of hass that change the model (registries), not states. */
 export function registrySignature(hass) {
-  return [hass.areas, hass.devices, hass.entities, hass.floors];
+  // Media players come and go with their reachability (see buildModel): which ones are down is part of it.
+  return [hass.areas, hass.devices, hass.entities, hass.floors, downPlayers(hass)];
 }
+/** The media players that can't be reached right now, as one string. */
+const downPlayers = (hass) => Object.keys(hass.states).filter((id) => id.startsWith("media_player.") && hass.states[id].state === "unavailable").sort().join(",");
 
 export function isOn(st) {
   if (!st) return false;

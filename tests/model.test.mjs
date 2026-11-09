@@ -157,7 +157,7 @@ test("Music Assistant: a player without a room joins its twin's room and stands 
   assert.equal(m.areaOf["media_player.desk_speaker"], "office", "same name");
   assert.ok(office.includes("media_player.desk_speaker"));
   assert.ok(!office.includes("media_player.desk_speaker_2"), "the twin of the same name steps back");
-  assert.equal(m.areaOf["media_player.office_tv_ma"], "office", "same device name");
+  assert.equal(m.areaOf["media_player.office_tv_ma"], undefined, "unreachable: left out");
   assert.ok(office.includes("media_player.apple_tv_office"), "a twin with another name, and an unavailable MA player, keep the original");
   assert.ok(!m.unassigned.tiles.some((id) => id.includes("desk_speaker")), "nothing left under Other");
 });
@@ -171,4 +171,26 @@ test("Music Assistant: a player with no twin and no room gets no tile under Othe
   const m = buildModel(hass, {});
   assert.ok(!m.unassigned.tiles.includes("media_player.receiver_ma"));
   assert.ok(m.media.includes("media_player.receiver_ma"), "Home's music card can still show it");
+});
+
+test("an unreachable media player gets no tile, one that is just off does", () => {
+  const hass = fakeHass({
+    areas: { living: { area_id: "living", name: "Living" } },
+    entities: { "media_player.tv": { area_id: "living" }, "media_player.speaker": { area_id: "living" } },
+    states: { "media_player.tv": "off", "media_player.speaker": "unavailable" },
+  });
+  const m = buildModel(hass, {});
+  assert.deepEqual(m.areaById.get("living").tiles, ["media_player.tv"]);
+});
+
+test("Music Assistant: the same device name also finds the twin's room", () => {
+  const hass = fakeHass({
+    areas: { office: { area_id: "office", name: "Office" } },
+    devices: { ma: { id: "ma", name: "Office TV" }, at: { id: "at", name: "Office TV", area_id: "office" } },
+    entities: { "media_player.office_tv_ma": { device_id: "ma", platform: "music_assistant" }, "media_player.apple_tv_office": { device_id: "at", platform: "apple_tv" } },
+    states: { "media_player.office_tv_ma": { state: "idle", attributes: { friendly_name: "Living TV" } }, "media_player.apple_tv_office": { state: "off", attributes: { friendly_name: "Apple TV Office" } } },
+  });
+  const m = buildModel(hass, {});
+  assert.equal(m.areaOf["media_player.office_tv_ma"], "office");
+  assert.ok(m.areaById.get("office").tiles.includes("media_player.apple_tv_office"), "another name: the original stays too");
 });
