@@ -2149,6 +2149,10 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-wx-warn { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 10px 14px; border-radius: 16px; background: rgba(78,165,245,.16); border: 1px solid rgba(78,165,245,.35); color: var(--hp-text); font-size: 14px; font-weight: 500; --mdc-icon-size: 20px; }
 .hp-wx-warn ha-icon { color: #7cc0ff; flex: none; }
 .hp-wx-warn[hidden] { display: none; }
+/* Settings: worth a look */
+a.hp-hint { color: inherit; text-decoration: none; }
+.hp-hint .hp-qrow-ic { color: #f6c945; }
+.hp-hint .hp-hint-go { color: var(--hp-sub); --mdc-icon-size: 17px; flex: none; }
 /* Welcome window */
 .hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
 .hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }

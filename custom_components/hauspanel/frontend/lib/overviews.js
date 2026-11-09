@@ -178,7 +178,7 @@ export function openSecurityOverview(ctx, openClassic) {
 
   const cams = cameraList(ctx).items;
   const lay = secLayout(ctx);
-  const recent = (cams.length || frigateCams(ctx.hass).length) && lay.on.has("recent") ? recentMotions(ctx, cams) : null;
+  const recent = frigateCams(ctx.hass).length && lay.on.has("recent") ? recentMotions(ctx, cams) : null;
   const parts = {
     alarm: alarmId ? [aCard, modeBox, blockers] : [],
     doors: [openBox, closedHead, closedBox],

@@ -1,0 +1,22 @@
+name: Idea or wish
+description: Something HausPanel could do, or do better.
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Tell us what you want to do at home, not only the button you have in mind. That helps find the best way.
+      placeholder: "When I leave the house I'd like to see …"
+    validations:
+      required: true
+  - type: textarea
+    id: devices
+    attributes:
+      label: Devices or integrations involved
+      placeholder: "Reolink doorbell, Shelly covers …"
+  - type: textarea
+    id: picture
+    attributes:
+      label: Sketch or screenshot
+      description: Optional. A rough drawing is great.

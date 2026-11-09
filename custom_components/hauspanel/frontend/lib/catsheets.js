@@ -125,7 +125,7 @@ export function openEnergySheet(ctx, rate) {
 }
 
 /** What needs looking after: low batteries and devices that are gone. Platforms hidden in HausPanel are left out. */
-export function maintenanceItems(ctx, hass) {
+export function maintenanceItems(ctx, hass, now = Date.now()) {
   // Anything hidden in HausPanel (by rule or by hand) was put aside on purpose and does not count.
   const hiddenRule = hideMatcher(hass, ctx.settings.s.hide);
   const shown = new Set(ctx.model.all);
@@ -153,7 +153,46 @@ export function maintenanceItems(ctx, hass) {
   }
   const ignored = new Set(ctx.settings.s.maintIgnore || []);
   const offline = [...byDev.entries()].filter(([dev]) => !ignored.has(dev)).filter(([, ids]) => ids.every((id) => hass.states[id].state === "unavailable")).map(([dev, ids]) => ({ dev, id: ids[0] }));
-  return { batteries, offline, count: batteries.length + offline.length };
+  const offlineDev = new Set(offline.map((o) => o.dev));
+  const { silent, consumables } = quietAndWorn(hass, { skip: (id) => skip(id) || !!hass.entities?.[id]?.hidden, ignored, offlineDev, now });
+  return { batteries, offline, silent, consumables, count: batteries.length + offline.length + silent.length + consumables.length };
+}
+
+/** Sensors that report on their own every few minutes to hours: silent for two days means something is wrong. */
+const CHATTY = new Set(["temperature", "humidity", "battery", "illuminance", "pressure", "carbon_dioxide", "voltage"]);
+export const SILENT_HOURS = 48;
+/** Filters, brushes, mops, dust bags, water filters, toner and ink. */
+const WORN = /filter|brush|b(ü|ue)rste|mop|wischtuch|wischpad|dust_?bag|staubbeutel|toner|ink\b|tinte|cartridge|patrone|sensor_dirty|sensor_verschmutz/i;
+
+/**
+ * Devices that went quiet (a chatty sensor with no news for SILENT_HOURS, though not unavailable) and
+ * consumables that are nearly used up (10 % or less left). One entry per device; ignored devices stay out.
+ */
+export function quietAndWorn(hass, { skip = () => false, ignored = new Set(), offlineDev = new Set(), now = Date.now() } = {}) {
+  const silent = [];
+  const consumables = [];
+  const seenQuiet = new Set();
+  const seenWorn = new Set();
+  for (const [id, st] of Object.entries(hass.states)) {
+    if (!id.startsWith("sensor.") || skip(id)) continue;
+    const reg = hass.entities?.[id];
+    const dev = reg?.device_id || id;
+    if (ignored.has(dev) || offlineDev.has(dev)) continue;
+    const a = st.attributes;
+    if (["unavailable", "unknown"].includes(st.state)) continue;
+    const seen = Date.parse(st.last_updated || st.last_changed || "");
+    if (CHATTY.has(a.device_class) && Number.isFinite(seen) && now - seen > SILENT_HOURS * 3600e3 && !seenQuiet.has(dev)) {
+      seenQuiet.add(dev);
+      silent.push({ id, dev, since: seen });
+    }
+    const v = Number(st.state);
+    if (a.unit_of_measurement === "%" && a.device_class !== "battery" && Number.isFinite(v) && v <= 10
+      && WORN.test(`${id} ${a.friendly_name || ""}`) && !seenWorn.has(`${dev}|${id}`)) {
+      seenWorn.add(`${dev}|${id}`);
+      consumables.push({ id, dev, left: v });
+    }
+  }
+  return { silent, consumables };
 }
 
 /** Maintenance popup: batteries and offline devices, each opens its device in Home Assistant. */
@@ -187,7 +226,24 @@ export function openMaintenanceSheet(ctx) {
       r.sub.textContent = area || "";
       return r;
     }));
-    // Each battery or offline row can be put aside for good (a pool pump in winter, say).
+    block(t("maint_silent"), m.silent.map(({ dev, id, since }) => {
+      const days = Math.max(2, Math.floor((Date.now() - since) / 86400e3));
+      const r = listRow(ctx, id, h("span", { class: "hp-qval" }, t("maint_days", { n: days })));
+      r.ic.icon = "mdi:signal-off";
+      r.dataset.dev = dev;
+      if (hass.devices?.[dev]) r.querySelector("b").textContent = devName(dev);
+      r.sub.textContent = roomOf(ctx, id);
+      return r;
+    }));
+    block(t("maint_worn"), m.consumables.map(({ dev, id, left }) => {
+      const r = listRow(ctx, id, h("span", { class: "hp-qval warn" }, `${formatNumber(hass, left, 0)} %`));
+      r.ic.icon = "mdi:filter-remove-outline";
+      r.dataset.dev = dev;
+      const dn = hass.devices?.[dev] ? devName(dev) : "";
+      r.sub.textContent = [dn, roomOf(ctx, id)].filter(Boolean).join(" · ");
+      return r;
+    }));
+    // Each row can be put aside for good (a pool pump in winter, say).
     const ignoreBtn = (row, dev) => {
       const b = h("button", { class: "hp-round ghost small", "aria-label": t("maint_ignore"), title: t("maint_ignore") }, icon("mdi:eye-off-outline"));
       b.addEventListener("click", (e) => {

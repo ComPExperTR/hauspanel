@@ -1,0 +1,24 @@
+name: Translation
+description: A wrong, odd or missing text in your language.
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Most languages were translated by machine, so fixes are very welcome. You can also change the file yourself: see [Help with translations](https://github.com/alpacalabs-de/hauspanel#help-with-translations).
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: "French"
+    validations:
+      required: true
+  - type: textarea
+    id: texts
+    attributes:
+      label: Which text, and how should it read?
+      description: Where you saw it, what it says now, and your better wording.
+      placeholder: |
+        Room popup, shades tile: "Volets" → "Stores"
+    validations:
+      required: true

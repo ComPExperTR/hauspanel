@@ -13,7 +13,7 @@ For the tablet on the wall, the phone in your pocket and a screen for the camera
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
 </p>
 
-<p align="center"><img src="images/screenshots/tablet-home.png" alt="HausPanel on a wall tablet" width="900"></p>
+<p align="center"><img src="images/demo.gif" alt="HausPanel on a wall tablet: open a room, move all shades with one slider, the security popup, every room at once" width="860"><br><sub>Open a room, move all its shades with one slider, check what is open, see every room. (Demo data.)</sub></p>
 
 Home Assistant already knows your house: which rooms are on which floor, and which lamp, thermostat or lock hangs where. HausPanel takes that map and turns it into screens you can use at a glance, from the hallway as well as from the sofa. When you add a device to a room, it simply turns up in that room. The integration runs on your own Home Assistant and talks to nothing else.
 
@@ -195,8 +195,15 @@ HAUSPANEL_DEV=1 .venv-ha/bin/hass -c ha-config
 
 **Tests:** `node --test "tests/*.test.mjs"` (Node 22 or newer, nothing to install). They check the time windows for doors and gates, which room a device lands in, hiding, the shade sliders, the weather heads-up, and that every language has every text with the same placeholders. GitHub runs them on every push. A new text key needs an entry in every language file, or the tests fail.
 
+Bugs and ideas are welcome as [issues](https://github.com/alpacalabs-de/hauspanel/issues/new/choose); the form asks for the version, panel and layout right away.
 
-Bugs and ideas are welcome as [issues](https://github.com/alpacalabs-de/hauspanel/issues).
+## Help with translations
+
+English and German are written by hand. French, Dutch, Spanish, Italian, Polish and Swedish were translated by machine, so a native speaker's eye helps a lot.
+
+- **Just tell us:** open a [translation issue](https://github.com/alpacalabs-de/hauspanel/issues/new?template=translation.yml) with the text you saw and your better wording.
+- **Change it yourself:** each language is one file, `custom_components/hauspanel/frontend/lib/lang/<code>.js` (one line per text, `key: "text"`). Edit the text on GitHub (pencil icon) and propose the change. Keep words in `{braces}` as they are, they are filled in by HausPanel. The setup texts are in `custom_components/hauspanel/translations/<code>.json`.
+- **A new language:** copy a file in `lang/`, translate it, add its code to `LANGS` in `i18n.js` and add `translations/<code>.json`. `node --test "tests/*.test.mjs"` tells you if a text is missing.
 
 ## Support
 
@@ -239,6 +246,8 @@ Home Assistant kennt dein Haus schon: welche Räume auf welcher Etage liegen und
 **Erste Schritte:** Geräte Räumen zuordnen und Räume Etagen, dann HausPanel öffnen und die Einstellungen von links nach rechts durchgehen.
 
 **Schritt für Schritt:** kurze Anleitungen fürs Wandtablet, das Handy, das Tor, das tagsüber offen sein darf, Kameras, Ausblenden und mehr stehen in [docs/guides.de.md](docs/guides.de.md). Jeder Reiter in den Einstellungen verlinkt die passende.
+
+**Übersetzungen:** Englisch und Deutsch sind von Hand geschrieben, die anderen Sprachen maschinell. Verbesserungen sind sehr willkommen, als [Issue](https://github.com/alpacalabs-de/hauspanel/issues/new?template=translation.yml) oder direkt in der Datei der Sprache, siehe [Help with translations](#help-with-translations).
 
 **Unterstützen:** HausPanel ist kostenlos und bleibt es. Wenn es dir Zeit spart, kannst du uns auf [Ko-fi einen Kaffee spendieren](https://ko-fi.com/alpacalabs). Ein Stern auf GitHub oder eine Idee als Issue hilft genauso.
 

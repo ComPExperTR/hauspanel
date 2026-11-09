@@ -1,0 +1,70 @@
+name: Something doesn't work
+description: A bug, an error, or something that looks wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time! Many questions are answered in the [step-by-step guides](https://github.com/alpacalabs-de/hauspanel/blob/main/docs/guides.md). Please leave out anything private (names, addresses, camera pictures).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what did you see instead?
+      placeholder: "I tapped the Shades tile in the living room popup and …"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: HausPanel version
+      description: Settings (gear) → System, at the bottom.
+      placeholder: "1.2.0"
+    validations:
+      required: true
+  - type: input
+    id: ha
+    attributes:
+      label: Home Assistant version
+      description: Settings → About.
+      placeholder: "2026.11.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: panel
+    attributes:
+      label: Which panel?
+      options: [HausPanel, MobilePanel, SecurityPanel]
+    validations:
+      required: true
+  - type: dropdown
+    id: layout
+    attributes:
+      label: Layout (Settings → This screen)
+      options: [Tiles, Panel, Rows, Phone, Security, Don't know]
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: "iPad, Home Assistant app / Android tablet, Fully Kiosk / Chrome on Windows"
+  - type: input
+    id: language
+    attributes:
+      label: Language of Home Assistant
+      placeholder: "English"
+  - type: textarea
+    id: devices
+    attributes:
+      label: Devices involved (if any)
+      description: The kind of device and its integration, for example "Shelly 2PM as cover" or "Frigate camera".
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors
+      description: Settings → System → Logs (search for "hauspanel"), or the browser console. Paste as text.
+      render: text
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag a picture here if it helps. Please hide anything private.

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **Maintenance** also lists devices that went quiet (a temperature, humidity or battery sensor without news for two days) and consumables that are nearly used up (filters, brushes, mops, dust bags, toner, ink at 10 % or less). Each can be ignored like the others.
+- **Worth a look** at the top of the settings: devices without a room, rooms without a floor, cameras that can't be reached, each linking its guide.
+- The last movements in the security popup only show when Frigate is there.
+- GitHub: forms for bug reports, ideas and translations; the README explains how to fix a translation and shows a short demo.
+
 ## 1.2.0
 
 **New for everyone**

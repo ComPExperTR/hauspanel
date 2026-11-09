@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Step-by-step guides
+    url: https://github.com/alpacalabs-de/hauspanel/blob/main/docs/guides.md
+    about: How to set up rooms, a wall tablet, cameras, hiding and more.
+  - name: Anleitungen auf Deutsch
+    url: https://github.com/alpacalabs-de/hauspanel/blob/main/docs/guides.de.md
+    about: Räume, Wandtablet, Kameras, Ausblenden und mehr, Schritt für Schritt.

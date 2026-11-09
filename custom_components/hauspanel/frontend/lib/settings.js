@@ -10,6 +10,7 @@ import { securityEditor } from "./overviews.js";
 import { cameraList, CAM_CONTAINER } from "./securityview.js";
 import { openMotionCams, motionCamPref, frigateCams } from "./visitors.js";
 import { openWelcome } from "./welcome.js";
+import { setupHints } from "./hints.js";
 import { doorbells, bellCameras, openers, bellEnabled, bellCamera, bellOpener, ringNow } from "./doorbell.js";
 
 /** Soft surface of lit cards. */
@@ -492,6 +493,16 @@ export function openSettings(ctx) {
       });
       return b;
     }));
+    // Worth a look: rooms without a floor, devices without a room … on top of the first tab, each with its guide.
+    const de = /^de/i.test(ctx.hass.locale?.language || ctx.hass.language || "");
+    const guideUrl = (anchor) => `${GUIDES}${de ? "guides.de.md" : "guides.md"}#${anchor}`;
+    const hints = kind === "security" ? [] : setupHints(ctx);
+    if (hints.length) {
+      const list = h("div", { class: "hp-qlist" }, ...hints.map((x) => h("a", { class: "hp-qrow hp-hint", href: guideUrl(x.guide), target: "_blank", rel: "noopener" },
+        h("span", { class: "hp-qrow-ic" }, icon(x.icon)), h("div", { class: "hp-qrow-text" }, h("b", {}, t(`hint_${x.key}`, { n: x.n })), h("small", {}, t(`hint_${x.key}_fix`))),
+        icon("mdi:open-in-new", "hp-hint-go"))));
+      (groups.home ||= []).unshift(section(t("hints_title"), h("p", { class: "hp-muted small" }, t("hints_hint")), list));
+    }
     // Who a tab's settings are for: this screen only, just you, or everyone on this dashboard.
     const scope = tab === "device" ? ["mdi:tablet", t("scope_device")]
       : tab === "system" || tab === "hide" ? null
@@ -500,8 +511,7 @@ export function openSettings(ctx) {
     const note = scope ? h("div", { class: "hp-set-scope" }, icon(scope[0]), h("span", {}, scope[1])) : null;
     // One line on what the tab is for, so a first look makes sense.
     // … and a link to the step-by-step guide for it (German page when HausPanel speaks German).
-    const de = /^de/i.test(ctx.hass.locale?.language || ctx.hass.language || "");
-    const guide = `${GUIDES}${de ? "guides.de.md" : "guides.md"}#${GUIDE_OF[tab] || "guides"}`;
+    const guide = guideUrl(GUIDE_OF[tab] || "guides");
     const intro = h("p", { class: "hp-set-intro" }, t(`set_intro_${tab}`), " ",
       h("a", { class: "hp-set-guide", href: guide, target: "_blank", rel: "noopener" }, icon("mdi:help-circle-outline"), t("set_guide")));
     const pane = h("div", { class: "hp-set-pane" }, ...[intro, note, ...(groups[tab] || [])].filter(Boolean));

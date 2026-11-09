@@ -169,6 +169,8 @@ export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
   const label = (e) => subLabel(e) || t(`vis_l_${e.label}`) || e.label;
   pick.addEventListener("click", () => openMotionCams(ctx, camIds, () => load()));
   const load = async () => {
+    // Without Frigate there are no movements to show: the part stays away.
+    if (!frigateCams(hass).length) { box.hidden = true; return; }
     const own = await motionCamPref(hass);
     const only = own ?? camIds;
     big.hidden = true;
