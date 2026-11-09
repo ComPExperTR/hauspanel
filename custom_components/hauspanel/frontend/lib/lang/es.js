@@ -937,4 +937,5 @@ export default {
   gate_sent: "Enviado – esperando a que se mueva",
   gate_no_move: "La puerta no se ha movido. Comprueba que esté accesible y que nada la bloquee.",
   gate_failed: "Home Assistant no pudo enviarlo: {why}",
+  set_players_hint: "Desactiva lo que no quieras ver: así no aparece en ningún sitio de HausPanel (como Ajustes → Ocultar). Los reproductores inaccesibles vuelven solos en cuanto están en línea.",
 };

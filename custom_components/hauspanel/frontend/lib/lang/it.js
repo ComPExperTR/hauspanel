@@ -937,4 +937,5 @@ export default {
   gate_sent: "Inviato – in attesa che si muova",
   gate_no_move: "La porta non si è mossa. Controlla che sia raggiungibile e che niente la blocchi.",
   gate_failed: "Home Assistant non è riuscito a inviarlo: {why}",
+  set_players_hint: "Disattiva ciò che non vuoi vedere: non comparirà da nessuna parte in HausPanel (come Impostazioni → Nascondi). I lettori non raggiungibili ricompaiono da soli appena tornano online.",
 };

@@ -937,4 +937,5 @@ export default {
   gate_sent: "Wysłano – czekam na ruch bramy",
   gate_no_move: "Brama się nie poruszyła. Sprawdź, czy jest osiągalna i czy nic jej nie blokuje.",
   gate_failed: "Home Assistant nie mógł tego wysłać: {why}",
+  set_players_hint: "Wyłącz to, czego nie chcesz widzieć: nie pojawi się wtedy nigdzie w HausPanel (jak w Ustawienia → Ukrywanie). Niedostępne odtwarzacze wrócą same, gdy będą online.",
 };

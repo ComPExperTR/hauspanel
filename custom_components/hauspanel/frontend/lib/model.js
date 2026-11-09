@@ -185,6 +185,11 @@ export function buildModel(hass, hide) {
   }
 
   linkMusicAssistant(hass, model, areas);
+  // The Media page and Home's music card list the same players the rooms show: not a twin that a
+  // Music Assistant player stands for, nor a Music Assistant copy that found no room.
+  const shownTiles = new Set([...[...areas.values()].flatMap((a) => a.tiles), ...model.unassigned.tiles]);
+  model.media = model.media.filter((id) => shownTiles.has(id));
+  model.spotify = model.spotify.filter((id) => shownTiles.has(id));
 
   const rank = (id) => {
     const i = TILE_DOMAINS.indexOf(domainOf(id));
@@ -254,7 +259,7 @@ function linkMusicAssistant(hass, model, areas) {
       || others.find((o) => devName(o) && devName(o) === devName(id) && model.areaOf[o] !== "_other");
     if (twin && model.areaOf[id] === "_other") move(id, model.unassigned, areas.get(model.areaOf[twin]));
     // Still without a room: a copy of a player that lives elsewhere under another name. No tile under
-    // Other then; it stays in the media list, so Home's music card still shows it while it plays.
+    // Other then (and so not in the media list either).
     if (model.areaOf[id] === "_other") model.unassigned.tiles = model.unassigned.tiles.filter((x) => x !== id);
     // In its room, the Music Assistant player stands for a twin of the same name (while it is there at all).
     const area = areas.get(model.areaOf[id]);

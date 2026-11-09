@@ -937,4 +937,5 @@ export default {
   gate_sent: "Envoyé – en attente du mouvement",
   gate_no_move: "La porte n'a pas bougé. Vérifiez qu'elle est joignable et que rien ne la bloque.",
   gate_failed: "Home Assistant n'a pas pu l'envoyer : {why}",
+  set_players_hint: "Désactivez ce que vous ne voulez pas voir : il n'apparaît alors nulle part dans HausPanel (comme Paramètres → Masquer). Les lecteurs injoignables reviennent d'eux-mêmes dès qu'ils sont en ligne.",
 };

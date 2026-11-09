@@ -484,7 +484,9 @@ class HausPanelElement extends HTMLElement {
     const m = this.model;
     const tab = this.tab;
     if (tab === "media") {
-      let groups = this._roomGroups("media", (a) => a.all.filter((id) => id.startsWith("media_player.")), { addDomains: ["media_player"] });
+      // The same players the rooms show (model.media): no twin a Music Assistant player stands for, no copies.
+      const shown = new Set(m.media);
+      let groups = this._roomGroups("media", (a) => a.all.filter((id) => shown.has(id)), { addDomains: ["media_player"] });
       if (!this.editing) {
         // One grid instead of a heading per room (most rooms have one speaker): playing first, then on, then off.
         const rank = (id) => {

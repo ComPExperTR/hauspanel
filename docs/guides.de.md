@@ -157,6 +157,8 @@ Ausgeblendete Geräte bleiben in Home Assistant, nur HausPanel lässt sie weg.
 
 Zurückholen: denselben Schalter wieder ausschalten, oder im Bearbeiten-Modus der Chip *ausgeblendet* im Raum.
 
+**Lautsprecher und TVs** haben eine eigene kurze Liste: *Einstellungen → Räume & Geräte → Lautsprecher & TVs*, ein Schalter pro Player. Nicht erreichbare Player lässt HausPanel schon von selbst weg, und mit Music Assistant zeigt es dessen Player im Raum des Lautsprechers statt des eigenen, so erscheint jeder Lautsprecher einmal.
+
 ![Einstellungen → Ausblenden](../images/guides/guide-hiding.png)
 
 ---

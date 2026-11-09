@@ -937,4 +937,5 @@ export default {
   gate_sent: "Skickat – väntar på att porten rör sig",
   gate_no_move: "Porten har inte rört sig. Kontrollera att den går att nå och att inget är i vägen.",
   gate_failed: "Home Assistant kunde inte skicka det: {why}",
+  set_players_hint: "Stäng av det du inte vill se: det visas då ingenstans i HausPanel (som Inställningar → Dölj). Spelare som inte nås kommer tillbaka av sig själva när de är online.",
 };

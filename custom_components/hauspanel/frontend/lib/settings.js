@@ -304,6 +304,30 @@ export function openSettings(ctx) {
           S.update((x) => { x.nightCheck = x.nightCheck !== true; });
           draw();
         }), t("gn_setting_hint"))));
+      // Speakers and TVs: one switch each; off hides the player everywhere in HausPanel (Settings → Hiding).
+      {
+        const hiddenIds = new Set(s.hide?.entities || []);
+        const ids = [...new Set([...ctx.model.media, ...[...hiddenIds].filter((id) => id.startsWith("media_player.") && ctx.hass.states[id])])]
+          .sort((a, b) => (ctx.hass.states[a]?.attributes.friendly_name || a).localeCompare(ctx.hass.states[b]?.attributes.friendly_name || b));
+        if (ids.length) {
+          const where = (id) => ctx.model.areaById.get(ctx.model.areaOf[id])?.name || "";
+          const list = h("div", { class: "hp-qlist" }, ...ids.map((id) => {
+            const shown = !hiddenIds.has(id);
+            const sw = toggleSwitch(shown, () => {
+              S.update((x) => {
+                const ents = new Set(x.hide?.entities || []);
+                if (shown) ents.add(id); else ents.delete(id);
+                x.hide = { ...(x.hide || {}), entities: [...ents] };
+              });
+              draw();
+            });
+            const st = ctx.hass.states[id];
+            return h("div", { class: `hp-qrow ${shown ? "" : "off"}` }, h("span", { class: "hp-qrow-ic" }, icon(st?.attributes.device_class === "tv" ? "mdi:television" : "mdi:speaker")),
+              h("div", { class: "hp-qrow-text" }, h("b", {}, st?.attributes.friendly_name || id), h("small", {}, [where(id), ctx.hass.entities?.[id]?.platform === "music_assistant" ? "Music Assistant" : ""].filter(Boolean).join(" · "))), sw);
+          }));
+          add("rooms", section(t("players"), h("p", { class: "hp-muted small" }, t("set_players_hint")), list));
+        }
+      }
       add("rooms", section(t("shades"),
         row(t("group_shades"), toggleSwitch(!!s.groupShades, () => {
           S.update((x) => { x.groupShades = !x.groupShades; });

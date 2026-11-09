@@ -157,6 +157,8 @@ Hidden devices stay in Home Assistant; only HausPanel leaves them out.
 
 To get something back: the same switch off again, or in edit mode the *hidden* chip of the room.
 
+**Speakers and TVs** have their own short list: *Settings → Rooms & devices → Speakers & TVs*, one switch each. HausPanel already leaves out players that can't be reached, and with Music Assistant it shows its player in the speaker's room instead of the speaker's own one, so each speaker appears once.
+
 ![Settings → Hiding](../images/guides/guide-hiding.png)
 
 ---
