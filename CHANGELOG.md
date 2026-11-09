@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Last movements: a **full screen** button next to the close button. On the iPhone the clip itself goes full screen.
+
 ## 1.3.0
 
 - **Maintenance** also lists devices that went quiet (a temperature, humidity or battery sensor without news for two days) and consumables that are nearly used up (filters, brushes, mops, dust bags, toner, ink at 10 % or less). Each can be ignored like the others.

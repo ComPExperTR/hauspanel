@@ -219,8 +219,19 @@ export function recentMotions(ctx, camIds, { limit = 6 } = {}) {
             if (media.isConnected) media.replaceWith(h("img", { alt: "", src: `${base}/snapshot.jpg` }));
           }).finally(() => { big.classList.remove("loading"); wait.remove(); });
         } else media = h("img", { alt: "", src: `${base}/snapshot.jpg` });
+        // Full screen: the iPhone only lets the video itself go full screen; elsewhere the whole picture with its caption.
+        const full = h("button", { class: "hp-round ghost small full", "aria-label": t("fullscreen"), title: t("fullscreen") }, icon("mdi:fullscreen"));
+        // A still picture on an iPhone can't go full screen at all: no button then.
+        if (!e.has_clip && !big.requestFullscreen) full.hidden = true;
+        full.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          const m = big.querySelector("video, img");
+          if (document.fullscreenElement) return document.exitFullscreen?.();
+          if (m?.tagName === "VIDEO" && m.webkitEnterFullscreen && !big.requestFullscreen) return m.webkitEnterFullscreen();
+          (big.requestFullscreen?.() || Promise.reject()).catch(() => m?.webkitEnterFullscreen?.());
+        });
         big.replaceChildren(media, ...(wait ? [wait] : []),
-          h("div", { class: "cap" }, icon(LABEL_IC[e.label] || "mdi:motion-sensor"), h("b", {}, label(e)), h("small", {}, `${e.camName} · ${when(e.start_time)}`)), close);
+          h("div", { class: "cap" }, icon(LABEL_IC[e.label] || "mdi:motion-sensor"), h("b", {}, label(e)), h("small", {}, `${e.camName} · ${when(e.start_time)}`)), full, close);
         big.hidden = false;
         big.scrollIntoView({ block: "nearest", behavior: "smooth" });
       });

@@ -2155,6 +2155,9 @@ a.hp-hint { color: inherit; text-decoration: none; }
 .hp-hint .hp-hint-go { color: var(--hp-sub); --mdc-icon-size: 17px; flex: none; }
 /* Clip loading in the security popup */
 .hp-vis-big { position: relative; }
+.hp-vis-big .hp-round.full { right: 52px; }
+.hp-vis-big:fullscreen { display: flex; align-items: center; justify-content: center; background: #000; border-radius: 0; margin: 0; }
+.hp-vis-big:fullscreen video, .hp-vis-big:fullscreen img { width: 100%; height: 100%; object-fit: contain; }
 .hp-vis-wait { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; --mdc-icon-size: 26px; pointer-events: none; }
 .hp-vis-wait ha-icon { animation: hp-spin 1s linear infinite; }
 @keyframes hp-spin { to { transform: rotate(360deg); } }
