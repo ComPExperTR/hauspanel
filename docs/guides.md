@@ -216,6 +216,8 @@ Each tab says at the top who a change applies to: this screen, only you, or ever
 
 **Back up:** *Settings → System → Back up* saves the settings of this panel as a file and loads them back, for example after moving to a new Home Assistant. Loading replaces the current settings after you confirm.
 
+**Take from another panel:** in the same place, pick a panel (for example MobilePanel) and **House settings** or **Everything**. House settings are what is hidden, when doors may be open, the cameras of the Security page, doorbell, baby monitor, calendars and weather; looks, order and Home stay. Everything copies all of it. Handy when one panel is set up just right.
+
 ![Settings → System](../images/guides/guide-system.png)
 
 ---

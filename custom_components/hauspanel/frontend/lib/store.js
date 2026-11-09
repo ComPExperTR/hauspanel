@@ -24,6 +24,30 @@ export const DEFAULT_SETTINGS = {
   hide: { entities: [], domains: [], platforms: [], patterns: [] },
 };
 
+/**
+ * Settings about the house rather than the screen: what is hidden, when doors may be open, which cameras
+ * the Security page shows, doorbell, baby monitor, calendars and weather … Copying "the house" from
+ * another panel takes these; looks, order and the Home screen stay as they are.
+ */
+export const HOUSE_KEYS = ["hide", "secAllow", "doorbell", "baby", "calendars", "todos", "weather", "meters", "maintIgnore", "nightCheck", "sceneConfirm"];
+const houseContainer = (k) => k.startsWith("security:");
+
+/** The settings after taking `from` (another panel's) into `to`: "house" or "all". Neither is changed. */
+export function takeSettings(to, from, mode = "house") {
+  const c = (o) => JSON.parse(JSON.stringify(o ?? null));
+  if (mode === "all") return c(from);
+  const out = c(to);
+  for (const k of HOUSE_KEYS) {
+    if (from[k] === undefined) delete out[k];
+    else out[k] = c(from[k]);
+  }
+  const conts = { ...(out.containers || {}) };
+  for (const k of Object.keys(conts)) if (houseContainer(k)) delete conts[k];
+  for (const [k, v] of Object.entries(from.containers || {})) if (houseContainer(k)) conts[k] = c(v);
+  out.containers = conts;
+  return out;
+}
+
 const defaultSize = (key) => (key.startsWith("camera.") ? 2 : key === "card:today" ? "w" : 1);
 
 export const DEFAULT_DEVICE = {

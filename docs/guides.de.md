@@ -216,6 +216,8 @@ Jeder Reiter sagt oben, für wen eine Änderung gilt: diesen Bildschirm, nur dic
 
 **Sichern:** *Einstellungen → System → Sichern* speichert die Einstellungen dieses Panels als Datei und spielt sie wieder ein, zum Beispiel nach dem Umzug auf ein neues Home Assistant. Beim Einspielen werden die aktuellen Einstellungen nach einer Rückfrage ersetzt.
 
+**Von einem anderen Panel übernehmen:** an derselben Stelle ein Panel wählen (zum Beispiel MobilePanel) und **Haus-Einstellungen** oder **Alles**. Haus-Einstellungen sind das Ausgeblendete, die Zeitfenster für Türen, die Kameras der Sicherheitsseite, Türklingel, Babyphone, Kalender und Wetter; Aussehen, Reihenfolgen und Startseite bleiben. Alles kopiert alles. Praktisch, wenn ein Panel schon genau passt.
+
 ![Einstellungen → System](../images/guides/guide-system.png)
 
 ---

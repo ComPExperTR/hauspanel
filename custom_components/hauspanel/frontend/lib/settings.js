@@ -12,6 +12,7 @@ import { openMotionCams, motionCamPref, frigateCams } from "./visitors.js";
 import { openWelcome } from "./welcome.js";
 import { setupHints } from "./hints.js";
 import { setPref } from "./userprefs.js";
+import { takeSettings } from "./store.js";
 import { doorbells, bellCameras, openers, bellEnabled, bellCamera, bellOpener, ringNow } from "./doorbell.js";
 
 /** Soft surface of lit cards. */
@@ -493,8 +494,35 @@ export function openSettings(ctx) {
             draw();
           } });
       });
+      // Take settings from another panel: just the house (hidden devices, door windows, cameras …) or everything.
+      const others = Object.keys(PANEL_TITLES).filter((id) => id !== panelId);
+      const from = h("select", { class: "hp-select" }, others.map((id) => h("option", { value: id }, panelTitle(id))));
+      let mode = "house";
+      const modes = h("div", { class: "hp-seg" }, [["house", "take_house"], ["all", "take_all"]].map(([v, l]) => {
+        const b = h("button", { class: v === mode ? "active" : "" }, t(l));
+        b.addEventListener("click", () => { mode = v; modes.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b)); });
+        return b;
+      }));
+      const take = h("button", { class: "hp-chip" }, icon("mdi:swap-horizontal"), t("take_go"));
+      take.addEventListener("click", async () => {
+        let src;
+        try {
+          src = (await ctx.hass.callWS({ type: "hauspanel/settings/get", panel: from.value }))?.settings;
+        } catch { src = null; }
+        if (!src || typeof src !== "object") { ctx.toast(t("take_failed")); return; }
+        const fromName = panelTitle(from.value);
+        confirmDialog(ctx, { title: t("take_title"), text: t(mode === "all" ? "take_confirm_all" : "take_confirm_house", { from: fromName, to: panelTitle(panelId) }), ok: t("take_ok"), danger: mode === "all",
+          onOk: () => {
+            const next = takeSettings(S.s, src, mode);
+            S.update((x) => { for (const k of Object.keys(x)) delete x[k]; Object.assign(x, next); }, "take");
+            ctx.toast(t("take_done", { from: fromName }));
+            draw();
+          } });
+      });
       add("system", section(t("backup_title"), h("p", { class: "hp-muted small" }, t("backup_hint")),
-        h("div", { class: "hp-set-row-end hp-backup-btns" }, exp, imp, file)));
+        h("div", { class: "hp-set-row-end hp-backup-btns" }, exp, imp, file),
+        row(t("take_label"), from, t("take_hint")),
+        h("div", { class: "hp-set-row-end hp-take-btns" }, modes, take)));
     }
     add("system", section(t("when_opening"),
       row(t("start_screen"), startToggle("user"), t("start_screen_hint")),

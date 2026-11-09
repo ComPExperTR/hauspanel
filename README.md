@@ -136,7 +136,7 @@ The gear at the top right opens the settings. Every tab starts with one line on 
 | **Navigation** | Which tabs show in the bar at the bottom, your own pages |
 | **Calendar and weather** | Which calendars and lists, which weather source (Open-Meteo when you have none) |
 | **Hiding** | Single entities, text rules, device types, integrations |
-| **System** | Your own settings for this panel, back up and restore as a file, open HausPanel first when Home Assistant starts, the welcome window again |
+| **System** | Your own settings for this panel, back up and restore as a file, take settings from another panel (house settings or everything), open HausPanel first when Home Assistant starts, the welcome window again |
 
 <table>
   <tr>

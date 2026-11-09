@@ -5,6 +5,7 @@
 - **Waste chip**: with Waste Collection Schedule or a waste calendar (Abfall, Müll, Waste, Trash, Bin …), a chip shows on Home the day before and on the day of a pickup (*Tomorrow: Yellow bin*), coloured by kind of bin; a tap shows the next two weeks.
 - **Motion in the room popup**, a personal choice in *Settings → Rooms & devices*: *Motion now* or how long the room has been quiet.
 - **Back up and restore** in *Settings → System*: the panel's settings as a file, and loading them back after a confirmation.
+- **Take settings from another panel** (same place): from MobilePanel, HausPanel or SecurityPanel, either the house settings (hidden devices, door time windows, Security page cameras, doorbell, baby monitor, calendars, weather …) or everything.
 - **Lite mode** in *Settings → This screen → Effects*: no blur, glow or endless animations. *Automatic* turns it on when the screen seems slow.
 
 ## 1.3.1

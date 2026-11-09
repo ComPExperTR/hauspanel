@@ -2177,6 +2177,8 @@ a.hp-hint { color: inherit; text-decoration: none; }
 .hp-root.lite *:not(.hp-keep-anim), .hp-root.lite *:not(.hp-keep-anim)::before, .hp-root.lite *:not(.hp-keep-anim)::after { animation-iteration-count: 1 !important; }
 .hp-root.lite .hp-bg-glow { display: none; }
 .hp-root.lite .hp-backdrop { background: rgba(10,8,12,.72); }
+/* Settings → System: back up and take from another panel */
+.hp-take-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
 /* Welcome window */
 .hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
 .hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }
