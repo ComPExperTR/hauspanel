@@ -222,70 +222,75 @@ export function openRoomPopup(ctx, areaId) {
       const moving = shades.some((id) => ["opening", "closing"].includes(hs.states[id]?.state));
       return (moving ? t("shades_moving") : avg <= 0 ? t("ov_closed_short") : avg >= 100 ? t("ov_open_short") : t("open_pct", { n: avg })) + (shades.length > 1 ? ` · ${t("rp_n_shades", { n: shades.length })}` : "");
     }, "shades");
-    // Each shade as a window you can drag (slats follow the finger), with big Up / Half / Down buttons;
-    // with more than one, a row for all of them first.
-    const shadeCard = (ids, label, { all = false } = {}) => {
-      const sl = h("i", { class: "sl" });
-      const tip = h("b", { class: "tip" });
-      const frame = h("div", { class: `frame ${ids.length > 1 ? "duo" : ""}`, "data-no-swipe": "", role: "slider", "aria-label": label },
-        sl, ...(ids.length > 1 ? [h("i", { class: "mullion" })] : []), tip);
+    // Expanded: with several shades one bar for all of them (Up / 50 % / Down, Stop while moving), then one
+    // compact row per shade: a small window showing the position, name, up/down and a wide slider to drag.
+    const shName = (id) => name(id).replace(/^(shade|rollladen|rolladen|rollo|jalousie|blind)\s+/i, "");
+    const stateText = (sts, p) => {
+      const moving = sts.find((st) => ["opening", "closing"].includes(st?.state))?.state;
+      return moving === "opening" ? t("opening") : moving === "closing" ? t("closing")
+        : sts.some((st) => !st || st.state === "unavailable") ? t("unavailable")
+        : p <= 0 ? t("ov_closed_short") : p >= 100 ? t("ov_open_short") : t("open_pct", { n: p });
+    };
+    const avgOf = (hs, ids) => Math.round(ids.reduce((x, id) => x + posOf(hs.states[id]), 0) / ids.length);
+    const movingOf = (hs, ids) => ids.some((id) => ["opening", "closing"].includes(hs.states[id]?.state));
+    const btnOf = (ic, txt, fn, cls = "") => {
+      const b = h("button", { class: `hp-rp-shbtn ${cls}` }, icon(ic), ...(txt ? [h("span", {}, txt)] : []));
+      b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
+      return b;
+    };
+    if (shades.length > 1) {
       const val = h("small");
-      const mk = (ic, txt, fn) => {
-        const b = h("button", { class: "hp-rp-shbtn" }, icon(ic), h("span", {}, txt));
-        b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
-        return b;
-      };
-      const upB = mk("mdi:arrow-up", t("rp_sh_up"), () => call("open_cover", ids));
-      const halfB = mk("mdi:circle-half-full", "50 %", () => call("set_cover_position", ids, { position: 50 }));
-      const downB = mk("mdi:arrow-down", t("rp_sh_down"), () => call("close_cover", ids));
-      const stopB = mk("mdi:stop", "Stop", () => call("stop_cover", ids));
-      stopB.classList.add("stop");
-      const title = h("button", { class: "txt" }, h("b", {}, label), val);
-      if (!all && ids.length === 1) title.addEventListener("click", () => ctx.openDetails(ids[0]));
-      const el = h("div", { class: `hp-rp-shcard ${all ? "all" : ""}` }, frame,
-        h("div", { class: "side" }, title, h("div", { class: "btns" }, upB, halfB, downB, stopB)));
-      // Drag: top of the window = open, bottom = closed; the shade moves when the finger lets go.
-      let drag = null;
-      const at = (e) => {
-        const r = frame.getBoundingClientRect();
-        return Math.round(Math.max(0, Math.min(100, 100 - ((e.clientY - r.top) / r.height) * 100)) / 5) * 5;
-      };
-      const show = (v) => { sl.style.height = `${100 - v}%`; tip.textContent = `${v} %`; };
-      frame.addEventListener("pointerdown", (e) => {
-        e.preventDefault();
-        frame.setPointerCapture(e.pointerId);
-        drag = at(e);
-        frame.classList.add("drag");
-        show(drag);
-      });
-      frame.addEventListener("pointermove", (e) => { if (drag != null) { drag = at(e); show(drag); } });
-      const end = () => {
-        if (drag == null) return;
-        const v = drag;
-        drag = null;
-        frame.classList.remove("drag");
-        call(v <= 0 ? "close_cover" : v >= 100 ? "open_cover" : "set_cover_position", ids, v > 0 && v < 100 ? { position: v } : {});
-      };
-      frame.addEventListener("pointerup", end);
-      frame.addEventListener("pointercancel", end);
+      const upB = btnOf("mdi:arrow-up", t("rp_sh_up"), () => call("open_cover", shades));
+      const halfB = btnOf("mdi:circle-half-full", "50 %", () => call("set_cover_position", shades, { position: 50 }));
+      const downB = btnOf("mdi:arrow-down", t("rp_sh_down"), () => call("close_cover", shades));
+      const stopB = btnOf("mdi:stop", "Stop", () => call("stop_cover", shades), "stop");
+      const bar = h("div", { class: "hp-rp-shall" },
+        h("div", { class: "tt" }, h("b", {}, t("all_shades_n", { n: shades.length })), val),
+        h("div", { class: "btns" }, upB, halfB, downB, stopB));
+      list.append(bar);
       updaters.push((hs) => {
-        const sts = ids.map((id) => hs.states[id]);
-        const p = Math.round(sts.reduce((x, st) => x + posOf(st), 0) / ids.length);
-        const moving = sts.find((st) => ["opening", "closing"].includes(st?.state))?.state;
-        if (drag == null) show(p);
-        el.classList.toggle("moving", !!moving);
-        el.classList.toggle("on", p > 0);
-        val.textContent = moving === "opening" ? t("opening") : moving === "closing" ? t("closing")
-          : sts.some((st) => !st || st.state === "unavailable") ? t("unavailable")
-          : p <= 0 ? t("ov_closed_short") : p >= 100 ? t("ov_open_short") : t("open_pct", { n: p });
+        const p = avgOf(hs, shades);
+        const moving = movingOf(hs, shades);
+        bar.classList.toggle("moving", moving);
+        val.textContent = stateText(shades.map((id) => hs.states[id]), p);
+        upB.classList.toggle("active", !moving && shades.every((id) => posOf(hs.states[id]) >= 100));
+        downB.classList.toggle("active", !moving && shades.every((id) => posOf(hs.states[id]) <= 0));
+        halfB.classList.toggle("active", !moving && shades.every((id) => Math.abs(posOf(hs.states[id]) - 50) <= 5));
+      });
+    }
+    for (const id of shades) {
+      const sl = h("i", { class: "sl" });
+      const win = h("span", { class: "win" }, sl);
+      const val = h("small");
+      const title = h("button", { class: "txt" }, h("b", {}, shName(id)), val);
+      title.addEventListener("click", () => ctx.openDetails(id));
+      const upB = btnOf("mdi:arrow-up", "", () => call("open_cover", [id]), "round");
+      const stopB = btnOf("mdi:stop", "", () => call("stop_cover", [id]), "round stop");
+      const downB = btnOf("mdi:arrow-down", "", () => call("close_cover", [id]), "round");
+      upB.setAttribute("aria-label", t("rp_sh_up"));
+      downB.setAttribute("aria-label", t("rp_sh_down"));
+      stopB.setAttribute("aria-label", "Stop");
+      const pos = slider({ value: 0, cls: "hp-rp-shpos", label: shName(id), step: 5,
+        onInput: (v) => { val.textContent = t("open_pct", { n: v }); sl.style.height = `${100 - v}%`; },
+        onChange: (v) => call(v <= 0 ? "close_cover" : v >= 100 ? "open_cover" : "set_cover_position", [id], v > 0 && v < 100 ? { position: v } : {}) });
+      // Shades without a position (only up/down) get no slider.
+      if (!((hass.states[id]?.attributes.supported_features ?? 4) & 4)) pos.hidden = true;
+      const row = h("div", { class: "hp-rp-shrow" }, win, title, h("div", { class: "rbtns" }, upB, stopB, downB), pos);
+      list.append(row);
+      updaters.push((hs) => {
+        const st = hs.states[id];
+        const p = posOf(st);
+        const moving = movingOf(hs, [id]);
+        row.classList.toggle("moving", moving);
+        row.classList.toggle("on", p > 0);
+        if (pos.isDragging()) return;
+        sl.style.height = `${100 - p}%`;
+        val.textContent = stateText([st], p);
+        pos.update(p);
         upB.classList.toggle("active", !moving && p >= 100);
         downB.classList.toggle("active", !moving && p <= 0);
-        halfB.classList.toggle("active", !moving && p > 0 && p < 100 && Math.abs(p - 50) <= 5);
       });
-      return el;
-    };
-    if (shades.length > 1) list.append(shadeCard(shades, t("all_shades_n", { n: shades.length }), { all: true }));
-    for (const id of shades) list.append(shadeCard([id], name(id).replace(/^(shade|rollladen|rolladen|rollo|jalousie|blind)\s+/i, "")));
+    }
   }
 
   // ---- gates, switches, sockets, fans
