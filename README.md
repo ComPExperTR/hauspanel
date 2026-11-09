@@ -191,7 +191,10 @@ HAUSPANEL_DEV=1 .venv-ha/bin/hass -c ha-config
 
 - `__init__.py`: the three panels, serving the frontend, the websocket API for settings (per panel, optionally per user)
 - `frontend/hauspanel.js`: the panel (header, pages, dock)
-- `frontend/lib/`: `model.js` (areas → devices → entities), `domains.js` (what a tap does), `tile.js`, `layouts.js`, `phone.js`, `securitypanel.js`, `roompop.js`, `overviews.js` (the chip popups), `settings.js`, `store.js`, `i18n.js`, `styles.js` and one file per device popup
+- `frontend/lib/`: `model.js` (areas → devices → entities), `domains.js` (what a tap does), `tile.js`, `layouts.js`, `phone.js`, `securitypanel.js`, `roompop.js`, `overviews.js` (the chip popups), `settings.js`, `store.js`, `i18n.js` (English and German) with `lang/` (the other languages), `styles.js` and one file per device popup
+
+**Tests:** `node --test tests/` (Node 22 or newer, nothing to install). They check the time windows for doors and gates, which room a device lands in, hiding, the shade sliders, the weather heads-up, and that every language has every text with the same placeholders. GitHub runs them on every push. A new text key needs an entry in every language file, or the tests fail.
+
 
 Bugs and ideas are welcome as [issues](https://github.com/alpacalabs-de/hauspanel/issues).
 

@@ -14,7 +14,21 @@ import { createTile } from "./tile.js";
 const NOT_SHADE = new Set(["garage", "gate", "door", "damper"]);
 /** Which sections were opened, per room, while the panel is open. */
 const OPEN = new Map();
-const posOf = (st) => st?.attributes.current_position ?? (st?.state === "closed" ? 0 : 100);
+/** A shade's position in percent; without a position closed is 0 and anything else 100. */
+export const posOf = (st) => st?.attributes.current_position ?? (st?.state === "closed" ? 0 : 100);
+/** Can this shade go to a position (supported_features bit 4), or only up and down? */
+export const canPosition = (hass, id) => !!((hass.states[id]?.attributes.supported_features ?? 4) & 4);
+/**
+ * The service calls that put shades at v percent: 0 closes, 100 opens, anything between sets the position;
+ * shades without a position open from 50 % up and close below.
+ */
+export function shadeCalls(hass, ids, v) {
+  if (v <= 0) return [["close_cover", ids]];
+  if (v >= 100) return [["open_cover", ids]];
+  const pos = ids.filter((id) => canPosition(hass, id));
+  const rest = ids.filter((id) => !canPosition(hass, id));
+  return [...(pos.length ? [["set_cover_position", pos, { position: v }]] : []), ...(rest.length ? [[v >= 50 ? "open_cover" : "close_cover", rest]] : [])];
+}
 const pctOf = (st) => (isOn(st) ? (st.attributes.brightness != null ? Math.round((st.attributes.brightness / 255) * 100) : 100) : 0);
 const dimmable = (st) => (st?.attributes.supported_color_modes || []).some((m) => m !== "onoff");
 
@@ -232,20 +246,13 @@ export function openRoomPopup(ctx, areaId) {
         : sts.some((st) => !st || st.state === "unavailable") ? t("unavailable")
         : p <= 0 ? t("ov_closed_short") : p >= 100 ? t("ov_open_short") : `${p} %`;
     };
-    const canPos = (id) => !!((hass.states[id]?.attributes.supported_features ?? 4) & 4);
+    const canPos = (id) => canPosition(hass, id);
     const shBtn = (ic, label, fn, cls = "") => {
       const b = h("button", { class: `hp-rp-shbtn ${cls}`, "aria-label": label }, icon(ic));
       b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
       return b;
     };
-    const setTo = (ids, v) => {
-      if (v <= 0) return call("close_cover", ids);
-      if (v >= 100) return call("open_cover", ids);
-      const pos = ids.filter(canPos);
-      if (pos.length) call("set_cover_position", pos, { position: v });
-      const rest = ids.filter((id) => !canPos(id));
-      if (rest.length) call(v >= 50 ? "open_cover" : "close_cover", rest);
-    };
+    const setTo = (ids, v) => shadeCalls(ctx.hass, ids, v).forEach(([svc, list, data]) => call(svc, list, data));
     const shRow = (ids, label, all = false) => {
       const sl = h("i", { class: "sl" });
       const win = h("span", { class: "win" }, sl);

@@ -163,6 +163,8 @@ Object.assign(EN, EN_POP);
 Object.assign(DE, DE_POP);
 
 let dict = EN;
+/** For the tests: the built-in texts. */
+export const BUILTIN = { en: EN, de: DE };
 
 /** Languages with their own file in lang/ (loaded only when used); German and English are built in. */
 export const LANGS = ["fr", "nl", "es", "it", "pl", "sv"];

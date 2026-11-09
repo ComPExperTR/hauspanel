@@ -34,7 +34,13 @@ export function statusItems(ctx) {
 // Times when a door, gate or lock may be open without counting as a warning ({id: {from, to, days}}).
 let allowSrc = () => ({});
 export const setSecAllowSource = (fn) => { allowSrc = fn; };
-const toMin = (v) => { const [a, b] = String(v || "").split(":").map(Number); return Number.isFinite(a) ? a * 60 + (b || 0) : null; };
+/** "HH:MM" as minutes after midnight; anything else (empty, "7", "25:00") is null. */
+const toMin = (v) => {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(v ?? "").trim());
+  if (!m) return null;
+  const hh = Number(m[1]), mm = Number(m[2]);
+  return hh <= 24 && mm < 60 ? hh * 60 + mm : null;
+};
 /** The window set for this entity, if any. */
 export const allowRule = (id) => allowSrc()?.[id] || null;
 /** True while the entity is inside its "may be open" window (overnight windows like 22:00–06:00 work too). */
