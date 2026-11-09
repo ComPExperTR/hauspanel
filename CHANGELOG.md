@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.4.2
 
 - Security popup, the settings list and the Security page use the same icons as the pills: a gate contact set up as a door shows a gate there too.
 - Cameras: the red dot on a camera pulses only while pictures really arrive; while connecting or when a stream stalls it is grey.
