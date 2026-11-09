@@ -181,6 +181,8 @@ export function buildModel(hass, hide) {
     if (d === "calendar" || d === "todo" || (ADDABLE.has(d) && d !== "sensor" && d !== "binary_sensor" && d !== "update")) consider(id, undefined);
   }
 
+  linkMusicAssistant(hass, model, areas);
+
   const rank = (id) => {
     const i = TILE_DOMAINS.indexOf(domainOf(id));
     return i === -1 ? 99 : i;
@@ -221,6 +223,41 @@ export function roomPresence(hass, area) {
   const on = ids.some((id) => hass.states[id].state === "on");
   const since = Math.max(...ids.map((id) => Date.parse(hass.states[id].last_changed || "") || 0));
   return { on, since, ids };
+}
+
+/**
+ * Music Assistant makes its own player for every speaker, usually without a room, next to the speaker's
+ * own player (Apple TV/AirPlay, Sonos, Cast …) that has one. The room then showed the speaker's player,
+ * idle, while Music Assistant's played elsewhere. So: a Music Assistant player without a room takes the
+ * room of its twin (same name, or same device name, from another integration); and while it is
+ * available, the room shows it instead of a twin with the same name.
+ */
+function linkMusicAssistant(hass, model, areas) {
+  const reg = (id) => hass.entities?.[id];
+  const nameOf = (id) => (hass.states[id]?.attributes.friendly_name || "").trim().toLowerCase();
+  const devName = (id) => { const d = hass.devices?.[reg(id)?.device_id]; return (d?.name_by_user || d?.name || "").trim().toLowerCase(); };
+  const players = model.all.filter((id) => id.startsWith("media_player."));
+  const ma = players.filter((id) => reg(id)?.platform === "music_assistant");
+  const move = (id, from, to) => {
+    for (const list of ["tiles", "all"]) {
+      from[list] = from[list].filter((x) => x !== id);
+      if (!to[list].includes(id)) to[list].push(id);
+    }
+    model.areaOf[id] = to.id;
+  };
+  for (const id of ma) {
+    const others = players.filter((o) => o !== id && reg(o)?.platform !== "music_assistant");
+    const twin = others.find((o) => nameOf(o) && nameOf(o) === nameOf(id) && model.areaOf[o] !== "_other")
+      || others.find((o) => devName(o) && devName(o) === devName(id) && model.areaOf[o] !== "_other");
+    if (twin && model.areaOf[id] === "_other") move(id, model.unassigned, areas.get(model.areaOf[twin]));
+    // Still without a room: a copy of a player that lives elsewhere under another name. No tile under
+    // Other then; it stays in the media list, so Home's music card still shows it while it plays.
+    if (model.areaOf[id] === "_other") model.unassigned.tiles = model.unassigned.tiles.filter((x) => x !== id);
+    // In its room, the Music Assistant player stands for a twin of the same name (while it is there at all).
+    const area = areas.get(model.areaOf[id]);
+    const same = others.filter((o) => model.areaOf[o] === model.areaOf[id] && nameOf(o) === nameOf(id));
+    if (area && same.length && hass.states[id]?.state !== "unavailable") area.tiles = area.tiles.filter((x) => !same.includes(x));
+  }
 }
 
 /** Signature of the parts of hass that change the model (registries), not states. */

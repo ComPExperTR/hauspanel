@@ -134,3 +134,41 @@ test("presence: occupancy sensors count, a motion sensor in the same room is lef
   assert.equal(roomPresence(hass, area(["binary_sensor.attic_presence", "binary_sensor.attic_motion"])), null, "an unavailable presence sensor still rules out motion");
   assert.equal(roomPresence(hass, area([])), null, "no sensor, nothing to say");
 });
+
+test("Music Assistant: a player without a room joins its twin's room and stands for it there", () => {
+  const hass = fakeHass({
+    areas: { office: { area_id: "office", name: "Office" } },
+    devices: { ma1: { id: "ma1", name: "Desk Speaker" }, at1: { id: "at1", name: "Desk Speaker", area_id: "office" }, ma2: { id: "ma2", name: "Office TV" }, at2: { id: "at2", name: "Office TV", area_id: "office" } },
+    entities: {
+      "media_player.desk_speaker": { device_id: "ma1", platform: "music_assistant" },
+      "media_player.desk_speaker_2": { device_id: "at1", platform: "apple_tv" },
+      "media_player.office_tv_ma": { device_id: "ma2", platform: "music_assistant" },
+      "media_player.apple_tv_office": { device_id: "at2", platform: "apple_tv" },
+    },
+    states: {
+      "media_player.desk_speaker": { state: "playing", attributes: { friendly_name: "Desk Speaker" } },
+      "media_player.desk_speaker_2": { state: "idle", attributes: { friendly_name: "Desk Speaker" } },
+      "media_player.office_tv_ma": { state: "unavailable", attributes: { friendly_name: "Office TV" } },
+      "media_player.apple_tv_office": { state: "off", attributes: { friendly_name: "Apple TV Office" } },
+    },
+  });
+  const m = buildModel(hass, {});
+  const office = m.areaById.get("office").tiles;
+  assert.equal(m.areaOf["media_player.desk_speaker"], "office", "same name");
+  assert.ok(office.includes("media_player.desk_speaker"));
+  assert.ok(!office.includes("media_player.desk_speaker_2"), "the twin of the same name steps back");
+  assert.equal(m.areaOf["media_player.office_tv_ma"], "office", "same device name");
+  assert.ok(office.includes("media_player.apple_tv_office"), "a twin with another name, and an unavailable MA player, keep the original");
+  assert.ok(!m.unassigned.tiles.some((id) => id.includes("desk_speaker")), "nothing left under Other");
+});
+
+test("Music Assistant: a player with no twin and no room gets no tile under Other, but stays a media player", () => {
+  const hass = fakeHass({
+    devices: { ma: { id: "ma", name: "Receiver" } },
+    entities: { "media_player.receiver_ma": { device_id: "ma", platform: "music_assistant" } },
+    states: { "media_player.receiver_ma": { state: "playing", attributes: { friendly_name: "Receiver" } } },
+  });
+  const m = buildModel(hass, {});
+  assert.ok(!m.unassigned.tiles.includes("media_player.receiver_ma"));
+  assert.ok(m.media.includes("media_player.receiver_ma"), "Home's music card can still show it");
+});

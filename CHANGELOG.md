@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Buttons that need two taps (gates, the doorbell opener, scenes) now say *Tap to confirm* after the first tap.
+- **Music Assistant**: its players, which come without a room, join the room of their twin (the speaker's own player with the same name or device name) and stand for it there, so a room shows the player that is really playing. Players with no twin get no tile under Other but still show on Home's music card while they play.
 - **Gate and garage popup**: after the second tap it says *Sent – waiting for the door to move*, and when the door hasn't moved after 20 seconds, or Home Assistant refuses the command, it says so. Doors that can't stop (many garage openers) keep Open and Close while moving instead of showing a Stop that does nothing.
 - A pool's filter pump is no longer shown like a washing machine, and a machine seen by two integrations (Home Connect and WashData) shows once.
 - Browser Mod's own entities (the browser's "screen" light, media player and tab camera) stay out of rooms and security.
