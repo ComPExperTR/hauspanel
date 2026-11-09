@@ -1135,7 +1135,7 @@ function listOverview(ctx) {
 
 // ---------------------------------------------------------------- layouts
 
-function sidePanel(ctx, selected) {
+function sidePanel(ctx, selected, { allRooms = false } = {}) {
   const date = h("div", { class: "hp-date" });
   const clock = h("div", { class: "hp-clock" });
   clock.update = (hass) => {
@@ -1147,7 +1147,7 @@ function sidePanel(ctx, selected) {
   ctx.clocks.push(clock);
   // Rooms tab: the room list below, scrolling on its own, so every room fits.
   if (selected && selected !== "overview") {
-    const rooms = roomNav(ctx, selected);
+    const rooms = roomNav(ctx, selected, { allRooms });
     requestAnimationFrame(() => rooms.querySelector(".hp-nav-item.active")?.scrollIntoView({ block: "nearest" }));
     return h("aside", { class: "hp-side-panel rooms" }, date, clock, h("div", { class: "hp-side-sep" }), rooms);
   }
@@ -1287,13 +1287,17 @@ export function renderRooms(ctx, layout) {
   if (!sel) return h("div", { class: "hp-layout" }, h("div", { class: "hp-empty" }, t("no_rooms")));
   // Rooms open as a popup: the tab shows all of them; the full page of one comes up by holding it.
   const popup = ctx.settings.s.roomPopup !== false;
-  if (popup && !ctx.roomPage && !ctx.editing && (layout === "grid" || layout === "list")) return roomsOverview(ctx);
+  const overviewOk = popup && (layout === "grid" || layout === "list" || layout === "sidebar");
+  if (overviewOk && !ctx.roomPage && !ctx.editing) {
+    if (layout === "sidebar" && !ctx.narrow) return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, null), h("div", { class: "hp-side-main" }, roomsOverview(ctx)));
+    return roomsOverview(ctx);
+  }
   ctx.roomSel = sel.id;
   if (layout === "focus") return h("div", { class: "hp-layout hp-layout-focus" }, ...focusRooms(ctx, sel.id));
   if (layout === "sidebar" && !ctx.narrow) {
-    return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, sel.id), h("div", { class: "hp-side-main" }, roomView(ctx, sel, "grid")));
+    return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, sel.id, { allRooms: overviewOk }), h("div", { class: "hp-side-main" }, roomView(ctx, sel, "grid")));
   }
-  return h("div", { class: "hp-layout hp-layout-rooms" }, h("div", { class: "hp-rooms" }, roomNav(ctx, sel.id, { allRooms: popup && (layout === "grid" || layout === "list") }), roomView(ctx, sel, layout === "list" ? "list" : "grid")));
+  return h("div", { class: "hp-layout hp-layout-rooms" }, h("div", { class: "hp-rooms" }, roomNav(ctx, sel.id, { allRooms: overviewOk }), roomView(ctx, sel, layout === "list" ? "list" : "grid")));
 }
 
 /** Media, Security, Scenes and own pages. */
