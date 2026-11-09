@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Buttons that need two taps (gates, the doorbell opener, scenes) now say *Tap to confirm* after the first tap.
 - **Gate and garage popup**: after the second tap it says *Sent – waiting for the door to move*, and when the door hasn't moved after 20 seconds, or Home Assistant refuses the command, it says so. Doors that can't stop (many garage openers) keep Open and Close while moving instead of showing a Stop that does nothing.
 - A pool's filter pump is no longer shown like a washing machine, and a machine seen by two integrations (Home Connect and WashData) shows once.
 - Browser Mod's own entities (the browser's "screen" light, media player and tab camera) stay out of rooms and security.
