@@ -35,6 +35,7 @@ import { renderPhone, isPhoneScreen, bindEdgeSwipe } from "./lib/phone.js";
 import { renderSecurityPanel, securityBar, securityStatePill, securityPages, bindPageSwipe } from "./lib/securitypanel.js";
 import { openSettings, CARD_COLORS, ACCENTS, BACKGROUNDS } from "./lib/settings.js";
 import { setLanguage, t } from "./lib/i18n.js";
+import { maybeWelcome } from "./lib/welcome.js";
 import { STYLES, loadFont } from "./lib/styles.js";
 
 const BUILT_IN_TABS = {
@@ -125,7 +126,7 @@ class HausPanelElement extends HTMLElement {
   async _start() {
     // Home Assistant sets hass and panel in the same go; wait a tick so the panel is known.
     await Promise.resolve();
-    setLanguage(this._hass.language);
+    await setLanguage(this._hass.language);
     loadFont(new URL("./fonts/outfit-latin.woff2", import.meta.url).href);
     const style = h("style", {}, STYLES);
     this._bgBase = h("div", { class: "hp-bg-base" });
@@ -155,6 +156,8 @@ class HausPanelElement extends HTMLElement {
     this.rerender();
     this.agenda.refresh();
     this.weather.start();
+    // The very first time this user opens HausPanel (not on a camera-only screen): three short steps.
+    if (this.layout !== "security") setTimeout(() => maybeWelcome(this), 800);
 
     this._clockTimer = setInterval(() => this._tick(), 1000);
     const activity = () => this._activity();

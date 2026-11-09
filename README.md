@@ -84,7 +84,7 @@ Installing the integration adds three entries to the Home Assistant sidebar. Eac
 - Settings are stored in Home Assistant and reach every open screen at once. Layout and tile size are remembered per device.
 - *My own settings* gives one person their own arrangement of a panel.
 - Any panel can be made visible to administrators only.
-- English and German, following the language of Home Assistant.
+- In English, German, French, Dutch, Spanish, Italian, Polish and Swedish, following the language of Home Assistant.
 
 ## Popups for your devices
 

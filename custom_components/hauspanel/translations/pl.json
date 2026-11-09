@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Dodaje HausPanel, MobilePanel i SecurityPanel do panelu bocznego, z układem opartym na Twoich obszarach, piętrach i urządzeniach."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel jest już skonfigurowany."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Kto widzi panele",
+        "description": "Włącz panel tutaj, aby pokazać go tylko administratorom. Pozostali nie zobaczą go w panelu bocznym i nie będą mogli go otworzyć.",
+        "data": {
+          "admin_hauspanel": "HausPanel tylko dla administratorów",
+          "admin_mobilepanel": "MobilePanel tylko dla administratorów",
+          "admin_securitypanel": "SecurityPanel tylko dla administratorów"
+        }
+      }
+    }
+  }
+}

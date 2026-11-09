@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Voegt HausPanel, MobilePanel en SecurityPanel toe aan de zijbalk, ingedeeld op basis van je kamers, verdiepingen en apparaten."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel is al ingesteld."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Wie ziet de panelen",
+        "description": "Zet hier een paneel aan om het alleen aan beheerders te tonen. Anderen zien het niet in de zijbalk en kunnen het niet openen.",
+        "data": {
+          "admin_hauspanel": "HausPanel alleen voor beheerders",
+          "admin_mobilepanel": "MobilePanel alleen voor beheerders",
+          "admin_securitypanel": "SecurityPanel alleen voor beheerders"
+        }
+      }
+    }
+  }
+}

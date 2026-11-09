@@ -7,6 +7,7 @@ import { runningAppliances } from "./usage.js";
 import { t } from "./i18n.js";
 import { btn, clock } from "./popkit.js";
 import { carDevices } from "./car.js";
+import { weatherWarningRow } from "./weather.js";
 
 const UNDO_SCENE = "hauspanel_leave_undo";
 const UNDO_HOURS = 12;
@@ -48,7 +49,9 @@ export function openLeave(ctx) {
   const undo = btn("mdi:undo-variant", t("leave_undo"));
   const foot = h("div", { class: "hp-sheet-actions hp-app-foot" }, undo, go);
   const note = h("div", { class: "hp-leave-note" });
-  sheet.body.append(body, note, foot);
+  // Windows open and rain, a storm or frost coming: say so first.
+  const wx = weatherWarningRow(ctx);
+  sheet.body.append(wx, body, note, foot);
 
   const group = (key, ic, label, ids, { action = true, sub } = {}) => {
     if (!ids.length) return null;
@@ -61,6 +64,7 @@ export function openLeave(ctx) {
   };
 
   const draw = (hs) => {
+    wx.update();
     const it = leaveItems(ctx, hs);
     const groups = [
       group("open", "mdi:window-open-variant", t("leave_open", { n: it.open.length }), it.open, { action: false, sub: t("leave_open_sub") }),

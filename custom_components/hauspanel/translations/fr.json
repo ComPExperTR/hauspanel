@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Ajoute HausPanel, MobilePanel et SecurityPanel à la barre latérale, organisés selon vos pièces, étages et appareils."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel est déjà configuré."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Qui voit les panneaux",
+        "description": "Activez un panneau ici pour le réserver aux administrateurs. Les autres ne le verront pas dans la barre latérale et ne pourront pas l'ouvrir.",
+        "data": {
+          "admin_hauspanel": "HausPanel réservé aux administrateurs",
+          "admin_mobilepanel": "MobilePanel réservé aux administrateurs",
+          "admin_securitypanel": "SecurityPanel réservé aux administrateurs"
+        }
+      }
+    }
+  }
+}

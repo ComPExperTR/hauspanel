@@ -339,3 +339,49 @@ function stat(ic, label, value) {
   if (value === "–" || value === "" || value == null) return null;
   return h("div", { class: "hp-wx-stat" }, icon(ic), h("div", {}, h("small", {}, label), h("b", {}, value)));
 }
+
+/** Windows (and other openings that are not doors) that are open now. */
+export function openWindows(hass) {
+  return Object.keys(hass.states).filter((id) => id.startsWith("binary_sensor.") && hass.states[id].state === "on"
+    && ["window", "opening"].includes(hass.states[id].attributes.device_class));
+}
+
+/**
+ * A heads-up for "Leaving home" and "Good night" when windows are open and the next hours bring rain,
+ * a thunderstorm or frost: { icon, text } or null.
+ */
+export function weatherWarning(ctx, { hours = 12 } = {}) {
+  const hass = ctx.hass;
+  const open = openWindows(hass);
+  if (!open.length) return null;
+  const now = Date.now();
+  const next = (ctx.weather?.hourly || []).filter((x) => {
+    const tm = new Date(x.datetime).getTime();
+    return tm >= now - 3600e3 && tm <= now + hours * 3600e3;
+  });
+  if (!next.length) return null;
+  const at = (x) => formatTime(hass, new Date(Math.max(now, new Date(x.datetime).getTime())));
+  const n = open.length;
+  const storm = next.find((x) => /lightning/.test(x.condition || ""));
+  if (storm) return { icon: "mdi:weather-lightning-rainy", text: t("wx_storm_at", { time: at(storm), n }) };
+  const rain = next.find((x) => (x.precipitation_probability ?? 0) >= 60 || /rain|pouring|snowy|hail/.test(x.condition || ""));
+  if (rain) return { icon: "mdi:weather-pouring", text: t("wx_rain_at", { time: at(rain), n }) };
+  const f = hass.config.unit_system?.temperature === "°F";
+  const frost = next.find((x) => x.temperature != null && x.temperature <= (f ? 32 : 0));
+  if (frost) return { icon: "mdi:snowflake-thermometer", text: t("wx_frost_at", { time: at(frost), n }) };
+  return null;
+}
+
+/** The heads-up as a row for a popup (hidden when there is nothing to say). */
+export function weatherWarningRow(ctx) {
+  const ic = icon("mdi:weather-pouring");
+  const txt = h("span");
+  const el = h("div", { class: "hp-wx-warn", hidden: true }, ic, txt);
+  el.update = () => {
+    const w = weatherWarning(ctx);
+    el.hidden = !w;
+    if (w) { ic.icon = w.icon; txt.textContent = w.text; }
+  };
+  el.update();
+  return el;
+}

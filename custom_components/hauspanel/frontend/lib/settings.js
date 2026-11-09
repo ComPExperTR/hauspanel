@@ -9,6 +9,7 @@ import { babyCamera, babyAreaOf, openBaby } from "./baby.js";
 import { securityEditor } from "./overviews.js";
 import { cameraList, CAM_CONTAINER } from "./securityview.js";
 import { openMotionCams, motionCamPref, frigateCams } from "./visitors.js";
+import { openWelcome } from "./welcome.js";
 import { doorbells, bellCameras, openers, bellEnabled, bellCamera, bellOpener, ringNow } from "./doorbell.js";
 
 /** Soft surface of lit cards. */
@@ -458,6 +459,11 @@ export function openSettings(ctx) {
       isAdmin ? row(t("start_screen_all"), startToggle("system"), t("start_screen_all_hint")) : null));
 
     // A quiet thank-you link next to the version; opens Ko-fi in a new tab.
+    {
+      const again = h("button", { class: "hp-chip" }, icon("mdi:hand-wave-outline"), t("wel_again"));
+      again.addEventListener("click", () => { sheet.close(); setTimeout(() => openWelcome(ctx), 250); });
+      add("system", section(t("wel_title"), row(t("wel_again_label"), again, t("wel_again_hint"))));
+    }
     add("system", h("p", { class: "hp-muted small center hp-set-version" }, `HausPanel ${ctx.version}`, " · ",
       h("a", { href: "https://ko-fi.com/alpacalabs", target: "_blank", rel: "noopener" }, t("support_link"))));
 

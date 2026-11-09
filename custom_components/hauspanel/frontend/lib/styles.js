@@ -317,6 +317,7 @@ ha-icon.hp-ic { --mdc-icon-size: 20px; display: inline-flex; flex: none; }
 .hp-card.lit .hp-power { background: rgba(43,33,37,.1); }
 .hp-roomcard-name { margin-top: auto; font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hp-sub { font-size: 12.5px; color: var(--hp-sub); }
+.hp-roomcard .hp-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hp-roomcard-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 7px; min-height: 12px; }
 .hp-dots { display: flex; gap: 4px; }
 .hp-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.28); }
@@ -2144,6 +2145,23 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-set-intro { margin: 2px auto 12px; padding: 0 4px; box-sizing: border-box; width: 100%; font-size: 13.5px; line-height: 1.45; color: var(--hp-sub); }
 .hp-set-guide { display: inline-flex; align-items: center; gap: 3px; color: var(--hp-accent, #6cc7b2); text-decoration: none; font-weight: 600; white-space: nowrap; --mdc-icon-size: 15px; }
 .hp-set-guide:hover { text-decoration: underline; }
+/* Rain, storm or frost while windows are open (Leaving home, Good night) */
+.hp-wx-warn { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 10px 14px; border-radius: 16px; background: rgba(78,165,245,.16); border: 1px solid rgba(78,165,245,.35); color: var(--hp-text); font-size: 14px; font-weight: 500; --mdc-icon-size: 20px; }
+.hp-wx-warn ha-icon { color: #7cc0ff; flex: none; }
+.hp-wx-warn[hidden] { display: none; }
+/* Welcome window */
+.hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
+.hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }
+.hp-wel-n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--hp-accent, #6cc7b2); color: #17202a; font-weight: 700; font-size: 14px; }
+.hp-wel-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.hp-wel-body > b { display: flex; align-items: center; gap: 8px; font-size: 15.5px; --mdc-icon-size: 19px; }
+.hp-wel-body > p { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--hp-sub); }
+.hp-wel-facts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hp-wel-fact { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 12.5px; background: var(--hp-glass-2); --mdc-icon-size: 15px; }
+.hp-wel-fact.ok { color: #8fe0b4; }
+.hp-wel-fact.warn { color: #f6c945; }
+.hp-wel-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.hp-wel-seg { align-self: flex-start; }
 .hp-set-section > .hp-qlist { background: transparent; padding: 0 2px; border-radius: 0; }
 .hp-allow-body { display: grid; gap: 12px; margin-top: 10px; }
 .hp-allow-times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -2556,7 +2574,11 @@ export function loadFont(baseUrl) {
   if (document.getElementById("hauspanel-font")) return;
   const style = document.createElement("style");
   style.id = "hauspanel-font";
-  style.textContent = `@font-face { font-family: "HP Outfit"; font-style: normal; font-weight: 200 700; font-display: swap; src: url("${baseUrl}") format("woff2"); }
+  // Two parts of the font, each loaded only when a letter from it shows up: the basic Latin letters, and the
+  // extended ones (ą, ł, ő, č …) for Polish and other languages.
+  const ext = baseUrl.replace("outfit-latin.woff2", "outfit-latin-ext.woff2");
+  style.textContent = `@font-face { font-family: "HP Outfit"; font-style: normal; font-weight: 200 700; font-display: swap; src: url("${baseUrl}") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "HP Outfit"; font-style: normal; font-weight: 200 700; font-display: swap; src: url("${ext}") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 `;
   document.head.append(style);
 }

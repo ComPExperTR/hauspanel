@@ -8,6 +8,7 @@ import { runningAppliances } from "./usage.js";
 import { t } from "./i18n.js";
 import { ring, btn, twoTap } from "./popkit.js";
 import { codePad } from "./overviews.js";
+import { weatherWarningRow } from "./weather.js";
 
 const NOT_SHADE = new Set(["garage", "gate", "door", "damper"]);
 
@@ -90,9 +91,12 @@ export function openGoodNight(ctx, sceneId) {
     else arm();
   });
   noAlarmB?.addEventListener("click", () => { runScene(); sheet.close(); });
-  sheet.body.append(hero, list, h("div", { class: "hp-sheet-actions hp-app-foot" }, goB, ...(noAlarmB ? [noAlarmB] : [])));
+  // Windows open and rain, a storm or frost coming tonight: say so above the list.
+  const wx = weatherWarningRow(ctx);
+  sheet.body.append(hero, wx, list, h("div", { class: "hp-sheet-actions hp-app-foot" }, goB, ...(noAlarmB ? [noAlarmB] : [])));
 
   const update = (hs) => {
+    wx.update();
     const bad = rows.map((r) => r.upd(hs)).filter(Boolean).length;
     const total = rows.length;
     rg.set(((total - bad) / total) * 100);

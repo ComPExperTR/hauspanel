@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Lägger till HausPanel, MobilePanel och SecurityPanel i sidofältet, uppbyggda av dina rum, våningar och enheter."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel är redan konfigurerad."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Vem ser panelerna",
+        "description": "Slå på en panel här för att bara visa den för administratörer. Alla andra ser den inte i sidofältet och kan inte öppna den.",
+        "data": {
+          "admin_hauspanel": "HausPanel bara för administratörer",
+          "admin_mobilepanel": "MobilePanel bara för administratörer",
+          "admin_securitypanel": "SecurityPanel bara för administratörer"
+        }
+      }
+    }
+  }
+}

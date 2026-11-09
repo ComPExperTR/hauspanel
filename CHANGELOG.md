@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.2.0
+
+**New for everyone**
+- **Welcome**: the first time you open HausPanel, three short steps: your rooms (how many were found, how many devices have no room), the layout for this screen, and where the settings and guides are. *Settings → System* shows it again.
+- **Step by step**: guides in English and German in `docs/`, and a link to the right one on every settings tab.
+- **More languages**: French, Dutch, Spanish, Italian, Polish and Swedish, besides English and German. The font now has the extended Latin letters too.
+
+**Rooms**
+- **Rooms tab**: on tablet and desktop every room at once, by floor, as cards, rows or compact rows. A tap opens the room popup, holding opens the room page (with *All rooms* to go back).
+- **Shades in the room popup**: one wide tile with a slider that sets all shades of the room at once; expanded, one slim line per shade with its own slider, up and down (Stop while moving).
+- Settings: *A tap on a room opens* with two clear choices, room at a glance or full room page.
+
+**Security**
+- **Cameras** in *Settings → Security*: which ones the Security page shows, and which ones the last movements come from.
+- **Last movements** per person: the camera button next to them picks the cameras just for you; Home Assistant keeps the choice with your user.
+- **Leaving home** and **Good night** warn when windows are open and rain, a thunderstorm or frost is coming in the next hours.
+
+**Other**
+- Status text on room cards stays on one line in every language.
+- German texts now say *Sicherheits-Popup* and *Babyphone* throughout.
+
 ## 1.1.0
 
 **Settings**

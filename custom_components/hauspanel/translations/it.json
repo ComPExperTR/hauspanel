@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Aggiunge HausPanel, MobilePanel e SecurityPanel alla barra laterale, organizzati in base a stanze, piani e dispositivi."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel è già configurato."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Chi vede i pannelli",
+        "description": "Attiva un pannello qui per mostrarlo solo agli amministratori. Gli altri non lo vedranno nella barra laterale e non potranno aprirlo.",
+        "data": {
+          "admin_hauspanel": "HausPanel solo per amministratori",
+          "admin_mobilepanel": "MobilePanel solo per amministratori",
+          "admin_securitypanel": "SecurityPanel solo per amministratori"
+        }
+      }
+    }
+  }
+}
