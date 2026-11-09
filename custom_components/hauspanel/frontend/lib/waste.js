@@ -74,7 +74,11 @@ export async function loadPickups(hass, fetchEvents, { days = 14, now = new Date
     const types = Array.isArray(a.types) && a.types.length ? a.types : [a.friendly_name?.replace(WASTE, "").trim() || a.friendly_name];
     for (const what of types) add(addDays(start, n), what);
   }
-  return out.sort((x, y) => x.day - y.day || x.what.localeCompare(y.what));
+  // Two calendars for the same town often say the same thing a little differently ("Biotonne" and
+  // "Biotonne in Townname"): on one day, an entry that starts with another one is that one.
+  const lower = (p) => p.what.toLowerCase();
+  const kept = out.filter((p) => !out.some((o) => o !== p && o.key === p.key && lower(o).length < lower(p).length && lower(p).startsWith(lower(o))));
+  return kept.sort((x, y) => x.day - y.day || x.what.localeCompare(y.what));
 }
 
 /** "Today", "Tomorrow" or the weekday with date. */

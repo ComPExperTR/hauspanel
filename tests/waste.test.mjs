@@ -72,3 +72,11 @@ test("today and tomorrow are named, later days get a weekday", () => {
   assert.equal(whenText(hass, new Date(2026, 10, 10), NOW), "Tomorrow");
   assert.match(whenText(hass, new Date(2026, 10, 12), NOW), /Thursday/);
 });
+
+test("the same pickup from two calendars shows once", async () => {
+  const hass = fakeHass({ states: { "calendar.abfall_a": "off", "calendar.abfall_b": "off" } });
+  const list = await loadPickups(hass, async (cal) => cal === "calendar.abfall_a"
+    ? [{ summary: "Biotonne", start: { date: day(16) } }, { summary: "Restmüll", start: { date: day(16) } }]
+    : [{ summary: "Biotonne in Sometown", start: { date: day(16) } }, { summary: "Restmüll in Sometown", start: { date: day(16) } }], { now: NOW });
+  assert.deepEqual(list.map((p) => p.what), ["Biotonne", "Restmüll"]);
+});
