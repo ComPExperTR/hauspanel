@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.4.0
 
 - **Waste chip**: with Waste Collection Schedule or a waste calendar (Abfall, Müll, Waste, Trash, Bin …), a chip shows on Home the day before and on the day of a pickup (*Tomorrow: Yellow bin*), coloured by kind of bin; a tap shows the next two weeks.
 - **Motion in the room popup**, a personal choice in *Settings → Rooms & devices*: *Motion now* or how long the room has been quiet.
