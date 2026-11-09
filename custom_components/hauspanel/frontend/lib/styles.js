@@ -2124,6 +2124,8 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-ov-ok.allowed ha-icon { color: var(--hp-sub); }
 .hp-ov-ok.allowed small { flex-basis: 100%; padding-left: 26px; font-size: 11.5px; color: var(--hp-sub); }
 .hp-se-clock.on { color: var(--hp-accent); }
+.hp-set-version a { color: var(--hp-accent); text-decoration: none; }
+.hp-set-version a:hover { text-decoration: underline; }
 .hp-set-intro { margin: 2px auto 12px; padding: 0 4px; box-sizing: border-box; width: 100%; font-size: 13.5px; line-height: 1.45; color: var(--hp-sub); }
 .hp-set-section > .hp-qlist { background: transparent; padding: 0 2px; border-radius: 0; }
 .hp-allow-body { display: grid; gap: 12px; margin-top: 10px; }

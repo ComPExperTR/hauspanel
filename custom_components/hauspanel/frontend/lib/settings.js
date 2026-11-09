@@ -418,7 +418,9 @@ export function openSettings(ctx) {
       row(t("start_screen"), startToggle("user"), t("start_screen_hint")),
       isAdmin ? row(t("start_screen_all"), startToggle("system"), t("start_screen_all_hint")) : null));
 
-    add("system", h("p", { class: "hp-muted small center" }, `HausPanel ${ctx.version}`));
+    // A quiet thank-you link next to the version; opens Ko-fi in a new tab.
+    add("system", h("p", { class: "hp-muted small center hp-set-version" }, `HausPanel ${ctx.version}`, " · ",
+      h("a", { href: "https://ko-fi.com/alpacalabs", target: "_blank", rel: "noopener" }, t("support_link"))));
 
     // Hiding: device types, integrations, text rules and single entities, everywhere in HausPanel.
     add("hide", ...hidePane(ctx, S, draw, hideState));
