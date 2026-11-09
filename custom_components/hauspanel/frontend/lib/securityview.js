@@ -458,6 +458,9 @@ export function cameraCard(ctx, id) {
   if (st0 && st0.state !== "unavailable") {
     player = liveVideo(ctx, id);
     view.append(player);
+    // The red dot pulses only while pictures really arrive (the player marks itself "playing" then);
+    // while it connects, or when the stream stalls, the dot is grey.
+    new MutationObserver(() => el.classList.toggle("playing", player.classList.contains("playing"))).observe(player, { attributes: true, attributeFilter: ["class"] });
     // Once the live picture runs, its own shape wins (a still can come from a substream with another shape).
     let tries = 0;
     const measure = setInterval(() => {

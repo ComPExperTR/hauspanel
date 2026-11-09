@@ -259,7 +259,10 @@ ha-icon.hp-ic { --mdc-icon-size: 20px; display: inline-flex; flex: none; }
 .hp-live-wrap { position: absolute; inset: 0; }
 .hp-cam-view .hp-live-wrap .hp-cam-live { object-fit: contain; }
 .hp-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #ef5f67; box-shadow: 0 0 0 3px rgba(239,95,103,.25); flex: none; }
-.hp-camcard.unavail .hp-live-dot { background: #999; box-shadow: none; }
+.hp-camcard .hp-live-dot { background: rgba(255,255,255,.45); box-shadow: none; }
+.hp-camcard.playing .hp-live-dot { background: #ef5f67; animation: hp-live-blink 1.6s ease-in-out infinite; }
+@keyframes hp-live-blink { 0%, 100% { opacity: 1; box-shadow: 0 0 0 3px rgba(239,95,103,.3); } 50% { opacity: .35; box-shadow: 0 0 0 0 rgba(239,95,103,0); } }
+.hp-camcard.unavail .hp-live-dot { background: #999; box-shadow: none; animation: none; }
 .hp-camcard-zoom { position: absolute; right: 10px; top: 10px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: rgba(0,0,0,.45); color: #fff; border: 0; opacity: 0; transition: opacity .2s; pointer-events: none; }
 .hp-camcard:hover .hp-camcard-zoom { opacity: 1; }
 .hp-camcard-zoom ha-icon { --mdc-icon-size: 17px; }
