@@ -934,6 +934,16 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-ph-room.mini { height: 58px; }
 .hp-ph-room.small .hp-ph-room-text b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
 .hp-ph-room.mini .hp-ph-room-text small { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Rooms tab on tablet and desktop: every room, by floor (cards, rows or compact) */
+.hp-layout-roomsall { display: flex; flex-direction: column; gap: 6px; }
+.hp-rooms-views { display: flex; justify-content: flex-end; gap: 4px; }
+.hp-rooms-all { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.hp-rooms-all.rows { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.hp-rooms-all.compact { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.hp-rooms-all > .hp-roomcard { min-height: 150px; }
+.hp-rooms-floor { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 12px 2px 0; color: var(--hp-sub); font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; --mdc-icon-size: 18px; }
+.hp-rooms-floor:first-child { margin-top: 0; }
+.hp-rooms-all .hp-ph-room-text b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hp-ph-floor { display: flex; align-items: center; gap: 8px; padding: 16px 4px 2px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--hp-sub); }
 .hp-ph-floor:first-child { padding-top: 0; }
 .hp-ph-floor ha-icon { --mdc-icon-size: 15px; }
@@ -2414,19 +2424,6 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-rp-ct.shades.wide .hp-rp-ctpos { position: absolute; left: 172px; right: 98px; top: 50%; height: 28px; margin-top: -14px; border-radius: 14px; touch-action: none; z-index: 1; background: rgba(255,255,255,.08); }
 .hp-rp-ct.shades.wide .hp-rp-ctpos .hp-slider-fill { background: linear-gradient(90deg, #7f95b3, #b9cbe2); }
 .hp-rp-ct.shades.wide:has(.hp-rp-ctpos:active) { transform: none; }
-/* Room at a glance inside the Rooms tab: hero and actions on the left, tiles and details on the right */
-.hp-rp-inline { container-type: inline-size; min-width: 0; }
-.hp-rp-inline-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; max-width: 640px; }
-@container (min-width: 760px) { .hp-rp-inline-grid { grid-template-columns: minmax(260px, 340px) minmax(0, 620px); gap: 18px; align-items: start; max-width: none; } .hp-rp-inline-side { position: sticky; top: 8px; } }
-.hp-rp-inline-side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.hp-rp-inline-title { display: flex; align-items: baseline; gap: 10px; padding: 2px 4px; }
-.hp-rp-inline-title b { font-size: 26px; font-weight: 600; }
-.hp-rp-inline-title small { font-size: 14px; color: var(--hp-sub); }
-.hp-rp-inline-side .hp-app-foot { display: flex; flex-direction: column; gap: 8px; margin: 0; }
-.hp-rp-inline-side .hp-app-foot .hp-btn { width: 100%; justify-content: center; }
-.hp-rp-inline-main { min-width: 0; }
-.hp-rp-inline-main > .hp-rp-body > .hp-rp-ctl:first-child { margin-top: 0; }
-@container (max-width: 759px) { .hp-rp-inline-side { display: contents; } .hp-rp-inline-side .hp-app-foot { flex-direction: row; order: 9; } .hp-rp-inline-side .hp-app-foot .hp-btn { flex: 1; } }
 @media (max-width: 520px) {
   .hp-rp-ctl > .hp-rp-ct.shades.wide { justify-content: flex-start; padding-top: 18px; padding-bottom: 54px; }
   .hp-rp-ctl > .hp-rp-ct.shades.wide .ic { top: 14px; transform: none; }

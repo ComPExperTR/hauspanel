@@ -326,7 +326,7 @@ class HausPanelElement extends HTMLElement {
     if (this.editing) return;
     this.tab = tab;
     this.phoneRoom = null;
-    this.roomClassic = false;
+    this.roomPage = null;
     this.rerender();
   }
 
@@ -337,15 +337,15 @@ class HausPanelElement extends HTMLElement {
   }
 
   holdRoom(areaId) {
-    if (this.settings.s.roomPopup !== false || areaId === "_other") this.openRoom(areaId, { classic: true });
+    if (this.settings.s.roomPopup !== false || areaId === "_other") this.openRoom(areaId);
     else openRoomPopup(this, areaId);
   }
 
-  /** Show a room in the Rooms tab; `classic` shows its full page instead of the room at a glance. */
-  openRoom(areaId, { classic = false } = {}) {
+  /** The full page of a room (in the Rooms tab, or on the phone on top of the current tab). */
+  openRoom(areaId) {
     if (this.editing) return;
     this.roomSel = areaId;
-    this.roomClassic = classic;
+    this.roomPage = areaId;
     // iPhone: the room opens on top of the current tab (Home or Rooms) and Back returns there.
     if (this.isPhone) this.phoneRoom = areaId;
     else this.tab = "rooms";

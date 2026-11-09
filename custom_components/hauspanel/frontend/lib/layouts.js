@@ -1008,7 +1008,7 @@ export function itemsBox(ctx, g, variant) {
 }
 
 /** One room: "1 LIGHT ON", the name, Turn on/off, scenes and devices. */
-export function roomView(ctx, area, variant = "grid", { big = false, hideName = false, toGlance = false } = {}) {
+export function roomView(ctx, area, variant = "grid", { big = false, hideName = false } = {}) {
   const label = h("div", { class: "hp-label" });
   const g = { container: `room:${area.id}`, title: area.name, items: roomItems(ctx, area), areaName: area.name, sort: roomSort(ctx), exclude: machineParts(ctx) };
   if (ctx.settings.s.groupShades) {
@@ -1023,7 +1023,7 @@ export function roomView(ctx, area, variant = "grid", { big = false, hideName = 
   const chips = h("div", { class: "hp-room-chips" });
   const head = h("div", { class: "hp-room-head" },
     h("div", {}, label, h("div", { class: "hp-room-title", role: "button", title: t("rp_glance"), onclick: (e) => { if (!ctx.editing && !e.target.closest(".hp-room-chips")) openRoomPopup(ctx, area.id); } }, hideName ? null : area.name, chips)),
-    h("div", { class: "hp-status-btns" }, ...(toGlance ? [h("button", { class: "hp-btn", onclick: () => { ctx.roomClassic = false; ctx.rerender(); } }, icon("mdi:view-dashboard-outline"), t("rp_glance"))] : []), on, off));
+    h("div", { class: "hp-status-btns" }, on, off));
   head.update = (hass) => {
     stats = roomStats(ctx, area);
     label.textContent = stats.lights.length
@@ -1064,7 +1064,7 @@ export function floorHeading(groups, g, cls) {
 }
 
 /** Room menu: Overview (optional) and every room by floor, with a count of the lights that are on. */
-export function roomNav(ctx, selected, { overview: withOverview = false } = {}) {
+export function roomNav(ctx, selected, { overview: withOverview = false, allRooms = false } = {}) {
   const nav = h("nav", { class: "hp-room-nav" });
   const item = (key, label, ic, count, onClick) => {
     const b = h("button", { class: `hp-nav-item ${selected === key ? "active" : ""}` },
@@ -1073,6 +1073,7 @@ export function roomNav(ctx, selected, { overview: withOverview = false } = {}) 
     return b;
   };
   if (withOverview) nav.append(item("overview", t("overview"), "mdi:home-outline", 0, () => ctx.goTab("home")));
+  if (allRooms) nav.append(item("all", t("rooms_all"), "mdi:view-grid-outline", 0, () => { ctx.roomPage = null; ctx.rerender(); }));
   const groups = roomsByFloor(ctx);
   for (const g of groups) {
     const head = floorHeading(groups, g, "hp-nav-floor");
@@ -1236,25 +1237,63 @@ export function renderHome(ctx, layout) {
   return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, homeBody(ctx, layout));
 }
 
+/**
+ * Every room at once, by floor, for the Rooms tab when rooms open as a popup: big cards, rows or compact rows
+ * (switch top right). A tap opens the room popup, holding the room's full page.
+ */
+function roomsOverview(ctx) {
+  const mode = ["cards", "rows", "compact"].includes(ctx.settings.s.roomsView) ? ctx.settings.s.roomsView : "cards";
+  const view = (m, ic, label) => {
+    const b = h("button", { class: `hp-ph-view ${mode === m ? "active" : ""}`, "aria-label": label, title: label }, icon(ic));
+    b.addEventListener("click", () => mode !== m && ctx.settings.update((x) => { x.roomsView = m; }));
+    return b;
+  };
+  const switcher = h("div", { class: "hp-rooms-views" }, view("cards", "mdi:view-grid-outline", t("rooms_v_cards")),
+    view("rows", "mdi:view-agenda-outline", t("rooms_v_rows")), view("compact", "mdi:view-module-outline", t("rooms_v_compact")));
+  const box = h("div", { class: `hp-rooms-all ${mode}` });
+  const groups = roomsByFloor(ctx);
+  for (const g of groups) {
+    const head = floorHeading(groups, g, "hp-rooms-floor");
+    if (head) box.append(head);
+    for (const a of g.rooms) {
+      if (mode === "cards") { box.append(roomCard(ctx, a, "rooms")); continue; }
+      const sub = h("small");
+      const power = h("button", { class: "hp-power", "aria-label": t("power") }, icon("mdi:power"));
+      const row = h("div", { class: `hp-card hp-ph-room ${mode === "compact" ? "mini" : ""}`, role: "button", tabindex: "0" },
+        h("div", { class: "hp-tile-icon" }, icon(a.icon || "mdi:texture-box")), h("div", { class: "hp-ph-room-text" }, h("b", {}, a.name || t("other")), sub), power);
+      let stats;
+      power.addEventListener("pointerdown", (e) => e.stopPropagation());
+      power.addEventListener("click", (e) => { e.stopPropagation(); switchRoom(ctx, stats, !stats.on); });
+      bindTapHold(row, { canStart: () => !ctx.editing, tap: () => ctx.tapRoom(a.id), hold: () => ctx.holdRoom(a.id) });
+      row.update = () => {
+        stats = roomStats(ctx, a);
+        row.classList.toggle("lit", stats.lightsOn > 0);
+        power.hidden = !stats.lights.length;
+        const txt = [onText(stats), roomTemp(ctx, a)].filter(Boolean).join(" · ");
+        if (sub.textContent !== txt) sub.textContent = txt;
+      };
+      row.update();
+      ctx.live.push(row);
+      box.append(row);
+    }
+  }
+  return h("div", { class: "hp-layout hp-layout-roomsall" }, switcher, box);
+}
+
 /** The Rooms tab in every layout. */
 export function renderRooms(ctx, layout) {
   const rooms = ctx.roomList();
   const sel = rooms.find((a) => a.id === ctx.roomSel) || rooms[0];
   if (!sel) return h("div", { class: "hp-layout" }, h("div", { class: "hp-empty" }, t("no_rooms")));
+  // Rooms open as a popup: the tab shows all of them; the full page of one comes up by holding it.
+  const popup = ctx.settings.s.roomPopup !== false;
+  if (popup && !ctx.roomPage && !ctx.editing && (layout === "grid" || layout === "list")) return roomsOverview(ctx);
   ctx.roomSel = sel.id;
-  // The room at a glance (as in the popup) unless rooms open as pages, or "All devices" was tapped.
-  const glance = ctx.settings.s.roomPopup !== false && sel.id !== "_other" && !ctx.roomClassic && !ctx.editing;
-  const view = (variant) => {
-    if (!glance) return roomView(ctx, sel, variant, { toGlance: ctx.roomClassic && !ctx.editing && sel.id !== "_other" && ctx.settings.s.roomPopup !== false });
-    const el = openRoomPopup(ctx, sel.id, h("div"));
-    if (el) { ctx.live.push(el); return el; }
-    return roomView(ctx, sel, variant);
-  };
   if (layout === "focus") return h("div", { class: "hp-layout hp-layout-focus" }, ...focusRooms(ctx, sel.id));
   if (layout === "sidebar" && !ctx.narrow) {
-    return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, sel.id), h("div", { class: "hp-side-main" }, view("grid")));
+    return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, sel.id), h("div", { class: "hp-side-main" }, roomView(ctx, sel, "grid")));
   }
-  return h("div", { class: "hp-layout hp-layout-rooms" }, h("div", { class: "hp-rooms" }, roomNav(ctx, sel.id), view(layout === "list" ? "list" : "grid")));
+  return h("div", { class: "hp-layout hp-layout-rooms" }, h("div", { class: "hp-rooms" }, roomNav(ctx, sel.id, { allRooms: popup && (layout === "grid" || layout === "list") }), roomView(ctx, sel, layout === "list" ? "list" : "grid")));
 }
 
 /** Media, Security, Scenes and own pages. */

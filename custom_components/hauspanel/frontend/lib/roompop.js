@@ -18,11 +18,7 @@ const posOf = (st) => st?.attributes.current_position ?? (st?.state === "closed"
 const pctOf = (st) => (isOn(st) ? (st.attributes.brightness != null ? Math.round((st.attributes.brightness / 255) * 100) : 100) : 0);
 const dimmable = (st) => (st?.attributes.supported_color_modes || []).some((m) => m !== "onoff");
 
-/**
- * The room at a glance: as a popup, or (with `host`) drawn into the Rooms tab. Returns the host element then,
- * with an update() for the panel's live list.
- */
-export function openRoomPopup(ctx, areaId, host = null) {
+export function openRoomPopup(ctx, areaId) {
   const hass = ctx.hass;
   const area = ctx.model.areaById.get(areaId);
   if (!area) return;
@@ -53,7 +49,7 @@ export function openRoomPopup(ctx, areaId, host = null) {
     const dn = (d?.name_by_user || d?.name || "").replace(new RegExp(`^${area.name}\\s*`, "i"), "").trim();
     return dn || n;
   };
-  const sheet = host ? { body: host, updaters: [], close() {} } : openSheet(ctx, { title: area.name, subtitle: area.floor?.name || "", cls: "appliance roompop" });
+  const sheet = openSheet(ctx, { title: area.name, subtitle: area.floor?.name || "", cls: "appliance roompop" });
   const updaters = [];
 
   // ---- hero: a temperature ring (target as arc, room temperature as a dot), glowing warm while heating
@@ -501,20 +497,8 @@ export function openRoomPopup(ctx, areaId, host = null) {
   // Customise: show, hide and add the room's devices right here (the room page may be switched off).
   const goRoom = h("button", { class: "hp-btn ghost" }, icon("mdi:pencil-outline"), h("span", {}, t("rp_customise")));
   const cats = sections.map((x) => ({ cat: x.cat, label: x.key.slice(areaId.length + 1) }));
-  goRoom.addEventListener("click", () => openRoomEdit(ctx, areaId, cats, () => {
-    if (host) return ctx.rerender();
-    sheet.close();
-    setTimeout(() => openRoomPopup(ctx, areaId), 250);
-  }));
-  const foot = h("div", { class: "hp-sheet-actions hp-app-foot" }, goRoom);
-  if (host) {
-    // In the Rooms tab: the classic page with every device is one tap away.
-    const classic = h("button", { class: "hp-btn ghost" }, icon("mdi:view-grid-outline"), h("span", {}, t("rp_all_devices")));
-    classic.addEventListener("click", () => { ctx.roomClassic = true; ctx.rerender(); });
-    foot.append(classic);
-    host.classList.add("hp-rp-inline", "roompop");
-    host.append(h("div", { class: "hp-rp-inline-grid" }, h("div", { class: "hp-rp-inline-side" }, h("div", { class: "hp-rp-inline-title" }, h("b", {}, area.name), area.floor?.name ? h("small", {}, area.floor.name) : null), hero, foot), h("div", { class: "hp-rp-inline-main" }, body)));
-  } else sheet.body.append(hero, body, foot);
+  goRoom.addEventListener("click", () => openRoomEdit(ctx, areaId, cats, () => { sheet.close(); setTimeout(() => openRoomPopup(ctx, areaId), 250); }));
+  sheet.body.append(hero, body, h("div", { class: "hp-sheet-actions hp-app-foot" }, goRoom));
 
   const update = (hs) => {
     const tv = num(hs, area.temperature) ?? (climate ? hs.states[climate]?.attributes.current_temperature : null);
@@ -532,7 +516,6 @@ export function openRoomPopup(ctx, areaId, host = null) {
     updaters.forEach((u) => u(hs));
   };
   update(hass);
-  if (host) { host.update = update; return host; }
   sheet.updaters.push(update);
 }
 
