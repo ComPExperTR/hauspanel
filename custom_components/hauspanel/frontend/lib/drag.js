@@ -42,8 +42,10 @@ export function sortable(box, { onDrop, handle, axis } = {}) {
     while (over && over.parentElement !== box) over = over.parentElement?.closest?.("[data-key]");
     if (!over || over === drag.item) return;
     const before = drag.item.getBoundingClientRect();
-    const r = over.getBoundingClientRect();
-    const after = axis === "y" ? e.clientY > r.top + r.height / 2 : (e.clientX > r.left + r.width / 2 || e.clientY > r.bottom - 4);
+    // By order, not by the middle of the one under the finger: moving onto a later one puts this behind it,
+    // onto an earlier one in front of it. Items of different widths (the chips) then don't flip back and forth.
+    const items = [...box.children];
+    const after = items.indexOf(over) > items.indexOf(drag.item);
     box.insertBefore(drag.item, after ? over.nextSibling : over);
     // Keep the element under the finger after it moved in the DOM.
     const now = drag.item.getBoundingClientRect();

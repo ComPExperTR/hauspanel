@@ -400,6 +400,11 @@ ha-icon.hp-ic { --mdc-icon-size: 20px; display: inline-flex; flex: none; }
 .hp-tile.hp-row .hp-edit-minus, .hp-tile.hp-row .hp-edit-resize, .hp-sep .hp-edit-minus, .hp-sep .hp-edit-resize { position: static; }
 .hp-tile.hp-row .hp-edit-minus { order: -1; }
 .editing .hp-tile, .editing .hp-card, .editing .hp-scene, .editing .hp-tab { animation: hp-jiggle .3s ease-in-out infinite alternate; cursor: grab; touch-action: none; }
+/* Status chips in edit mode: grabbed with a finger without the page scrolling away, and clearly lifted while dragged */
+.editing .hp-cats .hp-cat { animation: hp-jiggle .3s ease-in-out infinite alternate; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.hp-cats.sorting .hp-cat { transition: none; }
+.hp-cats .hp-cat.dragging { animation: none; z-index: 5; position: relative; cursor: grabbing; box-shadow: 0 10px 28px rgba(0,0,0,.45); scale: 1.06; }
+.hp-cats.sorting .hp-cat:not(.dragging) { opacity: .85; }
 .editing .hp-tile:nth-child(2n), .editing .hp-card:nth-child(2n), .editing .hp-scene:nth-child(2n), .editing .hp-tab:nth-child(2n) { animation-delay: -.15s; }
 .editing .hp-tile:active { transform: none; }
 .dragging { animation: none !important; z-index: 10; opacity: .94; box-shadow: 0 18px 40px rgba(20,8,16,.5) !important; transition: none !important; cursor: grabbing; }
