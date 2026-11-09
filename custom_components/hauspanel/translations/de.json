@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Fügt HausPanel, MobilePanel und SecurityPanel zur Seitenleiste hinzu, geordnet nach deinen Räumen, Etagen und Geräten."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel ist bereits eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Wer die Panels sieht",
+        "description": "Schalte ein Panel hier ein, damit es nur Administratoren sehen. Alle anderen sehen es nicht in der Seitenleiste und können es nicht öffnen.",
+        "data": {
+          "admin_hauspanel": "HausPanel nur für Admins",
+          "admin_mobilepanel": "MobilePanel nur für Admins",
+          "admin_securitypanel": "SecurityPanel nur für Admins"
+        }
+      }
+    }
+  }
+}

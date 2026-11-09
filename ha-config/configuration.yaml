@@ -1,0 +1,9 @@
+default_config:
+demo:
+logger:
+  default: warning
+  logs:
+    custom_components.hauspanel: debug
+http:
+  server_port: 8123
+scene: !include scenes.yaml

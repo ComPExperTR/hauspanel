@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "Adds HausPanel, MobilePanel and SecurityPanel to the sidebar, laid out from your rooms, floors and devices."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel is already set up."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Who sees the panels",
+        "description": "Switch a panel on here to show it only to administrators. Everyone else won't see it in the sidebar and can't open it.",
+        "data": {
+          "admin_hauspanel": "HausPanel only for admins",
+          "admin_mobilepanel": "MobilePanel only for admins",
+          "admin_securitypanel": "SecurityPanel only for admins"
+        }
+      }
+    }
+  }
+}

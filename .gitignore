@@ -1,0 +1,9 @@
+.venv-ha/
+ha-config/*
+!ha-config/configuration.yaml
+__pycache__/
+*.pyc
+.DS_Store
+
+# Design drafts stay local
+design/
