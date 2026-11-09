@@ -1008,7 +1008,7 @@ export function itemsBox(ctx, g, variant) {
 }
 
 /** One room: "1 LIGHT ON", the name, Turn on/off, scenes and devices. */
-export function roomView(ctx, area, variant = "grid", { big = false, hideName = false } = {}) {
+export function roomView(ctx, area, variant = "grid", { big = false, hideName = false, toGlance = false } = {}) {
   const label = h("div", { class: "hp-label" });
   const g = { container: `room:${area.id}`, title: area.name, items: roomItems(ctx, area), areaName: area.name, sort: roomSort(ctx), exclude: machineParts(ctx) };
   if (ctx.settings.s.groupShades) {
@@ -1023,7 +1023,7 @@ export function roomView(ctx, area, variant = "grid", { big = false, hideName = 
   const chips = h("div", { class: "hp-room-chips" });
   const head = h("div", { class: "hp-room-head" },
     h("div", {}, label, h("div", { class: "hp-room-title", role: "button", title: t("rp_glance"), onclick: (e) => { if (!ctx.editing && !e.target.closest(".hp-room-chips")) openRoomPopup(ctx, area.id); } }, hideName ? null : area.name, chips)),
-    h("div", { class: "hp-status-btns" }, on, off));
+    h("div", { class: "hp-status-btns" }, ...(toGlance ? [h("button", { class: "hp-btn", onclick: () => { ctx.roomClassic = false; ctx.rerender(); } }, icon("mdi:view-dashboard-outline"), t("rp_glance"))] : []), on, off));
   head.update = (hass) => {
     stats = roomStats(ctx, area);
     label.textContent = stats.lights.length
@@ -1242,11 +1242,19 @@ export function renderRooms(ctx, layout) {
   const sel = rooms.find((a) => a.id === ctx.roomSel) || rooms[0];
   if (!sel) return h("div", { class: "hp-layout" }, h("div", { class: "hp-empty" }, t("no_rooms")));
   ctx.roomSel = sel.id;
+  // The room at a glance (as in the popup) unless rooms open as pages, or "All devices" was tapped.
+  const glance = ctx.settings.s.roomPopup !== false && sel.id !== "_other" && !ctx.roomClassic && !ctx.editing;
+  const view = (variant) => {
+    if (!glance) return roomView(ctx, sel, variant, { toGlance: ctx.roomClassic && !ctx.editing && sel.id !== "_other" && ctx.settings.s.roomPopup !== false });
+    const el = openRoomPopup(ctx, sel.id, h("div"));
+    if (el) { ctx.live.push(el); return el; }
+    return roomView(ctx, sel, variant);
+  };
   if (layout === "focus") return h("div", { class: "hp-layout hp-layout-focus" }, ...focusRooms(ctx, sel.id));
   if (layout === "sidebar" && !ctx.narrow) {
-    return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, sel.id), h("div", { class: "hp-side-main" }, roomView(ctx, sel, "grid")));
+    return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, sel.id), h("div", { class: "hp-side-main" }, view("grid")));
   }
-  return h("div", { class: "hp-layout hp-layout-rooms" }, h("div", { class: "hp-rooms" }, roomNav(ctx, sel.id), roomView(ctx, sel, layout === "list" ? "list" : "grid")));
+  return h("div", { class: "hp-layout hp-layout-rooms" }, h("div", { class: "hp-rooms" }, roomNav(ctx, sel.id), view(layout === "list" ? "list" : "grid")));
 }
 
 /** Media, Security, Scenes and own pages. */
