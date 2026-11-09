@@ -934,4 +934,7 @@ export default {
   take_done: "Inställningar hämtade från {from}.",
   take_failed: "Det gick inte att läsa inställningarna för den panelen.",
   sec_allowed_short: "OK till {t}",
+  gate_sent: "Skickat – väntar på att porten rör sig",
+  gate_no_move: "Porten har inte rört sig. Kontrollera att den går att nå och att inget är i vägen.",
+  gate_failed: "Home Assistant kunde inte skicka det: {why}",
 };

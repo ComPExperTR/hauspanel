@@ -934,4 +934,7 @@ export default {
   take_done: "Przejęto ustawienia z {from}.",
   take_failed: "Nie udało się odczytać ustawień tego panelu.",
   sec_allowed_short: "OK do {t}",
+  gate_sent: "Wysłano – czekam na ruch bramy",
+  gate_no_move: "Brama się nie poruszyła. Sprawdź, czy jest osiągalna i czy nic jej nie blokuje.",
+  gate_failed: "Home Assistant nie mógł tego wysłać: {why}",
 };

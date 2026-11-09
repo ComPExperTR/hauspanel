@@ -934,4 +934,7 @@ export default {
   take_done: "Paramètres repris de {from}.",
   take_failed: "Impossible de lire les paramètres de ce panneau.",
   sec_allowed_short: "OK jusqu'à {t}",
+  gate_sent: "Envoyé – en attente du mouvement",
+  gate_no_move: "La porte n'a pas bougé. Vérifiez qu'elle est joignable et que rien ne la bloque.",
+  gate_failed: "Home Assistant n'a pas pu l'envoyer : {why}",
 };

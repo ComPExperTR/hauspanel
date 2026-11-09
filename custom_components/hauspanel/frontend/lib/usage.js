@@ -75,10 +75,16 @@ export function appliancesIn(hass, area) {
   }
   // Only machines you wait for: washer, dryer, dishwasher. Ovens, steamers, hobs and coffee machines report a program too.
   const NOT_LAUNDRY = /oven|ofen|dampf|steam|garer|cooktop|kochfeld|\bhob\b|herd|coffee|kaffee|fridge|k(ü|u|ue)hl|freezer|hood|haube/i;
-  return [...byDev.values()].filter((a) => {
+  const machines = [...byDev.values()].filter((a) => {
     const d = hass.devices?.[a.dev];
+    // Pumps and filters (a pool) report a state too, but nobody waits for them like for a washer.
+    if (/pump|pumpe|filter|pool/i.test(`${a.state} ${d?.name || ""} ${d?.model || ""}`)) return false;
     return a.state && (a.progress || a.remaining || a.end) && !NOT_LAUNDRY.test(`${d?.name_by_user || ""} ${d?.name || ""} ${d?.model || ""} ${a.state}`);
   });
+  // The same machine seen twice in a room (Home Connect and WashData): keep the one that tells more.
+  const name = (a) => (hass.devices?.[a.dev]?.name_by_user || hass.devices?.[a.dev]?.name || a.dev).toLowerCase();
+  const slots = (a) => ["state", "progress", "remaining", "end", "elapsed", "power"].filter((k) => a[k]).length;
+  return machines.filter((a) => !machines.some((b) => b !== a && name(b) === name(a) && (slots(b) > slots(a) || (slots(b) === slots(a) && b.dev < a.dev))));
 }
 
 /** Every appliance in the house that runs right now (washer, dryer, dishwasher …): [{ dev, name, text }]. */
@@ -87,8 +93,6 @@ export function runningAppliances(hass) {
   const out = [];
   for (const area of areas) {
     for (const a of appliancesIn(hass, area)) {
-      // Pumps and filters (pool) report a state too, but they are not appliances someone waits for.
-      if (/pump|filter|pool/i.test(a.state)) continue;
       const text = applianceText(hass, a);
       if (!text) continue;
       const d = hass.devices?.[a.dev];

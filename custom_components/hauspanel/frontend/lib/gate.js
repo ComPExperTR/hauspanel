@@ -1,6 +1,6 @@
 // Gate and garage door popup: a door that rolls up and down with the real state, "open for 12 min",
 // the camera of that place, the light, and open/close with two taps.
-import { h, icon } from "./util.js";
+import { h, icon, supports } from "./util.js";
 import { openSheet } from "./dialogs.js";
 import { liveVideo } from "./camera.js";
 import { t } from "./i18n.js";
@@ -39,7 +39,20 @@ export function openGate(ctx, id) {
   const hints = h("div", { class: "hp-app-hints" });
 
   const sheet = openSheet(ctx, { title: st0.attributes.friendly_name?.replace(/^(Garage|Entry Gate)\s+/, "") || id, subtitle: areaName, cls: "appliance gate", onClose: () => video?.stop() });
-  const call = (svc) => ctx.hass.callService("cover", svc, { entity_id: id });
+  // A command shows right away that it was sent; when Home Assistant refuses it, or the door doesn't move
+  // within 20 seconds, the popup says so (before, nothing happened on screen).
+  let sentAt = 0;
+  let sentFrom = "";
+  const call = (svc) => {
+    sentAt = Date.now();
+    sentFrom = ctx.hass.states[id]?.state || "";
+    update(ctx.hass);
+    ctx.hass.callService("cover", svc, { entity_id: id }).catch((err) => {
+      sentAt = 0;
+      ctx.toast(t("gate_failed", { why: err?.message || err?.code || "" }).trim());
+      update(ctx.hass);
+    });
+  };
   const openB = twoTap(btn(garage ? "mdi:arrow-up-bold" : "mdi:gate-open", t("gate_open"), "primary"), () => call("open_cover"), t("pk_tap_again"));
   const closeB = twoTap(btn(garage ? "mdi:arrow-down-bold" : "mdi:gate", t("gate_close"), "primary"), () => call("close_cover"), t("pk_tap_again"));
   const stopB = btn("mdi:stop", t("gate_stop"), "danger");
@@ -63,13 +76,18 @@ export function openGate(ctx, id) {
     status.textContent = hs.formatEntityState?.(st) || st.state;
     status.dataset.phase = st.state === "open" ? "pause" : moving ? "run" : st.state === "closed" ? "done" : "";
     sinceEl.textContent = st.state === "open" ? t("gate_open_since", { when: since(st.last_changed) }) : st.state === "closed" ? t("gate_closed_since", { when: since(st.last_changed) }) : "";
-    openB.hidden = st.state === "open" || moving;
-    closeB.hidden = st.state === "closed" || moving;
-    stopB.hidden = !moving;
+    // Doors that can't stop (many garage openers) keep open and close while moving, so there is always a way.
+    const canStop = supports(st, 8);
+    openB.hidden = st.state === "open" || (moving && canStop);
+    closeB.hidden = st.state === "closed" || (moving && canStop);
+    stopB.hidden = !moving || !canStop;
+    if (sentAt && st.state !== sentFrom) sentAt = 0;
     if (lightB) lightB.classList.toggle("lit", hs.states[light]?.state === "on");
     const list = [];
     if (a["obstruction-detected"] || a.obstruction_detected) list.push(hint("mdi:alert-octagon-outline", t("gate_obstruction"), true));
     if (st.state === "open" && Date.now() - Date.parse(st.last_changed) > 30 * 60000) list.push(hint("mdi:clock-alert-outline", t("gate_open_long")));
+    if (sentAt && Date.now() - sentAt < 20000) list.push(hint("mdi:send-clock-outline", t("gate_sent")));
+    else if (sentAt) list.push(hint("mdi:alert-circle-outline", t("gate_no_move"), true));
     hints.replaceChildren(...list);
     hints.hidden = !list.length;
     video?.update(hs);
@@ -77,4 +95,6 @@ export function openGate(ctx, id) {
   };
   update(hass);
   sheet.updaters.push(update);
+  // While a command waits for the door, look again every few seconds (no state change means no update).
+  const tick = setInterval(() => { if (!sheet.el.isConnected) clearInterval(tick); else if (sentAt) update(ctx.hass); }, 3000);
 }

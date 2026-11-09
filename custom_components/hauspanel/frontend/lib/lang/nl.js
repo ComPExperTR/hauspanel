@@ -934,4 +934,7 @@ export default {
   take_done: "Instellingen overgenomen van {from}.",
   take_failed: "De instellingen van dat paneel konden niet worden gelezen.",
   sec_allowed_short: "OK tot {t}",
+  gate_sent: "Verzonden – wachten tot de deur beweegt",
+  gate_no_move: "De deur heeft niet bewogen. Controleer of hij bereikbaar is en niets in de weg staat.",
+  gate_failed: "Home Assistant kon dat niet versturen: {why}",
 };

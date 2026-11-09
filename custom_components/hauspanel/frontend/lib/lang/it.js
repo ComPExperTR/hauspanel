@@ -934,4 +934,7 @@ export default {
   take_done: "Impostazioni prese da {from}.",
   take_failed: "Impossibile leggere le impostazioni di quel pannello.",
   sec_allowed_short: "OK fino alle {t}",
+  gate_sent: "Inviato – in attesa che si muova",
+  gate_no_move: "La porta non si è mossa. Controlla che sia raggiungibile e che niente la blocchi.",
+  gate_failed: "Home Assistant non è riuscito a inviarlo: {why}",
 };

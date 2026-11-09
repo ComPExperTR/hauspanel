@@ -10,12 +10,14 @@ export function fakeHass({ states = {}, areas = {}, floors = {}, devices = {}, e
     const s = typeof v === "string" ? { state: v, attributes: {} } : { attributes: {}, ...v };
     st[id] = { entity_id: id, ...s, attributes: { friendly_name: id.split(".")[1].replace(/_/g, " "), ...s.attributes } };
   }
+  // Like Home Assistant, every registry entry knows its own id.
+  const reg = Object.fromEntries(Object.entries(entities).map(([id, e]) => [id, { entity_id: id, ...e }]));
   return {
     states: st,
     areas,
     floors,
     devices,
-    entities,
+    entities: reg,
     language: "en",
     locale: { language: "en", time_format: "24" },
     config: { unit_system: { temperature: unit }, time_zone: "UTC" },

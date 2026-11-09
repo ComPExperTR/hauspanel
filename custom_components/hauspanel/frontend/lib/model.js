@@ -139,6 +139,9 @@ export function buildModel(hass, hide) {
     if (domain === "calendar") model.calendars.push(entityId);
     if (domain === "todo" && entityId !== "todo.shopping_list_disabled") model.todos.push(entityId);
     if (reg?.hidden || reg?.entity_category) return;
+    // Browser Mod: the browsers (tablets, laptops) themselves, with a "screen" light, a media player and a
+    // camera per browser tab. They are no devices of the house and stay out of rooms and security.
+    if (reg?.platform === "browser_mod") return;
     if (!ADDABLE.has(domain)) return;
     if (hidden(entityId)) return;
     if (isHelperGroup(hass, entityId, reg)) return;

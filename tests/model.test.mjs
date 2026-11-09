@@ -101,3 +101,18 @@ test("text rules: plain text is contained, * is a wildcard over the whole id or 
   assert.equal(wild("light.desk"), "");
   assert.equal(hideMatcher(hass, { patterns: ["  "] })("light.desk"), "", "an empty rule hides nothing");
 });
+
+test("Browser Mod (the browsers themselves) stays out of rooms and security", () => {
+  const hass = fakeHass({
+    areas: { office: { area_id: "office", name: "Office" } },
+    entities: {
+      "light.browser_mod_abc_screen": { area_id: "office", platform: "browser_mod" },
+      "camera.browser_mod_abc": { area_id: "office", platform: "browser_mod" },
+      "light.desk": { area_id: "office", platform: "hue" },
+    },
+    states: { "light.browser_mod_abc_screen": "unavailable", "camera.browser_mod_abc": "unavailable", "light.desk": "on" },
+  });
+  const m = buildModel(hass, {});
+  assert.deepEqual(m.areaById.get("office").tiles, ["light.desk"]);
+  assert.ok(!m.security.includes("camera.browser_mod_abc"));
+});
