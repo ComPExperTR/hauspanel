@@ -45,3 +45,17 @@ test("setup texts (config flow) exist for every language, with the same keys as 
     assert.deepEqual(keys(JSON.parse(readFileSync(new URL(`${code}.json`, dir)))), base, `translations/${code}.json`);
   }
 });
+
+test("no text key is written twice in a language file (the second would silently win)", () => {
+  const files = ["i18n.js", "i18n_popups.js", ...i18n.LANGS.map((c) => `lang/${c}.js`)];
+  for (const f of files) {
+    const src = readFileSync(new URL(f, LIB), "utf8");
+    // Each object literal of texts: { key: "…", key2: "…" }.
+    for (const block of src.split(/\n(?:export )?(?:const [A-Z_]+ = |default )\{/).slice(1)) {
+      const body = block.split("\n};")[0];
+      const keys = [...body.matchAll(/(?:^|[\s,{])([a-z][a-z0-9_]*): "/g)].map((m) => m[1]);
+      const twice = [...new Set(keys.filter((k, i) => keys.indexOf(k) !== i))];
+      assert.deepEqual(twice, [], `${f}: written twice`);
+    }
+  }
+});

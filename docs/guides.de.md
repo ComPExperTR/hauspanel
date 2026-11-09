@@ -53,7 +53,7 @@ Tipp: Das Raumsymbol in HausPanel ist das Symbol des Bereichs. Du änderst es in
 
 1. Auf dem Tablet in der Home-Assistant-Seitenleiste **HausPanel** öffnen.
 2. **Einstellungen (Zahnrad) → Dieser Bildschirm**:
-   - **Layout**: *Panel* hält Uhrzeit, Wetter und was offen ist links im Blick. *Kacheln* nutzt den ganzen Bildschirm für die Räume. Bei *Panel* legt **Seitenleiste** fest, was links steht: Wetter, Demnächst, was offen ist, Szenen, *Läuft gerade* und die Raumliste.
+   - **Layout**: *Panel* hält Uhrzeit, Wetter und was offen ist links im Blick. *Kacheln* nutzt den ganzen Bildschirm für die Räume. Bei *Panel* legt **Seitenleiste** fest, was links steht: Wetter, Demnächst, was offen ist, Szenen, *Gerade an* und die Raumliste.
    - **Kachelgröße**: *Bildschirm füllen* passt alles auf einen Bildschirm.
    - **Home-Assistant-Seitenleiste ausblenden**: gibt HausPanel den ganzen Bildschirm.
    - **Effekte**: *Sparsam* lässt Unschärfe, Leuchten und Dauer-Animationen weg, das hilft älteren oder langsamen Tablets. *Automatisch* schaltet das von selbst ein, wenn der Bildschirm langsam wirkt.
