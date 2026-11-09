@@ -19,7 +19,7 @@ Home Assistant already knows your house: which rooms are on which floor, and whi
 
 Free and open source (MIT), made by [Alpaca Labs](https://alpacalabs.de). *Deutsch: [weiter unten](#deutsch).*
 
-**Contents:** [Three panels](#three-panels) · [Features](#features) · [Popups](#popups-for-your-devices) · [Settings](#settings) · [Install](#install) · [First steps](#first-steps) · [FAQ](#good-to-know) · [Development](#development)
+**Contents:** [Three panels](#three-panels) · [Features](#features) · [Popups](#popups-for-your-devices) · [Settings](#settings) · [Install](#install) · [First steps](#first-steps) · [FAQ](#good-to-know) · [Development](#development) · [Support](#support)
 
 ## Three panels
 
@@ -193,6 +193,14 @@ HAUSPANEL_DEV=1 .venv-ha/bin/hass -c ha-config
 
 Bugs and ideas are welcome as [issues](https://github.com/alpacalabs-de/hauspanel/issues).
 
+## Support
+
+HausPanel is free and stays free. If it saves you time, you can buy us a coffee:
+
+<a href="https://ko-fi.com/alpacalabs"><img src="https://img.shields.io/badge/Ko--fi-Buy%20us%20a%20coffee-6cc7b2?logo=kofi&logoColor=white" alt="Buy us a coffee on Ko-fi"></a>
+
+A star on GitHub, a bug report or an idea in the [issues](https://github.com/alpacalabs-de/hauspanel/issues) helps just as much.
+
 ## License
 
 MIT © 2026 Alpaca Labs. See [LICENSE](LICENSE).
@@ -224,5 +232,7 @@ Home Assistant kennt dein Haus schon: welche Räume auf welcher Etage liegen und
 **Installieren:** In HACS unter „Benutzerdefinierte Repositories“ `https://github.com/alpacalabs-de/hauspanel` als „Integration“ hinzufügen, HausPanel installieren, Home Assistant neu starten, dann **Einstellungen → Geräte & Dienste → Integration hinzufügen → HausPanel**.
 
 **Erste Schritte:** Geräte Räumen zuordnen und Räume Etagen, dann HausPanel öffnen und die Einstellungen von links nach rechts durchgehen.
+
+**Unterstützen:** HausPanel ist kostenlos und bleibt es. Wenn es dir Zeit spart, kannst du uns auf [Ko-fi einen Kaffee spendieren](https://ko-fi.com/alpacalabs). Ein Stern auf GitHub oder eine Idee als Issue hilft genauso.
 
 Kostenlos und quelloffen (MIT), von [Alpaca Labs](https://alpacalabs.de). Fragen und Fehler gern als [Issue](https://github.com/alpacalabs-de/hauspanel/issues).
