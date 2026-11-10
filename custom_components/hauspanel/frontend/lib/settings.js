@@ -351,13 +351,15 @@ export function openSettings(ctx) {
         const src = raw.energy_sources || [];
         const grid = src.find((x) => x.type === "grid");
         const solar = src.find((x) => x.type === "solar");
+        // Sensor names are long: the label above, the picker in full width below it.
+        const stack = (el) => { el.classList.add("stack"); return el; };
         const rows = [];
-        if (grid) rows.push(row(t("set_energy_grid"), picker(pick.grid, grid.power_config?.stat_rate || grid.stat_rate, (v) => setPick((p) => { p.grid = v; }))));
-        if (solar) rows.push(row(t("set_energy_solar"), picker(pick.solar, solar.stat_rate, (v) => setPick((p) => { p.solar = v; }))));
+        if (grid) rows.push(stack(row(t("set_energy_grid"), picker(pick.grid, grid.power_config?.stat_rate || grid.stat_rate, (v) => setPick((p) => { p.grid = v; })))));
+        if (solar) rows.push(stack(row(t("set_energy_solar"), picker(pick.solar, solar.stat_rate, (v) => setPick((p) => { p.solar = v; })))));
         const devs = (raw.device_consumption || []).filter((d) => d.stat_consumption);
-        const devRows = devs.map((d) => row(d.name || deviceName(ctx.hass, d.stat_consumption),
+        const devRows = devs.map((d) => stack(row(d.name || deviceName(ctx.hass, d.stat_consumption),
           picker(pick.devices?.[d.stat_consumption], d.stat_rate || meterSensors(ctx.hass, d.stat_consumption).power,
-            (v) => setPick((p) => { p.devices ||= {}; if (v) p.devices[d.stat_consumption] = v; else delete p.devices[d.stat_consumption]; }), true)));
+            (v) => setPick((p) => { p.devices ||= {}; if (v) p.devices[d.stat_consumption] = v; else delete p.devices[d.stat_consumption]; }), true))));
         const open = h("button", { class: "hp-chip" }, icon("mdi:open-in-new"), t("set_energy_open"));
         open.addEventListener("click", () => { history.pushState(null, "", "/config/energy"); window.dispatchEvent(new CustomEvent("location-changed")); });
         add("rooms", section(t("energy"), h("p", { class: "hp-muted small" }, t("set_energy_hint")),

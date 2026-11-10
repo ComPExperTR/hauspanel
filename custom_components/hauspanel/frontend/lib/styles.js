@@ -702,6 +702,9 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-set-label { display: flex; flex-direction: column; min-width: 0; }
 .hp-set-label > span { font-weight: 500; display: flex; align-items: center; gap: 6px; }
 .hp-set-label small { color: var(--hp-sub); font-size: 12.5px; }
+.hp-set-row > .hp-select { flex: 0 1 auto; min-width: 0; text-overflow: ellipsis; }
+.hp-set-row.stack { flex-direction: column; align-items: stretch; gap: 6px; padding: 10px 0; }
+.hp-set-row.stack > .hp-select { width: 100%; }
 .hp-input { width: 100%; box-sizing: border-box; height: 42px; border-radius: 14px; border: 1px solid var(--hp-border); background: var(--hp-glass-2); color: inherit; font: inherit; padding: 0 14px; margin: 6px 0 8px; outline: none; }
 .hp-input:focus { border-color: var(--hp-accent); }
 .hp-pat-add { display: flex; gap: 8px; align-items: center; }

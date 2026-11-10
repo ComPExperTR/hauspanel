@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Settings → Energy on the phone: the sensor pickers sit below their label in full width instead of running over it. Other pickers in the settings shrink instead of overflowing.
+
 ## 1.5.1
 
 - **Settings → Rooms & devices → Energy**: pick which sensor shows the house's, the solar roof's and each device's power right now, or leave a device out. Use and costs still come from Home Assistant's energy settings.
