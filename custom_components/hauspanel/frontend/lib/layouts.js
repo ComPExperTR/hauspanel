@@ -1110,9 +1110,56 @@ export function roomsByFloor(ctx) {
 }
 
 /** Heading of a floor group; null when there is only one group. */
-export function floorHeading(groups, g, cls) {
+export function floorHeading(groups, g, cls, ctx = null) {
   if (groups.length < 2) return null;
-  return h("div", { class: cls }, icon(g.floor?.icon || "mdi:layers-outline"), h("span", {}, g.floor ? g.floor.name : t("no_floor")));
+  const el = h("div", { class: cls }, icon(g.floor?.icon || "mdi:layers-outline"), h("span", {}, g.floor ? g.floor.name : t("no_floor")));
+  // With ctx: buttons for the whole floor (all lights, all shades up / down).
+  const ctl = ctx && g.floor ? floorControls(ctx, g.rooms, g.floor.name) : null;
+  if (ctl) {
+    el.classList.add("has-ctl");
+    el.append(h("i", { class: "line" }), ctl);
+  }
+  return el;
+}
+
+/**
+ * Buttons for a whole floor: the lights (off when one is on, else on) and the shades (up, down).
+ * Only the ones the floor has; null without any.
+ */
+export function floorControls(ctx, rooms, floorName) {
+  const stats = () => rooms.filter((a) => a.id !== "_other").map((a) => roomStats(ctx, a));
+  const lights = () => stats().flatMap((x) => x.lights);
+  const shades = () => stats().flatMap((x) => x.shades);
+  if (!lights().length && !shades().length) return null;
+  const btn = (ic, label, fn) => {
+    const b = h("button", { class: "hp-floor-btn", "aria-label": `${label} · ${floorName}`, title: `${label} · ${floorName}` }, icon(ic));
+    b.addEventListener("pointerdown", (e) => e.stopPropagation());
+    b.addEventListener("click", (e) => { e.stopPropagation(); if (!ctx.editing) fn(); });
+    return b;
+  };
+  const box = h("div", { class: "hp-floor-ctl" });
+  let lightB = null;
+  if (lights().length) {
+    lightB = btn("mdi:lightbulb-group-outline", t("floor_lights"), () => {
+      const ids = lights();
+      const anyOn = ids.some((id) => isOn(ctx.hass.states[id]));
+      ctx.hass.callService("light", anyOn ? "turn_off" : "turn_on", { entity_id: ids });
+    });
+    box.append(lightB);
+  }
+  if (shades().length) {
+    box.append(btn("mdi:arrow-up", t("floor_shades_up"), () => ctx.hass.callService("cover", "open_cover", { entity_id: shades() })),
+      btn("mdi:arrow-down", t("floor_shades_down"), () => ctx.hass.callService("cover", "close_cover", { entity_id: shades() })));
+  }
+  box.update = (hass) => {
+    if (!lightB) return;
+    const on = lights().some((id) => isOn(hass.states[id]));
+    lightB.classList.toggle("on", on);
+    lightB.firstChild.icon = on ? "mdi:lightbulb-group" : "mdi:lightbulb-group-outline";
+  };
+  box.update(ctx.hass);
+  ctx.live.push(box);
+  return box;
 }
 
 /** Room menu: Overview (optional) and every room by floor, with a count of the lights that are on. */
@@ -1305,7 +1352,7 @@ function roomsOverview(ctx) {
   const box = h("div", { class: `hp-rooms-all ${mode}` });
   const groups = roomsByFloor(ctx);
   for (const g of groups) {
-    const head = floorHeading(groups, g, "hp-rooms-floor");
+    const head = floorHeading(groups, g, "hp-rooms-floor", ctx);
     if (head) box.append(head);
     for (const a of g.rooms) {
       if (mode === "cards") { box.append(roomCard(ctx, a, "rooms")); continue; }

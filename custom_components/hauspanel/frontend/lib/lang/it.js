@@ -944,4 +944,7 @@ export default {
   fav_card_security_sub: "Cosa è aperto, l'allarme",
   fav_card_climate_sub: "Temperature e riscaldamento",
   fav_card_today_sub: "Prossimi eventi e promemoria",
+  floor_lights: "Tutte le luci",
+  floor_shades_up: "Alza tutte le tapparelle",
+  floor_shades_down: "Abbassa tutte le tapparelle",
 };

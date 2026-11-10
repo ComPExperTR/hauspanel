@@ -944,4 +944,7 @@ export default {
   fav_card_security_sub: "Vad som är öppet, larmet",
   fav_card_climate_sub: "Temperaturer och värme",
   fav_card_today_sub: "Nästa händelser och påminnelser",
+  floor_lights: "Alla lampor på eller av",
+  floor_shades_up: "Alla persienner upp",
+  floor_shades_down: "Alla persienner ner",
 };

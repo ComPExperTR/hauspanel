@@ -2195,6 +2195,13 @@ a.hp-hint { color: inherit; text-decoration: none; }
 .hp-card.lit .hp-presence { background: rgba(46,140,118,.16); color: #2e8c76; }
 .hp-ph-room > .hp-presence, .hp-ph-room-top > .hp-presence { margin-left: auto; }
 .hp-ph-room-top > .hp-presence + .hp-power { margin-left: 6px; }
+/* Buttons for a whole floor on its heading (room lists) */
+.hp-ph-floor.has-ctl::after { display: none; }
+.hp-ph-floor.has-ctl .line, .hp-rooms-floor.has-ctl .line { flex: 1; height: 1px; background: var(--hp-border); }
+.hp-floor-ctl { display: flex; gap: 6px; flex: none; }
+.hp-floor-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--hp-border); background: var(--hp-glass); color: var(--hp-text); display: grid; place-items: center; cursor: pointer; padding: 0; --mdc-icon-size: 17px; }
+.hp-floor-btn.on { background: #ffd34e; color: #1c1c1e; border-color: transparent; }
+.hp-floor-btn:active { transform: scale(.94); }
 /* Welcome window */
 .hp-wel-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 4px; }
 .hp-wel-step + .hp-wel-step { border-top: 1px solid rgba(255,255,255,.07); }

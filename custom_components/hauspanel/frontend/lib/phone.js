@@ -25,7 +25,7 @@ function roomList(ctx) {
   const groups = roomsByFloor(ctx);
   for (const a of groups.flatMap((g) => [g, ...g.rooms])) {
     if (a.rooms) {
-      const head = floorHeading(groups, a, "hp-ph-floor");
+      const head = floorHeading(groups, a, "hp-ph-floor", ctx);
       if (head) list.append(head);
       continue;
     }

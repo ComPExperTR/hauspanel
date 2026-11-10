@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Floor buttons** in the room list (phone and tablet): next to each floor's name, one button switches all its lights off (or on when all are off), two more move all its shades up or down. Each shows only when the floor has such devices.
 - Buttons that need two taps (gates, the doorbell opener, scenes) now say *Tap to confirm* after the first tap.
 - **Favourites**: the picker has *Cards* on top: *Now playing* (the music card, whatever plays right now), Security, Climate and Today can be added like rooms and devices.
 - **Settings → Rooms & devices → Speakers & TVs**: one switch per player; off hides it everywhere in HausPanel. The Media page and its player buttons list the same players as the rooms, each once.

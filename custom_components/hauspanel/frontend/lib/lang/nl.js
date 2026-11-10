@@ -944,4 +944,7 @@ export default {
   fav_card_security_sub: "Wat openstaat, het alarm",
   fav_card_climate_sub: "Temperaturen en verwarming",
   fav_card_today_sub: "Volgende afspraken en herinneringen",
+  floor_lights: "Alle lampen aan of uit",
+  floor_shades_up: "Alle rolluiken omhoog",
+  floor_shades_down: "Alle rolluiken omlaag",
 };

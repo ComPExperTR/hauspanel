@@ -944,4 +944,7 @@ export default {
   fav_card_security_sub: "Lo que está abierto, la alarma",
   fav_card_climate_sub: "Temperaturas y calefacción",
   fav_card_today_sub: "Próximos eventos y recordatorios",
+  floor_lights: "Todas las luces",
+  floor_shades_up: "Subir todas las persianas",
+  floor_shades_down: "Bajar todas las persianas",
 };
