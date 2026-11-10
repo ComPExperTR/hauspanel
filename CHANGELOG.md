@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Settings → Rooms & devices → Energy**: pick which sensor shows the house's, the solar roof's and each device's power right now, or leave a device out. Use and costs still come from Home Assistant's energy settings.
+- A meter with three phases or several channels now shows its total instead of phase A.
+- **Cameras**: the second, smaller stream of a camera (Reolink *fluent*, UniFi *low*, *sub* …) and still pictures of the last event start switched off on the Security page. *Settings → Security → Cameras* switches them on.
+
 ## 1.5.0
 
 - **Floor buttons** in the room list (phone and tablet): next to each floor's name, one button switches all its lights off (or on when all are off), two more move all its shades up or down. Each shows only when the floor has such devices.

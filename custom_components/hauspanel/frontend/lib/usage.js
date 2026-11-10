@@ -6,18 +6,26 @@ import { t } from "./i18n.js";
 const ON_WATTS = 2; // a plug drawing more than this counts as "on"
 
 /** Power and energy sensors of the device an entity belongs to. */
+const PART = /phase|_l[123](_|\b)|\bl[123]\b|_[abc]_(power|energy|leistung)|channel_?\d|kanal_?\d|_ch\d/i;
+
 export function meterSensors(hass, entityId) {
   const st = hass.states[entityId];
   const dc = st?.attributes.device_class;
   const dev = hass.entities?.[entityId]?.device_id;
   const out = { power: dc === "power" ? entityId : null, energy: dc === "energy" ? entityId : null };
   if (!dev) return out;
+  const power = [];
+  const energy = [];
   for (const e of Object.values(hass.entities)) {
     if (e.device_id !== dev || !e.entity_id.startsWith("sensor.") || e.entity_category || e.hidden) continue;
     const c = hass.states[e.entity_id]?.attributes.device_class;
-    if (c === "power" && !out.power) out.power = e.entity_id;
-    if (c === "energy" && !out.energy && !/einspeisung|returned|export/i.test(e.entity_id)) out.energy = e.entity_id;
+    if (c === "power") power.push(e.entity_id);
+    if (c === "energy" && !/einspeisung|returned|export/i.test(e.entity_id)) energy.push(e.entity_id);
   }
+  // A meter with three phases or several channels: the total, not phase A.
+  const best = (ids) => ids.find((id) => !PART.test(`${id} ${hass.states[id]?.attributes.friendly_name || ""}`)) || ids[0] || null;
+  out.power ||= best(power);
+  out.energy ||= best(energy);
   return out;
 }
 

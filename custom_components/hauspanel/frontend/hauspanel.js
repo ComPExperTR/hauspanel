@@ -30,7 +30,7 @@ import { openBaby, isBabyCam } from "./lib/baby.js";
 import { loadPlugLinks } from "./lib/usage.js";
 import { securityView, cameraEditor, openSecuritySheet, setSecAllowSource, allowedNow } from "./lib/securityview.js";
 import { fitToScreen } from "./lib/fit.js";
-import { loadEnergyPrefs, hasEnergy, energyView } from "./lib/energy.js";
+import { loadEnergyPrefs, hasEnergy, energyView, withEnergyPicks } from "./lib/energy.js";
 import { renderPhone, isPhoneScreen, bindEdgeSwipe } from "./lib/phone.js";
 import { renderSecurityPanel, securityBar, securityStatePill, securityPages, bindPageSwipe } from "./lib/securitypanel.js";
 import { openSettings, CARD_COLORS, ACCENTS, BACKGROUNDS } from "./lib/settings.js";
@@ -241,6 +241,19 @@ class HausPanelElement extends HTMLElement {
     this._weatherPill?.update();
     for (const p of this.live) p.sideRefresh?.();
     for (const s of this.sheets) s.update(this._hass);
+  }
+
+  /** The energy settings of Home Assistant with this house's own sensor picks (Settings → Energy). */
+  get energyPrefs() {
+    const raw = this.energyPrefsRaw;
+    const pick = this.settings?.s?.energyPick;
+    const key = JSON.stringify(pick || null);
+    if (this._epRaw !== raw || this._epKey !== key) {
+      this._epRaw = raw;
+      this._epKey = key;
+      this._ep = withEnergyPicks(raw, pick);
+    }
+    return this._ep;
   }
 
   // ---- helpers the parts call (this element is their "ctx") ----

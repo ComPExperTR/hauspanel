@@ -8,11 +8,38 @@ const REFRESH_MS = 5 * 60 * 1000;
 
 export async function loadEnergyPrefs(ctx) {
   try {
-    ctx.energyPrefs = await ctx.hass.callWS({ type: "energy/get_prefs" });
+    ctx.energyPrefsRaw = await ctx.hass.callWS({ type: "energy/get_prefs" });
   } catch {
-    ctx.energyPrefs = null;
+    ctx.energyPrefsRaw = null;
   }
 }
+
+/**
+ * Home Assistant's energy settings with the sensors picked in Settings → Rooms & devices → Energy:
+ * pick = { grid, solar, devices: { [stat_consumption]: powerSensor | "none" } }. Neither is changed.
+ */
+export function withEnergyPicks(raw, pick) {
+  if (!raw || !pick) return raw;
+  const out = JSON.parse(JSON.stringify(raw));
+  const src = out.energy_sources || [];
+  const grid = src.find((x) => x.type === "grid");
+  if (grid && pick.grid) {
+    grid.stat_rate = pick.grid;
+    if (grid.power_config) grid.power_config.stat_rate = pick.grid;
+  }
+  const solar = src.find((x) => x.type === "solar");
+  if (solar && pick.solar) solar.stat_rate = pick.solar;
+  const dev = pick.devices || {};
+  out.device_consumption = (out.device_consumption || [])
+    .filter((d) => dev[d.stat_consumption] !== "none")
+    .map((d) => (dev[d.stat_consumption] ? { ...d, stat_rate: dev[d.stat_consumption] } : d));
+  return out;
+}
+
+/** Every power sensor, for the pickers. */
+export const powerSensors = (hass) => Object.keys(hass.states)
+  .filter((id) => id.startsWith("sensor.") && hass.states[id].attributes.device_class === "power")
+  .sort((a, b) => (hass.states[a].attributes.friendly_name || a).localeCompare(hass.states[b].attributes.friendly_name || b));
 
 export const hasEnergy = (ctx) => !!ctx.energyPrefs?.energy_sources?.length;
 

@@ -946,5 +946,5 @@ export default {
   fav_card_today_sub: "Prossimi eventi e promemoria",
   floor_lights: "Tutte le luci",
   floor_shades_up: "Alza tutte le tapparelle",
-  floor_shades_down: "Abbassa tutte le tapparelle",
+  floor_shades_down: "Abbassa tutte le tapparelle", set_energy_hint: "Consumi e costi arrivano dalle impostazioni energia di Home Assistant. Qui scegli quale sensore mostra la potenza attuale, se HausPanel ha sbagliato.", set_energy_grid: "Casa adesso", set_energy_solar: "Solare adesso", set_energy_devices: "Dispositivi", set_energy_auto: "Automatico ({name})", set_energy_nothing: "Automatico (nessuno trovato)", set_energy_hide: "Non mostrare", set_energy_open: "Impostazioni energia",
 };

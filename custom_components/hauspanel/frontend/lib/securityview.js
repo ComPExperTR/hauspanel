@@ -491,10 +491,37 @@ export function cameraCard(ctx, id) {
 export function cameraList(ctx) {
   const all = ctx.model.security.filter((id) => domainOf(id) === "camera" && ctx.hass.states[id]);
   const shown = new Set(ctx.securityItems());
-  const res = ctx.settings.arrange(CAM_CONTAINER, all, (id) => id.startsWith("camera.") && !!ctx.hass.states[id]);
+  // Second streams and still pictures start switched off; switched on in Settings they count as added.
+  const extra = extraCameras(ctx.hass, all);
+  const res = ctx.settings.arrange(CAM_CONTAINER, all.filter((id) => !extra.has(id)), (id) => id.startsWith("camera.") && !!ctx.hass.states[id]);
   // Cameras hidden in their room's security group (older setting) count as hidden here too.
-  const roomHidden = all.filter((id) => !shown.has(id));
-  return { items: res.items.filter((id) => shown.has(id) || !all.includes(id)), hidden: [...new Set([...res.hidden, ...roomHidden])] };
+  const roomHidden = all.filter((id) => !shown.has(id) && !extra.has(id));
+  const items = res.items.filter((id) => shown.has(id) || extra.has(id) || !all.includes(id));
+  const offExtra = [...extra].filter((id) => !items.includes(id));
+  return { items, hidden: [...new Set([...res.hidden, ...roomHidden, ...offExtra])], extra };
+}
+
+const STILL = /letzte|letztes|last_|snapshot|_person$|_car$|_dog$|_cat$|_bird$|browser_mod/i;
+const SECOND = /(^|[\s_-])(sub|substream|low|medium|sd|lq|fluent|mjpeg|telephoto|tele)([\s_-]|$)/i;
+
+/**
+ * Cameras that are not a camera of their own: still pictures of the last event, and the second,
+ * smaller stream of a camera that also has its main stream (Reolink "fluent", UniFi "low", "sub" …).
+ */
+export function extraCameras(hass, ids) {
+  const nameOf = (id) => `${id.split(".")[1]} ${hass.states[id]?.attributes.friendly_name || ""}`;
+  const out = new Set(ids.filter((id) => STILL.test(id)));
+  const byDev = new Map();
+  for (const id of ids) {
+    const dev = hass.entities?.[id]?.device_id;
+    if (dev && !out.has(id)) byDev.set(dev, [...(byDev.get(dev) || []), id]);
+  }
+  for (const cams of byDev.values()) {
+    if (cams.length < 2) continue;
+    const second = cams.filter((id) => SECOND.test(nameOf(id)));
+    if (second.length < cams.length) for (const id of second) out.add(id);
+  }
+  return out;
 }
 
 /** Edit mode: still pictures to drag into order, − to hide. */

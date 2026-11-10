@@ -946,5 +946,5 @@ export default {
   fav_card_today_sub: "Najbliższe wydarzenia i przypomnienia",
   floor_lights: "Wszystkie światła",
   floor_shades_up: "Wszystkie rolety w górę",
-  floor_shades_down: "Wszystkie rolety w dół",
+  floor_shades_down: "Wszystkie rolety w dół", set_energy_hint: "Zużycie i koszty pochodzą z ustawień energii Home Assistant. Tutaj wybierasz, który czujnik pokazuje bieżącą moc, jeśli HausPanel źle zgadł.", set_energy_grid: "Dom teraz", set_energy_solar: "Fotowoltaika teraz", set_energy_devices: "Urządzenia", set_energy_auto: "Automatycznie ({name})", set_energy_nothing: "Automatycznie (nie znaleziono)", set_energy_hide: "Nie pokazuj", set_energy_open: "Ustawienia energii",
 };

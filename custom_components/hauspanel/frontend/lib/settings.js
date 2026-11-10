@@ -13,6 +13,8 @@ import { openWelcome } from "./welcome.js";
 import { setupHints } from "./hints.js";
 import { setPref } from "./userprefs.js";
 import { takeSettings } from "./store.js";
+import { powerSensors } from "./energy.js";
+import { meterSensors, deviceName } from "./usage.js";
 import { doorbells, bellCameras, openers, bellEnabled, bellCamera, bellOpener, ringNow } from "./doorbell.js";
 
 /** Soft surface of lit cards. */
@@ -122,14 +124,16 @@ export function openSettings(ctx) {
     // Cameras: which ones the Security page shows (for everyone), and whose movements the security
     // popup lists (only for the signed-in user). Before, both were only in edit mode and the popup.
     const camerasSection = () => {
-      const { items, hidden } = cameraList(ctx);
+      const { items, hidden, extra } = cameraList(ctx);
       const all = [...items, ...hidden.filter((id) => !items.includes(id) && ctx.hass.states[id])];
       if (!all.length && !frigateCams(ctx.hass).length) return null;
       const nameOf = (id) => ctx.hass.states[id]?.attributes.friendly_name || id;
       const list = h("div", { class: "hp-qlist" }, ...all.map((id) => {
         const shown = items.includes(id);
         const sw = toggleSwitch(shown, () => {
-          if (shown) ctx.hideItem(CAM_CONTAINER, id); else S.unhide(CAM_CONTAINER, id);
+          if (shown) ctx.hideItem(CAM_CONTAINER, id);
+          else if (extra.has(id)) { S.unhide(CAM_CONTAINER, id); S.add(CAM_CONTAINER, id, []); }
+          else S.unhide(CAM_CONTAINER, id);
           draw();
         });
         return h("div", { class: `hp-qrow ${shown ? "" : "off"}` }, h("span", { class: "hp-qrow-ic" }, icon("mdi:cctv")),
@@ -327,6 +331,39 @@ export function openSettings(ctx) {
           }));
           add("rooms", section(t("players"), h("p", { class: "hp-muted small" }, t("set_players_hint")), list));
         }
+      }
+      // Energy: which sensor shows the power right now. Totals and costs stay with Home Assistant's energy settings.
+      const raw = ctx.energyPrefsRaw;
+      if (raw?.energy_sources?.length || raw?.device_consumption?.length) {
+        const pick = s.energyPick || {};
+        const nameOf = (id) => ctx.hass.states[id]?.attributes.friendly_name || id;
+        const sensors = powerSensors(ctx.hass);
+        const setPick = (fn) => { S.update((x) => { const p = JSON.parse(JSON.stringify(x.energyPick || {})); fn(p); x.energyPick = p; }); draw(); };
+        const picker = (cur, auto, onPick, canHide = false) => {
+          const sel = h("select", { class: "hp-select" },
+            h("option", { value: "" }, auto ? t("set_energy_auto", { name: nameOf(auto) }) : t("set_energy_nothing")),
+            ...(canHide ? [h("option", { value: "none" }, t("set_energy_hide"))] : []),
+            ...sensors.map((id) => h("option", { value: id }, nameOf(id))));
+          sel.value = cur || "";
+          sel.addEventListener("change", () => onPick(sel.value || null));
+          return sel;
+        };
+        const src = raw.energy_sources || [];
+        const grid = src.find((x) => x.type === "grid");
+        const solar = src.find((x) => x.type === "solar");
+        const rows = [];
+        if (grid) rows.push(row(t("set_energy_grid"), picker(pick.grid, grid.power_config?.stat_rate || grid.stat_rate, (v) => setPick((p) => { p.grid = v; }))));
+        if (solar) rows.push(row(t("set_energy_solar"), picker(pick.solar, solar.stat_rate, (v) => setPick((p) => { p.solar = v; }))));
+        const devs = (raw.device_consumption || []).filter((d) => d.stat_consumption);
+        const devRows = devs.map((d) => row(d.name || deviceName(ctx.hass, d.stat_consumption),
+          picker(pick.devices?.[d.stat_consumption], d.stat_rate || meterSensors(ctx.hass, d.stat_consumption).power,
+            (v) => setPick((p) => { p.devices ||= {}; if (v) p.devices[d.stat_consumption] = v; else delete p.devices[d.stat_consumption]; }), true)));
+        const open = h("button", { class: "hp-chip" }, icon("mdi:open-in-new"), t("set_energy_open"));
+        open.addEventListener("click", () => { history.pushState(null, "", "/config/energy"); window.dispatchEvent(new CustomEvent("location-changed")); });
+        add("rooms", section(t("energy"), h("p", { class: "hp-muted small" }, t("set_energy_hint")),
+          ...rows,
+          devRows.length ? h("div", { class: "hp-set-sub" }, t("set_energy_devices")) : null, ...devRows,
+          h("div", { class: "hp-set-row-end" }, open)));
       }
       add("rooms", section(t("shades"),
         row(t("group_shades"), toggleSwitch(!!s.groupShades, () => {
