@@ -213,6 +213,10 @@ HausPanel is free and stays free. If it saves you time, you can buy us a coffee:
 
 A star on GitHub, a bug report or an idea in the [issues](https://github.com/alpacalabs-de/hauspanel/issues) helps just as much.
 
+## How it's made
+
+HausPanel is written with a lot of help from AI (Claude). The ideas, the design decisions and the testing come from running it every day on our own wall tablet and phones. Every release goes through automated tests and is used in a real house before it ships. If something doesn't work for you, please [open an issue](https://github.com/alpacalabs-de/hauspanel/issues) – that's how it gets better.
+
 ## License
 
 MIT © 2026 Alpaca Labs. See [LICENSE](LICENSE).
@@ -250,5 +254,7 @@ Home Assistant kennt dein Haus schon: welche Räume auf welcher Etage liegen und
 **Übersetzungen:** Englisch und Deutsch sind von Hand geschrieben, die anderen Sprachen maschinell. Verbesserungen sind sehr willkommen, als [Issue](https://github.com/alpacalabs-de/hauspanel/issues/new?template=translation.yml) oder direkt in der Datei der Sprache, siehe [Help with translations](#help-with-translations).
 
 **Unterstützen:** HausPanel ist kostenlos und bleibt es. Wenn es dir Zeit spart, kannst du uns auf [Ko-fi einen Kaffee spendieren](https://ko-fi.com/alpacalabs). Ein Stern auf GitHub oder eine Idee als Issue hilft genauso.
+
+**Wie es entsteht:** HausPanel entsteht mit viel Hilfe von KI (Claude). Ideen, Designentscheidungen und das Testen kommen aus dem täglichen Einsatz auf unserem Wandtablet und den Handys. Jede Version läuft durch automatische Tests und ist bei uns im Haus im Einsatz, bevor sie veröffentlicht wird.
 
 Kostenlos und quelloffen (MIT), von [Alpaca Labs](https://alpacalabs.de). Fragen und Fehler gern als [Issue](https://github.com/alpacalabs-de/hauspanel/issues).
