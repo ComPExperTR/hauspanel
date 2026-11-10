@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.5.1
 
 - **Settings → Rooms & devices → Energy**: pick which sensor shows the house's, the solar roof's and each device's power right now, or leave a device out. Use and costs still come from Home Assistant's energy settings.
 - A meter with three phases or several channels now shows its total instead of phase A.
