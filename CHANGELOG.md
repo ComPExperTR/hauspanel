@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.5.2
 
 - Settings → Energy on the phone: the sensor pickers sit below their label in full width instead of running over it. Other pickers in the settings shrink instead of overflowing.
 
