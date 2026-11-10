@@ -705,6 +705,8 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-set-row > .hp-select { flex: 0 1 auto; min-width: 0; text-overflow: ellipsis; }
 .hp-set-row.stack { flex-direction: column; align-items: stretch; gap: 6px; padding: 10px 0; }
 .hp-set-row.stack > .hp-select { width: 100%; }
+.hp-set-more { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; color: var(--hp-accent); font-size: 14px; font-weight: 500; border-top: 1px solid rgba(255,255,255,.07); }
+.hp-set-more ha-icon { --mdc-icon-size: 18px; }
 .hp-input { width: 100%; box-sizing: border-box; height: 42px; border-radius: 14px; border: 1px solid var(--hp-border); background: var(--hp-glass-2); color: inherit; font: inherit; padding: 0 14px; margin: 6px 0 8px; outline: none; }
 .hp-input:focus { border-color: var(--hp-accent); }
 .hp-pat-add { display: flex; gap: 8px; align-items: center; }
@@ -1490,7 +1492,7 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-sheet.settings .hp-set-section { border-radius: 18px; background: rgba(255,255,255,.055); border: 0; padding: 4px 16px; margin: 0; }
 .hp-sheet.settings .hp-set-section:has(> .hp-preview, > .hp-layout-pick, > .hp-bg-row, > .hp-swatch-row) { padding: 14px 16px; }
 .hp-sheet.settings .hp-set-row + .hp-set-row, .hp-sheet.settings .hp-set-section > * + .hp-set-row { border-top: 1px solid rgba(255,255,255,.07); }
-.hp-sheet.settings .hp-set-row { min-height: 52px; }
+.hp-sheet.settings .hp-set-row { min-height: 52px; padding-top: 8px; padding-bottom: 8px; }
 .hp-sheet.settings .hp-set-section > .hp-muted { padding: 8px 0; margin: 0; }
 .hp-sheet.settings .hp-set-label small { color: rgba(238,242,246,.5); }
 .hp-sheet.settings .hp-layout-opt { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
@@ -1507,6 +1509,18 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-accentpick-opt { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; }
 .hp-accentpick-opt ha-icon { --mdc-icon-size: 18px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
 .hp-accentpick-opt.active { box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 0%, rgba(255,255,255,.25)); transform: scale(1.12); }
+/* Big screens: a bigger window, and the tabs as a list on the left. */
+@container (min-width: 1100px) {
+  .hp-backdrop:has(.hp-sheet.settings) { padding: 40px; }
+  .hp-sheet.settings { width: min(1240px, 100%); height: min(940px, 100%); }
+  .hp-sheet.settings .hp-sheet-body { flex-direction: row; }
+  .hp-sheet.settings .hp-set-nav { display: flex; flex-direction: column; gap: 2px; width: 230px; padding: 12px 12px 20px 18px; overflow-y: auto; overflow-x: hidden; border-bottom: 0; border-right: 1px solid rgba(255,255,255,.07); }
+  .hp-sheet.settings .hp-set-tab { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 7px 10px; font-size: 14px; border-radius: 14px; }
+  .hp-sheet.settings .hp-set-tab-ic { width: 34px; height: 34px; border-radius: 11px; flex: none; }
+  .hp-sheet.settings .hp-set-tab-label { text-align: left; white-space: normal; line-height: 1.25; }
+  .hp-set-pane { padding: 14px 40px 44px; }
+  .hp-set-pane > * { max-width: 860px; }
+}
 @container (max-width: 640px) {
   .hp-backdrop:has(.hp-sheet.settings) { padding: 0; }
   .hp-sheet.settings { width: 100%; height: 100%; border-radius: 0; border: 0; }
@@ -1514,6 +1528,10 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
   .hp-set-nav { padding: 8px 12px 10px; }
   .hp-sheet.settings .hp-set-nav { grid-auto-columns: 76px; }
   .hp-set-pane { padding: 4px 16px 40px; }
+  /* A choice of two or three buttons goes below its label, in full width. */
+  .hp-set-row:has(> .hp-seg) { flex-direction: column; align-items: stretch; gap: 8px; }
+  .hp-set-row > .hp-seg { align-self: stretch; display: flex; flex-wrap: nowrap; }
+  .hp-set-row > .hp-seg > button { flex: 1; }
 }
 /* ---------- popups behind the status chips ---------- */
 .hp-sheet.qsheet { width: min(520px, 100%); }

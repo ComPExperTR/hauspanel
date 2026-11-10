@@ -946,5 +946,5 @@ export default {
   fav_card_today_sub: "Próximos eventos y recordatorios",
   floor_lights: "Todas las luces",
   floor_shades_up: "Subir todas las persianas",
-  floor_shades_down: "Bajar todas las persianas", set_energy_hint: "El consumo y los costes vienen de los ajustes de energía de Home Assistant. Aquí eliges qué sensor muestra la potencia actual, si HausPanel se equivocó.", set_energy_grid: "Casa ahora", set_energy_solar: "Solar ahora", set_energy_devices: "Dispositivos", set_energy_auto: "Automático ({name})", set_energy_nothing: "Automático (ninguno encontrado)", set_energy_hide: "No mostrar", set_energy_open: "Ajustes de energía",
+  floor_shades_down: "Bajar todas las persianas", set_energy_hint: "El consumo y los costes vienen de los ajustes de energía de Home Assistant. Aquí eliges qué sensor muestra la potencia actual, si HausPanel se equivocó.", set_energy_grid: "Casa ahora", set_energy_solar: "Solar ahora", set_energy_devices: "Dispositivos", set_energy_auto: "Automático ({name})", set_energy_nothing: "Automático (ninguno encontrado)", set_energy_hide: "No mostrar", set_energy_open: "Ajustes de energía", show_all_n: "Mostrar todo ({n})",
 };

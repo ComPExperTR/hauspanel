@@ -946,5 +946,5 @@ export default {
   fav_card_today_sub: "Prochains événements et rappels",
   floor_lights: "Toutes les lumières",
   floor_shades_up: "Tous les volets en haut",
-  floor_shades_down: "Tous les volets en bas", set_energy_hint: "La consommation et les coûts viennent des réglages énergie de Home Assistant. Ici, tu choisis quel capteur affiche la puissance actuelle, si HausPanel s'est trompé.", set_energy_grid: "Maison maintenant", set_energy_solar: "Solaire maintenant", set_energy_devices: "Appareils", set_energy_auto: "Automatique ({name})", set_energy_nothing: "Automatique (aucun trouvé)", set_energy_hide: "Ne pas afficher", set_energy_open: "Réglages énergie",
+  floor_shades_down: "Tous les volets en bas", set_energy_hint: "La consommation et les coûts viennent des réglages énergie de Home Assistant. Ici, tu choisis quel capteur affiche la puissance actuelle, si HausPanel s'est trompé.", set_energy_grid: "Maison maintenant", set_energy_solar: "Solaire maintenant", set_energy_devices: "Appareils", set_energy_auto: "Automatique ({name})", set_energy_nothing: "Automatique (aucun trouvé)", set_energy_hide: "Ne pas afficher", set_energy_open: "Réglages énergie", show_all_n: "Tout afficher ({n})",
 };

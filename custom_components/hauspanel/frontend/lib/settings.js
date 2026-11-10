@@ -62,6 +62,26 @@ async function setDefaultPanel(hass, scope, on, panel) {
 const PANEL_TITLES = { hauspanel: "HausPanel", iphonepanel: "MobilePanel", securitypanel: "SecurityPanel" };
 const panelTitle = (id) => PANEL_TITLES[id] || id;
 
+const FOLD_AT = 6;
+const unfolded = new Set();
+
+/** A long list shows its first rows and a "Show all" button; open lists stay open while the window is. */
+function foldRows(rows, key) {
+  if (rows.length <= FOLD_AT + 2 || unfolded.has(key)) return rows;
+  const more = h("button", { class: "hp-set-more" }, icon("mdi:chevron-down"), t("show_all_n", { n: rows.length }));
+  const rest = rows.slice(FOLD_AT);
+  for (const r of rest) r.hidden = true;
+  more.addEventListener("click", () => { unfolded.add(key); for (const r of rest) r.hidden = false; more.remove(); });
+  return [...rows.slice(0, FOLD_AT), ...rest, more];
+}
+
+/** The same for a list element: its children fold. */
+function fold(list, key) {
+  const rows = [...list.children];
+  const out = foldRows(rows, key);
+  return out.length > rows.length ? h("div", {}, list, out[out.length - 1]) : list;
+}
+
 function row(label, control, hint) {
   return h("div", { class: "hp-set-row" }, h("div", { class: "hp-set-label" }, h("span", {}, label), hint ? h("small", {}, hint) : null), control);
 }
@@ -150,7 +170,7 @@ export function openSettings(ctx) {
             h("span", {}, t("set_cams_motion"), " ", h("span", { class: "hp-set-own" }, t("only_you"))), motionSub), pickBtn)
         : null;
       return section(t("set_cams"), h("p", { class: "hp-muted small" }, t("set_cams_hint")),
-        all.length ? h("div", { class: "hp-set-sub" }, t("set_cams_page")) : null, all.length ? list : null, motion);
+        all.length ? h("div", { class: "hp-set-sub" }, t("set_cams_page")) : null, all.length ? fold(list, "cams") : null, motion);
     };
     if (kind === "main") {
       const lay = h("div", { class: "hp-layout-pick" });
@@ -251,8 +271,7 @@ export function openSettings(ctx) {
       section(t("style"),
         row(t("corners"), corners),
         row(t("frame"), tog(["look", "frame"], look.frame !== false)),
-        row(t("glass"), tog(["look", "glass"], look.glass !== false), t("glass_hint"))),
-      section(t("ov_popups"),
+        row(t("glass"), tog(["look", "glass"], look.glass !== false), t("glass_hint")),
         row(t("ov_classic"), toggleSwitch(!!s.classicPopups, () => { S.update((x) => { x.classicPopups = !x.classicPopups; }); draw(); }), t("ov_classic_hint"))));
 
     // Header and Home
@@ -282,12 +301,7 @@ export function openSettings(ctx) {
         h("div", { class: "hp-home-styles" },
           pick("rooms", "mdi:view-grid-outline", t("home_style_rooms"), t("home_style_rooms_hint")),
           pick("favorites", "mdi:star-outline", t("home_style_fav"), t("home_style_fav_hint")))), chipsSection);
-      add("rooms", section(t("scenes"),
-        row(t("scene_confirm_setting"), toggleSwitch(s.sceneConfirm !== false, () => {
-          S.update((x) => { x.sceneConfirm = x.sceneConfirm === false; });
-          draw();
-        }), t("scene_confirm_hint"))));
-      add("rooms", section(t("set_rooms_open"),
+      add("rooms", section(t("rooms"),
         // What a tap on a room opens, as two clear choices (holding opens the other one).
         row(t("rp_tap"), h("div", { class: "hp-seg" }, [[true, "rp_tap_glance"], [false, "rp_tap_page"]].map(([v, l]) => {
           const b = h("button", { class: (s.roomPopup !== false) === v ? "active" : "" }, t(l));
@@ -297,7 +311,15 @@ export function openSettings(ctx) {
         // Motion in the room popup: a choice of each person, not of the panel.
         h("div", { class: "hp-set-row" }, h("div", { class: "hp-set-label" },
           h("span", {}, t("rp_motion_setting"), " ", h("span", { class: "hp-set-own" }, t("only_you"))), h("small", {}, t("rp_motion_setting_hint"))),
-          toggleSwitch(!!ctx.prefs?.roomMotion, () => { setPref(ctx, "roomMotion", !ctx.prefs?.roomMotion); draw(); }))));
+          toggleSwitch(!!ctx.prefs?.roomMotion, () => { setPref(ctx, "roomMotion", !ctx.prefs?.roomMotion); draw(); })),
+        row(t("scene_confirm_setting"), toggleSwitch(s.sceneConfirm !== false, () => {
+          S.update((x) => { x.sceneConfirm = x.sceneConfirm === false; });
+          draw();
+        }), t("scene_confirm_hint")),
+        row(t("group_shades"), toggleSwitch(!!s.groupShades, () => {
+          S.update((x) => { x.groupShades = !x.groupShades; });
+          draw();
+        }), t("group_shades_hint"))));
       // Security: the popup behind the Security chip, its doors and when they may be open, the good night check.
       const ed = securityEditor(ctx);
       add("security",
@@ -329,7 +351,7 @@ export function openSettings(ctx) {
             return h("div", { class: `hp-qrow ${shown ? "" : "off"}` }, h("span", { class: "hp-qrow-ic" }, icon(st?.attributes.device_class === "tv" ? "mdi:television" : "mdi:speaker")),
               h("div", { class: "hp-qrow-text" }, h("b", {}, st?.attributes.friendly_name || id), h("small", {}, [where(id), ctx.hass.entities?.[id]?.platform === "music_assistant" ? "Music Assistant" : ""].filter(Boolean).join(" · "))), sw);
           }));
-          add("rooms", section(t("players"), h("p", { class: "hp-muted small" }, t("set_players_hint")), list));
+          add("rooms", section(t("players"), h("p", { class: "hp-muted small" }, t("set_players_hint")), fold(list, "players")));
         }
       }
       // Energy: which sensor shows the power right now. Totals and costs stay with Home Assistant's energy settings.
@@ -364,14 +386,9 @@ export function openSettings(ctx) {
         open.addEventListener("click", () => { history.pushState(null, "", "/config/energy"); window.dispatchEvent(new CustomEvent("location-changed")); });
         add("rooms", section(t("energy"), h("p", { class: "hp-muted small" }, t("set_energy_hint")),
           ...rows,
-          devRows.length ? h("div", { class: "hp-set-sub" }, t("set_energy_devices")) : null, ...devRows,
+          devRows.length ? h("div", { class: "hp-set-sub" }, t("set_energy_devices")) : null, ...foldRows(devRows, "energy"),
           h("div", { class: "hp-set-row-end" }, open)));
       }
-      add("rooms", section(t("shades"),
-        row(t("group_shades"), toggleSwitch(!!s.groupShades, () => {
-          S.update((x) => { x.groupShades = !x.groupShades; });
-          draw();
-        }), t("group_shades_hint"))));
     }
 
     // Doorbell: camera full screen with an open button when it rings.
@@ -657,7 +674,7 @@ export function openSettings(ctx) {
 }
 
 const domainName = (hass, d) => {
-  const n = hass.localize?.(`component.${d}.entity_component._.name`) || d;
+  const n = hass.localize?.(`component.${d}.entity_component._.name`) || d.charAt(0).toUpperCase() + d.slice(1).replace(/_/g, " ");
   return d.startsWith("input_") ? `${n} (${t("helper")})` : n;
 };
 const platformName = (state, p) => state.names?.[p] || p;
@@ -689,10 +706,17 @@ function hidePane(ctx, S, draw, state) {
   // Device types
   const domains = [...new Set(all.map((id) => id.split(".")[0]))].sort((a, b) => domainName(hass, a).localeCompare(domainName(hass, b)));
   const domBox = h("div", {});
-  for (const d of domains) {
+  // Two kinds with the same name (a button and an event button …) get their id to tell them apart.
+  const nameCount = {};
+  for (const d of domains) nameCount[domainName(hass, d)] = (nameCount[domainName(hass, d)] || 0) + 1;
+  const domRows = domains.map((d) => {
     const n = count((id) => id.startsWith(d + "."));
-    domBox.append(row(`${domainName(hass, d)}`, toggleSwitch(hide.domains.includes(d), () => change(toggleIn("domains", d))), nEntities(n)));
-  }
+    const name = domainName(hass, d);
+    return row(nameCount[name] > 1 ? `${name} (${d})` : name, toggleSwitch(hide.domains.includes(d), () => change(toggleIn("domains", d))), nEntities(n));
+  });
+  // Kinds and integrations that hide something stay on top, so they are never folded away.
+  const onTop = (rows, isOn) => [...rows.filter((r, i) => isOn(i)), ...rows.filter((r, i) => !isOn(i))];
+  domBox.append(...foldRows(onTop(domRows, (i) => hide.domains.includes(domains[i])), "domains"));
 
   // Integrations
   const plats = {};
@@ -709,9 +733,9 @@ function hidePane(ctx, S, draw, state) {
     }).catch(() => {});
   }
   const platBox = h("div", {});
-  for (const [p, n] of Object.entries(plats).sort((a, b) => platformName(state, a[0]).localeCompare(platformName(state, b[0])))) {
-    platBox.append(row(platformName(state, p), toggleSwitch(hide.platforms.includes(p), () => change(toggleIn("platforms", p))), nEntities(n)));
-  }
+  const platList = Object.entries(plats).sort((a, b) => platformName(state, a[0]).localeCompare(platformName(state, b[0])));
+  const platRows = platList.map(([p, n]) => row(platformName(state, p), toggleSwitch(hide.platforms.includes(p), () => change(toggleIn("platforms", p))), nEntities(n)));
+  platBox.append(...foldRows(onTop(platRows, (i) => hide.platforms.includes(platList[i][0])), "platforms"));
 
   // Text rules
   const patBox = h("div", {});

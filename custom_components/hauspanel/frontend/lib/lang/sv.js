@@ -946,5 +946,5 @@ export default {
   fav_card_today_sub: "Nästa händelser och påminnelser",
   floor_lights: "Alla lampor på eller av",
   floor_shades_up: "Alla persienner upp",
-  floor_shades_down: "Alla persienner ner", set_energy_hint: "Förbrukning och kostnader kommer från energiinställningarna i Home Assistant. Här väljer du vilken sensor som visar effekten just nu, om HausPanel gissade fel.", set_energy_grid: "Huset just nu", set_energy_solar: "Sol just nu", set_energy_devices: "Enheter", set_energy_auto: "Automatiskt ({name})", set_energy_nothing: "Automatiskt (ingen hittad)", set_energy_hide: "Visa inte", set_energy_open: "Energiinställningar",
+  floor_shades_down: "Alla persienner ner", set_energy_hint: "Förbrukning och kostnader kommer från energiinställningarna i Home Assistant. Här väljer du vilken sensor som visar effekten just nu, om HausPanel gissade fel.", set_energy_grid: "Huset just nu", set_energy_solar: "Sol just nu", set_energy_devices: "Enheter", set_energy_auto: "Automatiskt ({name})", set_energy_nothing: "Automatiskt (ingen hittad)", set_energy_hide: "Visa inte", set_energy_open: "Energiinställningar", show_all_n: "Visa alla ({n})",
 };

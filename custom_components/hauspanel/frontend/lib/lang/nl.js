@@ -946,5 +946,5 @@ export default {
   fav_card_today_sub: "Volgende afspraken en herinneringen",
   floor_lights: "Alle lampen aan of uit",
   floor_shades_up: "Alle rolluiken omhoog",
-  floor_shades_down: "Alle rolluiken omlaag", set_energy_hint: "Verbruik en kosten komen uit de energie-instellingen van Home Assistant. Hier kies je welke sensor het vermogen van nu toont, als HausPanel verkeerd gokte.", set_energy_grid: "Huis nu", set_energy_solar: "Zon nu", set_energy_devices: "Apparaten", set_energy_auto: "Automatisch ({name})", set_energy_nothing: "Automatisch (geen gevonden)", set_energy_hide: "Niet tonen", set_energy_open: "Energie-instellingen",
+  floor_shades_down: "Alle rolluiken omlaag", set_energy_hint: "Verbruik en kosten komen uit de energie-instellingen van Home Assistant. Hier kies je welke sensor het vermogen van nu toont, als HausPanel verkeerd gokte.", set_energy_grid: "Huis nu", set_energy_solar: "Zon nu", set_energy_devices: "Apparaten", set_energy_auto: "Automatisch ({name})", set_energy_nothing: "Automatisch (geen gevonden)", set_energy_hide: "Niet tonen", set_energy_open: "Energie-instellingen", show_all_n: "Alles tonen ({n})",
 };
