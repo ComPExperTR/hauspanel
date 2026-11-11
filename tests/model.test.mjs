@@ -204,3 +204,15 @@ test("presence: a car's 'moving' sensor in the garage is no one in the room", as
   });
   assert.equal(roomPresence(hass, { all: ["binary_sensor.car_moving"] }), null);
 });
+
+test("a room with only a thermometer still shows, an empty one doesn't", async () => {
+  const { roomHasContent } = await import(LIB + "model.js");
+  const hass = house();
+  hass.areas.cellar = { area_id: "cellar", name: "Cellar" };
+  hass.entities["sensor.cellar_temp"] = { entity_id: "sensor.cellar_temp", area_id: "cellar", platform: "zha" };
+  hass.states["sensor.cellar_temp"] = { entity_id: "sensor.cellar_temp", state: "12.5", attributes: { device_class: "temperature", unit_of_measurement: "°C", friendly_name: "Cellar temperature" } };
+  const m = buildModel(hass, {});
+  assert.equal(roomHasContent(m.areaById.get("cellar")), true, "only a thermometer");
+  assert.equal(roomHasContent(m.areaById.get("attic")), false, "nothing at all");
+  assert.equal(roomHasContent(m.areaById.get("kitchen")), true);
+});

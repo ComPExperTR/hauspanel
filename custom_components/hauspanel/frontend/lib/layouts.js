@@ -1,6 +1,6 @@
 // Layouts and the building blocks they share: home status, scenes, room cards, room view, room menu.
 import { h, icon, formatNumber, formatTime, formatDate, bindTapHold, domainOf, isUnlocked, entityName } from "./util.js";
-import { isOn, roomPresence } from "./model.js";
+import { isOn, roomPresence, roomHasContent } from "./model.js";
 import { createTile, createSeparator, createScenePill } from "./tile.js";
 import { MEDIA, entityIcon, stateText } from "./domains.js";
 import { sortable } from "./drag.js";
@@ -488,7 +488,7 @@ export function overview(ctx, { container = "home", own = false, onAdd = null } 
   // "own": the Favourites home, where only what was added by hand shows.
   if (own) { /* nothing automatic */ } else if (ctx.settings.s.todayCard && (ctx.agenda.calendars().length || ctx.agenda.todoLists().length)) auto.push("card:today");
   if (!own) {
-    for (const a of m.areas) if (a.tiles.length) auto.push(`room:${a.id}`);
+    for (const a of m.areas) if (roomHasContent(a)) auto.push(`room:${a.id}`);
     if (m.unassigned.tiles.length) auto.push("room:_other");
     if (m.security.length) auto.push("card:security");
     if (m.all.some((id) => id.startsWith("climate."))) auto.push("card:climate");
@@ -675,8 +675,14 @@ export function roomItems(ctx, area) {
   const bundled = new Set([...carDevices(ctx.hass), ...poolDevices(ctx.hass),
     ...heatPumps(ctx.hass).flatMap((hp) => [hp.dev, hp.climate && ctx.hass.entities?.[hp.climate]?.device_id]).filter(Boolean)]);
   const inBundle = (id) => bundled.has(ctx.hass.entities?.[id]?.device_id);
-  return [...area.tiles.filter((id) => !plugs.has(id) && !inBundle(id)), ...deviceKeys(ctx, area.id)];
+  const items = [...area.tiles.filter((id) => !plugs.has(id) && !inBundle(id)), ...deviceKeys(ctx, area.id)];
+  // A room with nothing to switch (a cellar with a thermometer) shows what it measures instead of "nothing here".
+  if (!items.length && area.sensors?.length) {
+    return area.sensors.filter((id) => READINGS.has(ctx.hass.states[id]?.attributes.device_class));
+  }
+  return items;
 }
+const READINGS = new Set(["temperature", "humidity", "carbon_dioxide", "pm25", "pm10", "illuminance", "pressure", "volatile_organic_compounds", "moisture"]);
 
 /** Washers, dryers, dishwashers and 3D printers of a room, as tile keys ("app:<device>", "prn:<device>"). */
 export function deviceKeys(ctx, areaId) {

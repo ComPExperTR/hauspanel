@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Settings** on a big screen: a bigger window with the tabs as a list on the left. Sections with a single switch are merged (Rooms: opening, presence, scenes and shades in one place; Look: classic popups under Style), long lists (speakers, energy devices, cameras, device types, integrations) show their first six and *Show all*. On the phone, two-way choices sit below their label.
+- Rooms with nothing to switch but a thermometer or another reading (a cellar, a storeroom) now show up, with their temperature, and their page shows what they measure.
+
 ## 1.5.2
 
 - Settings → Energy on the phone: the sensor pickers sit below their label in full width instead of running over it. Other pickers in the settings shrink instead of overflowing.

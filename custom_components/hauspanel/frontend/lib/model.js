@@ -216,6 +216,9 @@ export function buildModel(hass, hide) {
   return model;
 }
 
+/** A room is worth showing with something to switch, or at least a temperature or humidity to read. */
+export const roomHasContent = (a) => !!(a.tiles.length || a.temperature || a.humidity);
+
 /**
  * Is someone in this room? Presence and occupancy sensors count; when a room has one, plain motion sensors
  * there are left out (they drop off while you sit still, and are often the same device seen twice). Only a

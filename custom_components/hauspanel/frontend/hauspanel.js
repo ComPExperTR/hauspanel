@@ -1,6 +1,6 @@
 // HausPanel: a dashboard for Home Assistant that builds itself.
 import { h, icon, formatTime, formatDate, fireHass, debounce, formatNumber, isUnlocked } from "./lib/util.js";
-import { buildModel, registrySignature, isOn } from "./lib/model.js";
+import { buildModel, registrySignature, isOn, roomHasContent } from "./lib/model.js";
 import { Settings } from "./lib/store.js";
 import { renderHome, renderRooms, renderPage, specialTiles } from "./lib/layouts.js";
 import { SIDE_DEFAULTS } from "./lib/sidepanel.js";
@@ -401,10 +401,10 @@ class HausPanelElement extends HTMLElement {
     return this._today;
   }
 
-  /** Rooms in the order chosen in edit mode; rooms without devices are left out. */
+  /** Rooms in the order chosen in edit mode; rooms with nothing to switch or read are left out. */
   roomList() {
     const m = this.model;
-    const has = (a) => a.tiles.length || this.settings.cont(`room:${a.id}`).added?.length;
+    const has = (a) => (a === m.unassigned ? a.tiles.length : roomHasContent(a)) || this.settings.cont(`room:${a.id}`).added?.length;
     const auto = m.areas.filter(has).map((a) => a.id);
     const { items } = this.settings.arrange("rooms", auto);
     const out = items.map((id) => m.areaById.get(id)).filter(Boolean);
