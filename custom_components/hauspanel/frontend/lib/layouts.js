@@ -30,6 +30,7 @@ import { snapshotUrl } from "./camera.js";
 import { ago, since } from "./popkit.js";
 import { wasteSources, loadPickups, openWaste, whenText } from "./waste.js";
 import { noticesBlock } from "./notices.js";
+import { parcelsBlock } from "./parcels.js";
 
 export const LAYOUTS = [
   { id: "grid", icon: "mdi:view-grid-outline" },
@@ -679,7 +680,10 @@ export function roomItems(ctx, area) {
   const items = [...area.tiles.filter((id) => !plugs.has(id) && !inBundle(id)), ...deviceKeys(ctx, area.id)];
   // A room with nothing to switch (a cellar with a thermometer) shows what it measures instead of "nothing here".
   if (!items.length && area.sensors?.length) {
-    return area.sensors.filter((id) => READINGS.has(ctx.hass.states[id]?.attributes.device_class));
+    const read = area.sensors.filter((id) => READINGS.has(ctx.hass.states[id]?.attributes.device_class));
+    const watch = area.sensors.filter((id) => id.startsWith("binary_sensor."));
+    // Readings and contacts first; a room with neither shows its other sensors.
+    return read.length || watch.length ? [...read, ...watch] : area.sensors.slice(0, 12);
   }
   return items;
 }
@@ -1290,7 +1294,7 @@ function focusHome(ctx) {
     pill.addEventListener("click", () => ctx.tapRoom(a.id));
     rooms.append(pill);
   }
-  return h("div", { class: "hp-focus-home" }, date, clock, line, noticesBlock(ctx),
+  return h("div", { class: "hp-focus-home" }, date, clock, line, noticesBlock(ctx), parcelsBlock(ctx),
     scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes")), rooms);
 }
 
@@ -1337,10 +1341,10 @@ export function renderHome(ctx, layout) {
   const scenes = scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes"));
   if (layout === "sidebar" && !ctx.narrow) {
     return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, "overview"),
-      h("div", { class: "hp-side-main" }, h("div", { class: "hp-side-title" }, t("tab_home")), homeCats(ctx), sideScenes(ctx) ? null : scenes, noticesBlock(ctx),
+      h("div", { class: "hp-side-main" }, h("div", { class: "hp-side-title" }, t("tab_home")), homeCats(ctx), sideScenes(ctx) ? null : scenes, noticesBlock(ctx), parcelsBlock(ctx),
         ctx.settings.s.homeStyle === "favorites" ? null : h("div", { class: "hp-label hp-rooms-label" }, t("rooms")), homeBody(ctx, layout)));
   }
-  return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, noticesBlock(ctx), homeBody(ctx, layout));
+  return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, noticesBlock(ctx), parcelsBlock(ctx), homeBody(ctx, layout));
 }
 
 /**

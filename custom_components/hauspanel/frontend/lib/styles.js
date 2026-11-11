@@ -1158,6 +1158,11 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 .hp-sheet.printer { --c: #b59cff; --c2: #7a5cf0; }
 .hp-onpill.printer .hp-onpill-ic { background: #b59cff; color: #1d1433; }
 .hp-notices { margin-bottom: 18px; gap: 8px; }
+.hp-parcels .hp-onnow { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.hp-root.layout-phone .hp-parcels .hp-onnow, .hp-side-onnow .hp-parcels .hp-onnow { grid-template-columns: 1fr; }
+.hp-onpill.parcel .hp-onpill-ic { background: #c9a27a; color: #2e1d0e; }
+.hp-onpill.parcel.problem .hp-onpill-ic { background: var(--hp-red); color: #fff; }
+a.hp-onpill { color: inherit; text-decoration: none; }
 .hp-onpill.notice .hp-onpill-ic { background: #ffb259; color: #3a1f05; }
 .hp-notice-ctl { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .hp-notice-ctl > .hp-input, .hp-notice-ctl > .hp-select { flex: 1; min-width: 0; }
@@ -1613,6 +1618,11 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 /* Scene armed for its second tap: wins over every layout's pill style. */
 .hp-scene.armed.armed { background: var(--hp-accent); color: #2b2125; border-color: transparent; animation: hp-armed 1s ease-in-out infinite alternate; }
 .hp-scene.armed.armed ha-icon { background: rgba(0,0,0,.12); }
+/* Names and "Tap to confirm" stay inside the pill: long names end in …, the confirm text may take two lines. */
+.hp-scene { min-width: 0; }
+.hp-scene > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.hp-scene.armed.armed > span { white-space: normal; line-height: 1.15; font-size: .9em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.hp-side-scenes .hp-scene.armed.armed > span { font-size: 10.5px; line-height: 1.1; }
 .hp-shadegroup-n { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: var(--hp-glass-2); color: var(--hp-sub); }
 .hp-row .hp-shadegroup-n { margin-left: auto; }
 /* ---- shared popup parts */

@@ -216,3 +216,14 @@ test("a room with only a thermometer still shows, an empty one doesn't", async (
   assert.equal(roomHasContent(m.areaById.get("attic")), false, "nothing at all");
   assert.equal(roomHasContent(m.areaById.get("kitchen")), true);
 });
+
+test("a room with only a door contact shows too", async () => {
+  const { roomHasContent } = await import(LIB + "model.js");
+  const hass = house();
+  hass.areas.shed = { area_id: "shed", name: "Shed" };
+  hass.entities["binary_sensor.shed_door"] = { entity_id: "binary_sensor.shed_door", area_id: "shed", platform: "zha" };
+  hass.states["binary_sensor.shed_door"] = { entity_id: "binary_sensor.shed_door", state: "off", attributes: { device_class: "door", friendly_name: "Shed door" } };
+  hass.entities["sensor.shed_battery"] = { entity_id: "sensor.shed_battery", area_id: "garage_x", platform: "zha", entity_category: "diagnostic" };
+  const m = buildModel(hass, {});
+  assert.equal(roomHasContent(m.areaById.get("shed")), true);
+});

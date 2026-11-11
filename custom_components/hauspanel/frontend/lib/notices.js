@@ -1,8 +1,9 @@
 // Notices: entities you pick yourself ("Mail is here", "Washing done") that show on Home only while they say so.
-import { h, icon, domainOf, bindTapHold, entityName } from "./util.js";
+import { h, icon, domainOf, bindTapHold, entityName, toggleSwitch } from "./util.js";
 import { entityIcon, stateText } from "./domains.js";
 import { candidateEntities } from "./model.js";
 import { t } from "./i18n.js";
+import { parcelSensors } from "./parcels.js";
 
 /** Kinds that are simply on or off: shown while on. */
 const ON_OFF = new Set(["input_boolean", "switch", "binary_sensor", "light", "fan", "siren", "humidifier", "automation"]);
@@ -134,6 +135,10 @@ export function noticesSection(ctx, S, draw, state, { section, row }) {
   search.addEventListener("input", () => { state.noticeQuery = search.value; drawResults(); });
   drawResults();
 
+  // Parcels from the parcel integrations show by themselves; this switches them off.
+  const parcels = parcelSensors(hass).length
+    ? row(t("parcels_setting"), toggleSwitch(S.s.parcels !== false, () => { S.update((x) => { x.parcels = x.parcels === false; }); draw(); }), t("parcels_setting_hint"))
+    : null;
   return section(t("notices"), h("p", { class: "hp-muted small" }, t("notices_hint")),
-    ...(rows.length ? rows : [h("div", { class: "hp-muted small" }, t("notices_none"))]), search, results);
+    ...(rows.length ? rows : [h("div", { class: "hp-muted small" }, t("notices_none"))]), search, results, parcels);
 }

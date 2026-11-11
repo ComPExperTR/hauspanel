@@ -1,8 +1,11 @@
 # Changelog
 
-## Unreleased
+## 1.6.0
 
 - **Notices** (*Settings → Home → Notices*): pick entities of your own, like a helper for *Mail is here* or a washing machine sensor, and they show on Home only when they matter. Switches and helpers show while on; sensors and lists at the states you enter (several separated by commas, or a number like `>0`). A helper is cleared with the tick on its pill.
+- **Parcels**: with the [parcel integrations](https://ha-parcel-integrations.github.io/) (one per carrier, or their aggregator) Home shows the parcels on their way: sender, carrier, status and when it comes, the next one first. A tap opens the tracking page. Switch them off under *Settings → Home → Notices*.
+- Rooms with only a door contact, a motion sensor or other sensors now show up as well, with those sensors on their page.
+- Scenes: *Tap to confirm* no longer runs out of the pill on the phone and in the side panel; long scene names end in "…".
 
 ## 1.5.3
 

@@ -217,7 +217,8 @@ export function buildModel(hass, hide) {
 }
 
 /** A room is worth showing with something to switch, or at least a temperature or humidity to read. */
-export const roomHasContent = (a) => !!(a.tiles.length || a.temperature || a.humidity);
+/** A room worth showing: something to switch, or at least something it measures or watches (a door contact, a motion sensor). */
+export const roomHasContent = (a) => !!(a.tiles.length || a.temperature || a.humidity || a.sensors?.length);
 
 /**
  * Is someone in this room? Presence and occupancy sensors count; when a room has one, plain motion sensors

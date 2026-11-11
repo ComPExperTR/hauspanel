@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS = {
  * the Security page shows, doorbell, baby monitor, calendars and weather … Copying "the house" from
  * another panel takes these; looks, order and the Home screen stay as they are.
  */
-export const HOUSE_KEYS = ["hide", "secAllow", "doorbell", "baby", "calendars", "todos", "weather", "meters", "maintIgnore", "nightCheck", "sceneConfirm", "energyPick", "notices"];
+export const HOUSE_KEYS = ["hide", "secAllow", "doorbell", "baby", "calendars", "todos", "weather", "meters", "maintIgnore", "nightCheck", "sceneConfirm", "energyPick", "notices", "parcels"];
 const houseContainer = (k) => k.startsWith("security:");
 
 /** The settings after taking `from` (another panel's) into `to`: "house" or "all". Neither is changed. */
