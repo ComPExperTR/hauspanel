@@ -7,3 +7,6 @@ __pycache__/
 
 # Design drafts stay local
 design/
+
+# Private notes, never committed
+CLAUDE.local.md
