@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.5.3
 
 - **Settings** on a big screen: a bigger window with the tabs as a list on the left. Sections with a single switch are merged (Rooms: opening, presence, scenes and shades in one place; Look: classic popups under Style), long lists (speakers, energy devices, cameras, device types, integrations) show their first six and *Show all*. On the phone, two-way choices sit below their label.
 - Rooms with nothing to switch but a thermometer or another reading (a cellar, a storeroom) now show up, with their temperature, and their page shows what they measure.
+- Room popup: the room's temperature shows once, on top, not again under *More in this room*.
 
 ## 1.5.2
 
