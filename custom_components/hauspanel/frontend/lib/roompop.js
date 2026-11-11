@@ -319,7 +319,8 @@ export function openRoomPopup(ctx, areaId) {
 
   // ---- everything else the room page shows (vacuum, valves, locks, sensors …) as its normal tiles
   const known = new Set([...lights, ...shades, ...covers, ...switches, ...locks, ...players, ...(climate ? [climate] : [])]);
-  const rest = tiles.filter((id) => !known.has(id) && domainOf(id) !== "climate");
+  // The room's own temperature is already the big number on top.
+  const rest = tiles.filter((id) => !known.has(id) && domainOf(id) !== "climate" && id !== area.temperature);
   if (rest.length) {
     const list = section("mdi:dots-grid", t("rp_other"), "", () => t("rp_n_items", { n: rest.length }), "other");
     for (const id of rest) {
