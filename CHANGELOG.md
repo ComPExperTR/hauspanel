@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Notices** (*Settings → Home → Notices*): pick entities of your own, like a helper for *Mail is here* or a washing machine sensor, and they show on Home only when they matter. Switches and helpers show while on; sensors and lists at the states you enter (several separated by commas, or a number like `>0`). A helper is cleared with the tick on its pill.
+
 ## 1.5.3
 
 - **Settings** on a big screen: a bigger window with the tabs as a list on the left. Sections with a single switch are merged (Rooms: opening, presence, scenes and shades in one place; Look: classic popups under Style), long lists (speakers, energy devices, cameras, device types, integrations) show their first six and *Show all*. On the phone, two-way choices sit below their label.

@@ -29,6 +29,7 @@ import { doorbells } from "./doorbell.js";
 import { snapshotUrl } from "./camera.js";
 import { ago, since } from "./popkit.js";
 import { wasteSources, loadPickups, openWaste, whenText } from "./waste.js";
+import { noticesBlock } from "./notices.js";
 
 export const LAYOUTS = [
   { id: "grid", icon: "mdi:view-grid-outline" },
@@ -1289,7 +1290,7 @@ function focusHome(ctx) {
     pill.addEventListener("click", () => ctx.tapRoom(a.id));
     rooms.append(pill);
   }
-  return h("div", { class: "hp-focus-home" }, date, clock, line,
+  return h("div", { class: "hp-focus-home" }, date, clock, line, noticesBlock(ctx),
     scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes")), rooms);
 }
 
@@ -1336,10 +1337,10 @@ export function renderHome(ctx, layout) {
   const scenes = scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes"));
   if (layout === "sidebar" && !ctx.narrow) {
     return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, "overview"),
-      h("div", { class: "hp-side-main" }, h("div", { class: "hp-side-title" }, t("tab_home")), homeCats(ctx), sideScenes(ctx) ? null : scenes,
+      h("div", { class: "hp-side-main" }, h("div", { class: "hp-side-title" }, t("tab_home")), homeCats(ctx), sideScenes(ctx) ? null : scenes, noticesBlock(ctx),
         ctx.settings.s.homeStyle === "favorites" ? null : h("div", { class: "hp-label hp-rooms-label" }, t("rooms")), homeBody(ctx, layout)));
   }
-  return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, homeBody(ctx, layout));
+  return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, noticesBlock(ctx), homeBody(ctx, layout));
 }
 
 /**

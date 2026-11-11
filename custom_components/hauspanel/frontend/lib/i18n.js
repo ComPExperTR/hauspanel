@@ -77,7 +77,7 @@ const EN = {
   start_screen: "Start Home Assistant here", start_screen_hint: "Only for you, on all your devices.",
   start_screen_all: "Start here for everyone", start_screen_all_hint: "For users who haven't chosen a start page.",
   start_on: "HausPanel now opens first.", start_off: "Home Assistant opens its usual dashboard again.",
-  start_failed: "Could not change the start screen.",
+  start_failed: "Could not change the start screen.", notices: "Notices", notices_hint: "Entities of your own that show on Home only when they matter, like a helper for “Mail is here” or a sensor that says the washing is done. Switches and helpers show while on, anything else at the states you enter.", notices_none: "No notices yet. Search below to add one.", notice_when_on: "Shows while on", notice_pick: "Show at …", notice_when_ph: "Show at, e.g. done or >0", notice_need_when: "Enter when it should show.", notice_now: "now: {state}", notice_done: "Done", notice_done_hint: "Tap the tick when done",
 };
 
 const DE = {
@@ -156,7 +156,7 @@ const DE = {
   start_screen: "Home Assistant hier starten", start_screen_hint: "Nur für dich, auf allen deinen Geräten.",
   start_screen_all: "Für alle hier starten", start_screen_all_hint: "Für Benutzer ohne eigene Startseite.",
   start_on: "HausPanel öffnet jetzt zuerst.", start_off: "Home Assistant öffnet wieder sein übliches Dashboard.",
-  start_failed: "Startseite konnte nicht geändert werden.",
+  start_failed: "Startseite konnte nicht geändert werden.", notices: "Meldungen", notices_hint: "Eigene Entitäten, die nur dann auf der Startseite erscheinen, wenn sie wichtig sind, zum Beispiel ein Helfer „Post ist da“ oder ein Sensor, der meldet, dass die Wäsche fertig ist. Schalter und Helfer erscheinen, solange sie an sind, alles andere bei den Zuständen, die du einträgst.", notices_none: "Noch keine Meldungen. Unten suchen und hinzufügen.", notice_when_on: "Erscheint, solange an", notice_pick: "Zeigen bei …", notice_when_ph: "Zeigen bei, z. B. fertig oder >0", notice_need_when: "Trag ein, wann sie erscheinen soll.", notice_now: "gerade: {state}", notice_done: "Erledigt", notice_done_hint: "Haken antippen, wenn erledigt",
 };
 
 Object.assign(EN, EN_POP);

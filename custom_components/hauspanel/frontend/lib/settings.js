@@ -11,6 +11,7 @@ import { cameraList, CAM_CONTAINER } from "./securityview.js";
 import { openMotionCams, motionCamPref, frigateCams } from "./visitors.js";
 import { openWelcome } from "./welcome.js";
 import { setupHints } from "./hints.js";
+import { noticesSection } from "./notices.js";
 import { setPref } from "./userprefs.js";
 import { takeSettings } from "./store.js";
 import { powerSensors } from "./energy.js";
@@ -119,6 +120,7 @@ export function openSettings(ctx) {
   });
 
   const hideState = { query: "" };
+  const noticeState = { noticeQuery: "" };
   const draw = () => {
     const scroll = sheet.body.querySelector(".hp-set-pane")?.scrollTop || 0;
     const s = S.s;
@@ -300,7 +302,8 @@ export function openSettings(ctx) {
       add("home", section(t("home_style"),
         h("div", { class: "hp-home-styles" },
           pick("rooms", "mdi:view-grid-outline", t("home_style_rooms"), t("home_style_rooms_hint")),
-          pick("favorites", "mdi:star-outline", t("home_style_fav"), t("home_style_fav_hint")))), chipsSection);
+          pick("favorites", "mdi:star-outline", t("home_style_fav"), t("home_style_fav_hint")))), chipsSection,
+        noticesSection(ctx, S, draw, noticeState, { section, row }));
       add("rooms", section(t("rooms"),
         // What a tap on a room opens, as two clear choices (holding opens the other one).
         row(t("rp_tap"), h("div", { class: "hp-seg" }, [[true, "rp_tap_glance"], [false, "rp_tap_page"]].map(([v, l]) => {

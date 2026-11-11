@@ -1157,6 +1157,11 @@ ha-icon.hp-player-noart { --mdc-icon-size: 44px; opacity: .4; }
 /* Printer popup */
 .hp-sheet.printer { --c: #b59cff; --c2: #7a5cf0; }
 .hp-onpill.printer .hp-onpill-ic { background: #b59cff; color: #1d1433; }
+.hp-notices { margin-bottom: 18px; gap: 8px; }
+.hp-onpill.notice .hp-onpill-ic { background: #ffb259; color: #3a1f05; }
+.hp-notice-ctl { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hp-notice-ctl > .hp-input, .hp-notice-ctl > .hp-select { flex: 1; min-width: 0; }
+.hp-notice-ctl > .hp-muted { flex: 1; }
 .hp-pr-media { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 16 / 9; background: #0e0c10; margin-bottom: 12px; cursor: pointer; }
 .hp-pr-media .hp-live-wrap, .hp-pr-media .hp-cam-live { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hp-pr-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 10%; }
