@@ -1,5 +1,6 @@
 // Spanish texts. Keys and {placeholders} as in English.
 export default {
+  gas: "Gas", battery: "Batería", charged: "{v} cargados",
   playlists: "Listas de reproducción",
   search_playlists: "Buscar listas de reproducción",
   playing_x: "Reproduciendo {name}",

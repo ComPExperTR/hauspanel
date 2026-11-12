@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HausPanel",
+        "description": "HausPanel, MobilePanel ve SecurityPanel'i kenar çubuğuna ekler; odalarına, katlarına ve cihazlarına göre düzenler."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HausPanel zaten kurulu."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Panelleri kim görsün",
+        "description": "Bir paneli buradan açarak yalnızca yöneticilere göster. Diğer kullanıcılar onu kenar çubuğunda görmez ve açamaz.",
+        "data": {
+          "admin_hauspanel": "HausPanel yalnızca yöneticiler için",
+          "admin_mobilepanel": "MobilePanel yalnızca yöneticiler için",
+          "admin_securitypanel": "SecurityPanel yalnızca yöneticiler için"
+        }
+      }
+    }
+  }
+}

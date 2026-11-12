@@ -2,6 +2,7 @@ import { EN_POP, DE_POP } from "./i18n_popups.js";
 // Texts: German and English here, other languages in lang/; follows Home Assistant's language.
 
 const EN = {
+  gas: "Gas", battery: "Battery", charged: "{v} charged",
   playlists: "Playlists", search_playlists: "Search playlists", playing_x: "Playing {name}", play_failed: "Could not start playback.", no_playlists: "No playlists in Music Assistant yet.",
   players: "Speakers & TVs", maintenance: "Maintenance", maint_batteries: "Low batteries", maint_offline: "Not reachable", maint_updates: "Updates", maint_all_good: "Nothing to do – everything is fine.", maint_ignore: "Ignore", maint_ignored_n: "Show {n} ignored again", n_notes: "{n} to check", low: "Low", doorbell: "Doorbell", doorbell_ringing: "Someone is at the door", doorbell_show: "Show the camera when it rings", doorbell_hint: "On this panel the camera opens full screen when the doorbell rings, with a button to open the door. Closes by itself after 2 minutes.", doorbell_camera: "Camera", doorbell_opener: "Open button", doorbell_none: "None", doorbell_open_confirm: "Tap to confirm", doorbell_test: "Try it", doorbell_buzzer: "Open door", scene_confirm: "Tap to confirm", scene_confirm_setting: "Confirm scenes", scene_confirm_hint: "The first tap asks, the second starts the scene – so Good night doesn't run by accident.", cam_close: "Close", cat_chips: "Status chips", cat_chips_hint: "The row at the top of Home. A tap opens a popup with the details.", cat_today: "Today's events",
   no_lights_on: "All lights are off.", nothing_running: "Nothing is drawing power right now.", no_energy_devices: "Add devices under Settings → Dashboards → Energy to see them here.",
@@ -81,6 +82,7 @@ const EN = {
 };
 
 const DE = {
+  gas: "Gas", battery: "Batterie", charged: "{v} geladen",
   playlists: "Playlists", search_playlists: "Playlists suchen", playing_x: "Spielt {name}", play_failed: "Wiedergabe konnte nicht starten.", no_playlists: "Noch keine Playlists in Music Assistant.",
   players: "Lautsprecher & TVs", maintenance: "Wartung", maint_batteries: "Batterie schwach", maint_offline: "Nicht erreichbar", maint_updates: "Updates", maint_all_good: "Nichts zu tun – alles in Ordnung.", maint_ignore: "Ignorieren", maint_ignored_n: "{n} ignorierte wieder zeigen", n_notes: "{n} prüfen", low: "Schwach", doorbell: "Klingel", doorbell_ringing: "Es klingelt", doorbell_show: "Kamera zeigen, wenn es klingelt", doorbell_hint: "Auf diesem Panel geht beim Klingeln die Kamera im Vollbild auf, mit einem Knopf zum Öffnen. Schließt sich nach 2 Minuten von selbst.", doorbell_camera: "Kamera", doorbell_opener: "Öffnen-Knopf", doorbell_none: "Keiner", doorbell_open_confirm: "Zum Bestätigen tippen", doorbell_test: "Ausprobieren", doorbell_buzzer: "Tür öffnen", scene_confirm: "Zum Bestätigen tippen", scene_confirm_setting: "Szenen bestätigen", scene_confirm_hint: "Der erste Tipp fragt, der zweite startet die Szene – damit „Gute Nacht“ nicht aus Versehen läuft.", cam_close: "Schließen", cat_chips: "Status-Chips", cat_chips_hint: "Die Reihe oben auf Home. Antippen öffnet ein Popup mit Details.", cat_today: "Termine heute",
   no_lights_on: "Alle Lichter sind aus.", nothing_running: "Gerade verbraucht nichts Strom.", no_energy_devices: "Geräte unter Einstellungen → Dashboards → Energie hinzufügen, dann stehen sie hier.",
@@ -167,7 +169,7 @@ let dict = EN;
 export const BUILTIN = { en: EN, de: DE };
 
 /** Languages with their own file in lang/ (loaded only when used); German and English are built in. */
-export const LANGS = ["fr", "nl", "es", "it", "pl", "sv"];
+export const LANGS = ["fr", "nl", "es", "it", "pl", "sv", "tr"];
 const loaded = {};
 
 /** Follow Home Assistant's language; texts missing in a language fall back to English. */

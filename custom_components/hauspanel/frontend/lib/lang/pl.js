@@ -1,5 +1,6 @@
 // Polish texts. Keys and {placeholders} as in English.
 export default {
+  gas: "Gaz", battery: "Bateria", charged: "{v} naładowane",
   playlists: "Playlisty",
   search_playlists: "Szukaj playlist",
   playing_x: "Odtwarzanie: {name}",

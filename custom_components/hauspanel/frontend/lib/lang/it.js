@@ -1,5 +1,6 @@
 // Italian texts. Keys and {placeholders} as in English.
 export default {
+  gas: "Gas", battery: "Batteria", charged: "{v} caricati",
   playlists: "Playlist",
   search_playlists: "Cerca playlist",
   playing_x: "In riproduzione: {name}",

@@ -86,7 +86,7 @@ Installing the integration adds three entries to the Home Assistant sidebar. Eac
 - Settings are stored in Home Assistant and reach every open screen at once. Layout and tile size are remembered per device.
 - *My own settings* gives one person their own arrangement of a panel.
 - Any panel can be made visible to administrators only.
-- In English, German, French, Dutch, Spanish, Italian, Polish and Swedish, following the language of Home Assistant.
+- In English, German, French, Dutch, Spanish, Italian, Polish, Swedish and Turkish, following the language of Home Assistant.
 
 ## Popups for your devices
 
@@ -201,7 +201,7 @@ Bugs and ideas are welcome as [issues](https://github.com/alpacalabs-de/hauspane
 
 ## Help with translations
 
-English and German are written by hand. French, Dutch, Spanish, Italian, Polish and Swedish were translated by machine, so a native speaker's eye helps a lot.
+English and German are written by hand. French, Dutch, Spanish, Italian, Polish, Swedish and Turkish were translated by machine, so a native speaker's eye helps a lot.
 
 - **Just tell us:** open a [translation issue](https://github.com/alpacalabs-de/hauspanel/issues/new?template=translation.yml) with the text you saw and your better wording.
 - **Change it yourself:** each language is one file, `custom_components/hauspanel/frontend/lib/lang/<code>.js` (one line per text, `key: "text"`). Edit the text on GitHub (pencil icon) and propose the change. Keep words in `{braces}` as they are, they are filled in by HausPanel. The setup texts are in `custom_components/hauspanel/translations/<code>.json`.

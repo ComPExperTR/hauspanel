@@ -1,5 +1,6 @@
 // French texts. Keys and {placeholders} as in English.
 export default {
+  gas: "Gaz", battery: "Batterie", charged: "{v} chargés",
   playlists: "Playlists",
   search_playlists: "Rechercher une playlist",
   playing_x: "Lecture de {name}",

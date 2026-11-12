@@ -1,5 +1,6 @@
 // Swedish texts. Keys and {placeholders} as in English.
 export default {
+  gas: "Gas", battery: "Batteri", charged: "{v} laddade",
   playlists: "Spellistor",
   search_playlists: "Sök spellistor",
   playing_x: "Spelar {name}",

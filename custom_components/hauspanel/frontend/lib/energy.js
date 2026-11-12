@@ -62,10 +62,20 @@ function sources(ctx) {
     });
   }
   const solar = prefs.energy_sources.filter((x) => x.type === "solar" && x.stat_energy_from);
+  const gas = prefs.energy_sources.filter((x) => x.type === "gas" && x.stat_energy_from).map((s) => ({
+    from: s.stat_energy_from,
+    priceEntity: s.entity_energy_price,
+    priceNumber: s.number_energy_price,
+    unit: ctx.hass.states[s.stat_energy_from]?.attributes.unit_of_measurement || "kWh",
+  }));
+  const battery = prefs.energy_sources.filter((x) => x.type === "battery").map((s) => ({
+    from: s.stat_energy_from || null,
+    to: s.stat_energy_to || null,
+  }));
   const devices = (prefs.device_consumption || []).filter((d) => d.stat_consumption);
   // A meter without its own power sensor takes the one of the device that measures the same thing (heat pump).
   for (const m of meters) if (!m.rate) m.rate = devices.find((d) => d.stat_consumption === m.from)?.stat_rate || null;
-  return { meters, solar, devices };
+  return { meters, solar, devices, gas, battery };
 }
 
 function price(ctx, m) {
@@ -108,17 +118,19 @@ function span(range, offset) {
   return { start, end, period, buckets };
 }
 
-async function fetchChanges(ctx, ids, start, end, period) {
+async function fetchChanges(ctx, ids, start, end, period, convert = true) {
   if (!ids.length) return {};
-  const res = await ctx.hass.callWS({
+  const msg = {
     type: "recorder/statistics_during_period",
     start_time: start.toISOString(),
     end_time: end.toISOString(),
     statistic_ids: ids,
     period,
     types: ["change"],
-    units: { energy: "kWh" },
-  });
+  };
+  // Mètres à gaz comptent souvent en m³ : on garde alors l'unité du capteur.
+  if (convert) msg.units = { energy: "kWh" };
+  const res = await ctx.hass.callWS(msg);
   return res || {};
 }
 
@@ -144,19 +156,26 @@ async function loadData(ctx, range, offset) {
   const prev = span(range, offset - 1);
   const prevEnd = offset === 0 ? new Date(prev.start.getTime() + (now - sp.start)) : prev.end;
   const mainIds = [...src.meters.map((m) => m.from), ...src.meters.map((m) => m.to).filter(Boolean), ...src.solar.map((s) => s.stat_energy_from)];
-  const [raw, rawPrev] = await Promise.all([
+  const gasIds = src.gas.map((g) => g.from);
+  const [raw, rawPrev, gasRaw] = await Promise.all([
     fetchChanges(ctx, ids, sp.start, sp.end, sp.period),
     fetchChanges(ctx, mainIds, prev.start, prevEnd, sp.period),
+    gasIds.length ? fetchChanges(ctx, gasIds, sp.start, sp.end, sp.period, false) : Promise.resolve({}),
   ]);
+  // Gas stays in the unit of its sensor (m³ for most meters).
+  const withGas = (r) => (gasIds.length ? { ...r, ...Object.fromEntries(gasIds.map((id) => [id, gasRaw[id] || []])) } : r);
   const totals = (r, buckets) => {
     const imp = src.meters.map((m) => series(r, m.from, buckets));
     const exp = series(r, src.meters[0]?.to, buckets);
     const sol = src.solar.reduce((acc, s) => series(r, s.stat_energy_from, buckets).map((v, i) => v + (acc[i] || 0)), []);
     const self = buckets.map((_, i) => Math.max(0, (sol[i] || 0) - exp[i]));
-    return { imp, exp, sol, self, use: sum(imp.map(sum)) + sum(self) };
+    const gasKwh = src.gas.map((g) => series(r, g.from, buckets));
+    const battCharge = src.battery.map((b) => (b.to ? series(r, b.to, buckets) : buckets.map(() => 0)));
+    const battDischarge = src.battery.map((b) => (b.from ? series(r, b.from, buckets) : buckets.map(() => 0)));
+    return { imp, exp, sol, self, gas: gasKwh, battCharge, battDischarge, use: sum(imp.map(sum)) + sum(self) };
   };
-  const cur = totals(raw, sp.buckets);
-  const before = totals(rawPrev, prev.buckets);
+  const cur = totals(withGas(raw), sp.buckets);
+  const before = totals(withGas(rawPrev), prev.buckets);
   const devices = src.devices.map((d) => ({
     id: d.stat_consumption,
     name: d.name || ctx.hass.states[d.stat_consumption]?.attributes.friendly_name?.replace(/\s*(Energie|Energy|Energieverbrauch|energy consumed)$/i, "") || d.stat_consumption,
@@ -349,6 +368,18 @@ export function energyView(ctx) {
     if (s.solar.length) {
       cards.push(card("solar", "mdi:solar-power-variant-outline", t("solar"), kwh(ctx, solar), exported > 0.01 ? t("fed_in", { v: kwh(ctx, exported) }) : null));
       cards.push(card("auto", "mdi:leaf", t("self_sufficiency"), `${formatNumber(ctx.hass, cur.use > 0 ? (self / cur.use) * 100 : 0, 0)} %`, t("own_solar", { v: kwh(ctx, self) })));
+    }
+    if (s.gas.length) {
+      const g = s.gas[0];
+      const gasTotal = sum(cur.gas[0] || []);
+      const gasText = /kwh/i.test(g.unit) ? kwh(ctx, gasTotal) : `${formatNumber(ctx.hass, gasTotal, gasTotal < 10 ? 2 : 1)} ${g.unit}`;
+      const gasCost = (price(ctx, g) ?? 0) * gasTotal;
+      cards.push(card("gas", "mdi:fire", t("gas"), gasText, gasCost > 0 ? money(ctx, gasCost) : null));
+    }
+    if (s.battery.length) {
+      const ch = sum(cur.battCharge.map(sum));
+      const dis = sum(cur.battDischarge.map(sum));
+      cards.push(card("battery", "mdi:battery-charging-outline", t("battery"), kwh(ctx, dis), t("charged", { v: kwh(ctx, ch) })));
     }
     if (s.meters.length > 1) {
       s.meters.forEach((m, i) => cards.push(card(`meter m${i}`, i === 0 ? "mdi:home-lightning-bolt-outline" : "mdi:heat-pump-outline", m.name, kwh(ctx, meterKwh[i]),

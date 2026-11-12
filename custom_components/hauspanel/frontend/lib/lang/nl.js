@@ -1,5 +1,6 @@
 // Dutch texts. Keys and {placeholders} as in English.
 export default {
+  gas: "Gas", battery: "Batterij", charged: "{v} geladen",
   playlists: "Afspeellijsten",
   search_playlists: "Afspeellijsten zoeken",
   playing_x: "{name} wordt afgespeeld",
