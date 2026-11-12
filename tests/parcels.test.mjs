@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { LIB, fakeHass } from "./fake.mjs";
 
-const { parcelSensors, incomingParcels, parcelWhen } = await import(LIB + "parcels.js");
+const { parcelSensors, incomingParcels, deliveredParcels, parcelChipText, hasParcels, parcelWhen } = await import(LIB + "parcels.js");
 
 const p = (carrier, barcode, status, from, extra = {}) => ({ carrier, barcode, status, planned_from: from, planned_to: from, delivered: status === "delivered", ...extra });
 
@@ -31,4 +31,22 @@ test("today and tomorrow say so, no date says nothing", () => {
   assert.match(parcelWhen(hass, { planned_from: new Date(2026, 10, 12, 14).toISOString(), planned_to: new Date(2026, 10, 12, 16).toISOString() }, now), /^Today 14:00–16:00$/);
   assert.equal(parcelWhen(hass, { planned_from: new Date(2026, 10, 13).toISOString() }, now), "Tomorrow");
   assert.equal(parcelWhen(hass, {}, now), "");
+});
+
+test("delivered in the last two days, and what the chip says", () => {
+  const now = new Date(2026, 10, 12, 9, 0);
+  const hass = fakeHass({ states: {
+    "sensor.parcel_aggregator_delivered_parcels": { state: "2", attributes: { parcels: [
+      { carrier: "DHL", barcode: "x", status: "delivered", delivered: true, delivered_at: new Date(2026, 10, 11, 15).toISOString() },
+      { carrier: "DHL", barcode: "y", status: "delivered", delivered: true, delivered_at: new Date(2026, 10, 1, 15).toISOString() }] } },
+  } });
+  assert.equal(hasParcels(hass), true);
+  const done = deliveredParcels(hass, now.getTime());
+  assert.deepEqual(done.map((p) => p.barcode), ["x"], "older than two days drops out");
+  assert.equal(parcelChipText(hass, [], done, now), "1 delivered");
+  const one = [{ carrier: "GLS", status: "in_transit", planned_from: new Date(2026, 10, 13).toISOString() }];
+  assert.equal(parcelChipText(hass, one, done, now), "Tomorrow");
+  assert.equal(parcelChipText(hass, [...one, ...one], done, now), "2 on the way");
+  assert.equal(parcelChipText(hass, [], [], now), "");
+  assert.equal(hasParcels(fakeHass()), false);
 });

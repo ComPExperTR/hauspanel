@@ -288,7 +288,7 @@ export function openSettings(ctx) {
       const cats = { ...CAT_DEFAULTS, ...(s.cats || {}) };
       const chipsSection = section(t("cat_chips"), h("p", { class: "hp-muted small" }, t("cat_chips_hint")),
         ...[["light", "mdi:lightbulb-outline", t("cat_light")], ["climate", "mdi:thermometer", t("climate")], ["shades", "mdi:blinds-horizontal", t("shades")], ["security", "mdi:shield-outline", t("security")],
-          ["energy", "mdi:lightning-bolt-outline", t("energy")], ["today", "mdi:calendar-blank-outline", t("cat_today")], ["waste", "mdi:delete-variant", t("waste")], ["maint", "mdi:wrench-outline", t("maintenance")], ["leave", "mdi:home-export-outline", t("leave_chip")]].map(([k, ic, label]) =>
+          ["energy", "mdi:lightning-bolt-outline", t("energy")], ["today", "mdi:calendar-blank-outline", t("cat_today")], ["waste", "mdi:delete-variant", t("waste")], ["parcels", "mdi:package-variant-closed", t("parcels")], ["maint", "mdi:wrench-outline", t("maintenance")], ["leave", "mdi:home-export-outline", t("leave_chip")]].map(([k, ic, label]) =>
           row(h("span", {}, icon(ic), " ", label), toggleSwitch(cats[k], () => {
             S.update((x) => { x.cats = { ...cats, [k]: !cats[k] }; });
             draw();

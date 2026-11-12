@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+
+- **Parcels** are now a status chip at the top of Home, like Waste and Maintenance: it shows when the next parcel comes or how many are on the way, and only while one is coming or just came. A tap opens the list with the parcels on their way and the ones delivered in the last two days; a tap on a parcel opens its tracking page. Switch the chip off under *Settings → Home → Status chips* or with − in edit mode. The parcel list further down on Home is gone.
+
 ## 1.6.0
 
 - **Notices** (*Settings → Home → Notices*): pick entities of your own, like a helper for *Mail is here* or a washing machine sensor, and they show on Home only when they matter. Switches and helpers show while on; sensors and lists at the states you enter (several separated by commas, or a number like `>0`). A helper is cleared with the tick on its pill.

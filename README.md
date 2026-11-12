@@ -55,12 +55,12 @@ Installing the integration adds three entries to the Home Assistant sidebar. Eac
 - Hide whole device types, integrations, entities by text, or one by one.
 
 **Home screen**
-- **Status chips** for light, climate, shades, security, energy, today, maintenance and leaving home. A tap opens a popup with the details. Each chip can be switched off.
+- **Status chips** for light, climate, shades, security, energy, today, waste, parcels, maintenance and leaving home. A tap opens a popup with the details. Each chip can be switched off.
 - **Scenes ask first**: the first tap arms, the second runs. So *Good night* never starts by accident.
 - **Today** card with events from your calendars and to-do lists.
 - Two home styles: every room as a card, or *on now + favourites*.
 - **Notices**: pick a helper, switch or sensor of your own (*Mail is here*, *Washing done*) and it shows on Home only while it is on or at the states you enter. A helper is cleared with its tick.
-- **Parcels** on their way from the [parcel integrations](https://ha-parcel-integrations.github.io/): sender, carrier, status and delivery time on Home.
+- **Parcels** on their way from the [parcel integrations](https://ha-parcel-integrations.github.io/): a status chip on Home with sender, carrier, status and delivery time.
 
 **Rooms**
 - A tap on a room opens the **room popup**: a temperature ring, big tiles for light, shades, music and switches, the room's devices and scenes. Under *Customise* you choose which sections open by default.
@@ -239,9 +239,9 @@ Home Assistant kennt dein Haus schon: welche Räume auf welcher Etage liegen und
 
 **Das Wichtigste:**
 
-- **Status-Chips** oben auf der Startseite für Licht, Klima, Rollos, Sicherheit, Energie, Heute, Wartung und Haus verlassen. Ein Tipp öffnet ein Popup mit allen Details.
+- **Status-Chips** oben auf der Startseite für Licht, Klima, Rollos, Sicherheit, Energie, Heute, Müll, Pakete, Wartung und Haus verlassen. Ein Tipp öffnet ein Popup mit allen Details.
 - **Meldungen**: eigene Helfer, Schalter oder Sensoren (*Post ist da*, *Wäsche fertig*) erscheinen auf der Startseite nur, solange sie an sind oder einen eingetragenen Zustand haben. Ein Helfer wird mit dem Haken zurückgesetzt.
-- **Pakete** aus den [Paket-Integrationen](https://ha-parcel-integrations.github.io/): Absender, Paketdienst, Status und Lieferzeit auf der Startseite.
+- **Pakete** aus den [Paket-Integrationen](https://ha-parcel-integrations.github.io/): ein Status-Chip auf der Startseite mit Absender, Paketdienst, Status und Lieferzeit.
 - **Raum-Popup** mit Temperaturring, großen Kacheln für Licht, Rollos, Musik und Schalter, dazu Szenen. Pro Raum einstellbar, welche Bereiche offen sind.
 - **Sicherheit**: was offen ist, Alarm mit Modi, Rauchmelder, die letzten Bewegungen von Frigate mit kurzen Clips. Pro Tür, Tor oder Schloss ein **Zeitraum, in dem es offen sein darf**, z. B. das Einfahrtstor tagsüber.
 - **Gute-Nacht-Check**, **Haus verlassen** mit Rückgängig, **Türklingel** mit Kamera im Vollbild, **Babyfon**.

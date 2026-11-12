@@ -30,7 +30,7 @@ import { snapshotUrl } from "./camera.js";
 import { ago, since } from "./popkit.js";
 import { wasteSources, loadPickups, openWaste, whenText } from "./waste.js";
 import { noticesBlock } from "./notices.js";
-import { parcelsBlock } from "./parcels.js";
+import { hasParcels, incomingParcels, deliveredParcels, parcelChipText, openParcels } from "./parcels.js";
 
 export const LAYOUTS = [
   { id: "grid", icon: "mdi:view-grid-outline" },
@@ -116,9 +116,9 @@ const OPENINGS = ["door", "window", "garage_door", "opening"];
  * The home at a glance: round category chips (light, climate, security, energy, today) and "All lights off".
  * Each chip leads to its page where there is one.
  */
-export const CAT_DEFAULTS = { light: true, climate: true, shades: true, security: true, energy: true, today: true, waste: true, maint: true, leave: true };
+export const CAT_DEFAULTS = { light: true, climate: true, shades: true, security: true, energy: true, today: true, waste: true, parcels: true, maint: true, leave: true };
 
-export const CAT_ORDER = ["light", "climate", "shades", "security", "energy", "today", "waste", "maint", "leave"];
+export const CAT_ORDER = ["light", "climate", "shades", "security", "energy", "today", "waste", "parcels", "maint", "leave"];
 
 export function homeCats(ctx) {
   const box = h("div", { class: "hp-cats" });
@@ -156,6 +156,8 @@ export function homeCats(ctx) {
   // Waste: only when a waste calendar is there, and on Home only the day before and on the day of a pickup.
   const hasWaste = (() => { const w = wasteSources(ctx.hass); return w.calendars.length + w.sensors.length > 0; })();
   const waste = hasWaste ? chip("waste", "mdi:delete-variant", t("waste"), () => openWaste(ctx, ctx._waste?.list || [])) : null;
+  // Parcels: only with a parcel integration, and on Home only while one is coming or just came.
+  const parcels = hasParcels(ctx.hass) ? chip("parcels", "mdi:package-variant-closed", t("parcels"), () => openParcels(ctx)) : null;
   // Maintenance only shows up when something needs looking after.
   const maint = chip("maint", "mdi:wrench-outline", t("maintenance"), () => openMaintenanceSheet(ctx));
   const leave = chip("leave", "mdi:home-export-outline", t("leave_chip"), () => openLeave(ctx));
@@ -219,6 +221,14 @@ export function homeCats(ctx) {
       leaveAt = Date.now();
       const k = leaveItems(ctx, hass).count;
       leave.val.textContent = k ? t("leave_n_todo", { n: k }) : t("leave_ready");
+    }
+    if (parcels) {
+      const coming = incomingParcels(hass);
+      const done = deliveredParcels(hass);
+      parcels.hidden = !coming.length && !done.length && !editing;
+      parcels.val.textContent = parcelChipText(hass, coming, done) || "–";
+      parcels.classList.toggle("active", coming.some((p) => p.status === "out_for_delivery" || p.status === "at_pickup_point"));
+      parcels.classList.toggle("alert", coming.some((p) => p.status === "problem"));
     }
     if (today) {
       const k = ctx.agenda.todayEvents().length;
@@ -1294,7 +1304,7 @@ function focusHome(ctx) {
     pill.addEventListener("click", () => ctx.tapRoom(a.id));
     rooms.append(pill);
   }
-  return h("div", { class: "hp-focus-home" }, date, clock, line, noticesBlock(ctx), parcelsBlock(ctx),
+  return h("div", { class: "hp-focus-home" }, date, clock, line, noticesBlock(ctx),
     scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes")), rooms);
 }
 
@@ -1341,10 +1351,10 @@ export function renderHome(ctx, layout) {
   const scenes = scenesBlock(ctx, "scenes:home", ctx.allScenes(), t("scenes"));
   if (layout === "sidebar" && !ctx.narrow) {
     return h("div", { class: "hp-layout hp-layout-sidebar" }, sidePanel(ctx, "overview"),
-      h("div", { class: "hp-side-main" }, h("div", { class: "hp-side-title" }, t("tab_home")), homeCats(ctx), sideScenes(ctx) ? null : scenes, noticesBlock(ctx), parcelsBlock(ctx),
+      h("div", { class: "hp-side-main" }, h("div", { class: "hp-side-title" }, t("tab_home")), homeCats(ctx), sideScenes(ctx) ? null : scenes, noticesBlock(ctx),
         ctx.settings.s.homeStyle === "favorites" ? null : h("div", { class: "hp-label hp-rooms-label" }, t("rooms")), homeBody(ctx, layout)));
   }
-  return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, noticesBlock(ctx), parcelsBlock(ctx), homeBody(ctx, layout));
+  return h("div", { class: "hp-layout hp-layout-home" }, homeCats(ctx), scenes, noticesBlock(ctx), homeBody(ctx, layout));
 }
 
 /**
